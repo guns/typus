@@ -27,8 +27,6 @@ module Admin
         actions << link_to_unless_current(_t("Add new"), :action => "new")
       end
 
-      actions << link_to_unless_current(_t("List"), :action => "index")
-
       return actions
     end
 
