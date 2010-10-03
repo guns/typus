@@ -180,7 +180,7 @@ module Admin
                   render "admin/helpers/preview",
                          :attribute => attribute,
                          :attachment => attribute,
-                         :content => item.send(attribute),
+                         :content => image_tag(item.send(attribute).url(file_thumbnail)),
                          :file_preview_is_image => file_preview_is_image,
                          :has_file_preview => has_file_preview,
                          :href => item.send(attribute).url(file_preview),
