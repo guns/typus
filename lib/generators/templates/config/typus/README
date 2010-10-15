@@ -38,7 +38,6 @@ common settings.
         default_action_on_item: show
         end_year: 2015
         form_rows: 25
-        habtm_limit: 500
         minute_step: 15
         nil: 'nil'
         only_user_items: true

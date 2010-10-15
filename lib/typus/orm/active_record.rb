@@ -78,7 +78,6 @@ module Typus
 
       end
 
-      # Typus sidebar filters.
       def typus_filters
         fields_with_type = ActiveSupport::OrderedHash.new
 
@@ -97,15 +96,6 @@ module Typus
         return fields_with_type
       end
 
-      def typus_actions
-        return [] if Typus::Configuration.config[name]['actions'].nil?
-        Typus::Configuration.config[name]['actions'].keys.map do |key|
-          Typus::Configuration.config[name]['actions'][key].extract_settings
-        end.flatten
-      rescue
-        []
-      end
-
       # Extended actions for this model on Typus.
       def typus_actions_on(filter)
         Typus::Configuration.config[name]['actions'][filter.to_s].extract_settings
@@ -116,7 +106,7 @@ module Typus
       # Used for +search+, +relationships+
       def typus_defaults_for(filter)
         data = Typus::Configuration.config[name][filter.to_s]
-        return (!data.nil?) ? data.extract_settings : []
+        return data.try(:extract_settings) || []
       end
 
       def typus_search_fields
@@ -139,9 +129,6 @@ module Typus
         return search
       end
 
-      #--
-      # TODO: Test method.
-      #++
       def typus_application
         Typus::Configuration.config[name]["application"] || "Unknown"
       end
@@ -168,29 +155,22 @@ module Typus
       #++
       def typus_options_for(filter)
         data = Typus::Configuration.config[name]
+
         unless data['options'].nil?
           value = data['options'][filter.to_s] unless data['options'][filter.to_s].nil?
         end
 
-        return (!value.nil?) ? value : Typus::Resources.send(filter)
+        value || Typus::Resources.send(filter)
       end
 
       def typus_export_formats
-        data = Typus::Configuration.config[name]
-        !data['export'].nil? ? data['export'].extract_settings : []
+        Typus::Configuration.config[name]['export'].try(:extract_settings) || []
       end
 
-      # Used for `order_by`.
       def typus_order_by
-        fields = typus_defaults_for(:order_by)
-
-        if fields.empty?
-          "#{table_name}.#{primary_key} ASC"
-        else
-          fields.map do |field|
-            field.include?('-') ? "#{table_name}.#{field.delete('-')} DESC" : "#{table_name}.#{field} ASC"
-          end.join(', ')
-        end
+        typus_defaults_for(:order_by).map do |field|
+          field.include?('-') ? "#{table_name}.#{field.delete('-')} DESC" : "#{table_name}.#{field} ASC"
+        end.join(', ')
       end
 
       #--
@@ -292,7 +272,7 @@ module Typus
             condition = ["#{key} BETWEEN ? AND ?", interval.first.to_s(:db), interval.last.to_s(:db)]
             conditions = merge_conditions(conditions, condition)
           when :date
-            if value.is_a?(Hash)
+            if value.kind_of?(Hash)
               date_format = Date::DATE_FORMATS[typus_date_format(key)]
 
               begin

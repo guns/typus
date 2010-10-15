@@ -2,6 +2,38 @@ require "test_helper"
 
 class Admin::DashboardControllerTest < ActionController::TestCase
 
+  context "When authentication is http_basic" do
+
+    setup do
+      Typus.stubs(:authentication).returns(:http_basic)
+    end
+
+    should_eventually "return a 401 message when no credentials sent" do
+      get :show
+      assert_response 401
+    end
+
+    should_eventually "authenticate user" do
+      @request.env['HTTP_AUTHORIZATION'] = 'Basic ' + Base64::encode64("admin:columbia")
+      get :show
+      assert_response :success
+    end
+
+  end
+
+  context "When authentication is none" do
+
+    setup do
+      Typus.stubs(:authentication).returns(:none)
+    end
+
+    should_eventually "render dashboard" do
+      get :show
+      assert_response :success
+    end
+
+  end
+
   context "Not logged" do
 
     setup do

@@ -5,13 +5,13 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
   include Admin::FormHelper
   include Admin::ResourcesHelper
 
-  should_eventually "verify belongs_to_field" do
+  should_eventually "verify_belongs_to_field" do
 
     params = { :controller => 'admin/post', :id => 1, :action => :create }
     self.stubs(:params).returns(params)
 
-    @current_user = mock()
-    @current_user.stubs(:can?).with('create', Post).returns(false)
+    current_user = mock()
+    current_user.stubs(:can?).with('create', Post).returns(false)
     @resource = Comment
 
     expected = <<-HTML
@@ -34,8 +34,8 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
     params = { :controller => 'admin/post', :id => 1, :action => :edit }
     self.stubs(:params).returns(params)
 
-    @current_user = mock()
-    @current_user.stubs(:can?).with('create', Comment).returns(true)
+    current_user = mock()
+    current_user.stubs(:can?).with('create', Comment).returns(true)
     @resource = Post
 
     expected = <<-HTML
@@ -71,7 +71,7 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
 
   end
 
-  should_eventually "verify attribute_disabled" do
+  should_eventually "verify_attribute_disabled" do
     @resource = Post
     assert !attribute_disabled?('test')
     Post.expects(:accessible_attributes).returns(['test'])

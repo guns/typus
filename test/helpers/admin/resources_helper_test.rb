@@ -14,10 +14,10 @@ class Admin::ResourcesHelperTest < ActiveSupport::TestCase
     params = { :action => "edit", :back_to => "/back_to_param" }
     self.expects(:params).at_least_once.returns(params)
 
-    partial = "admin/helpers/resources/display_link_to_previous"
-    options = { :message => "You're updating a Post." }
+    expected = [ "admin/helpers/resources/display_link_to_previous", { :message => "You're updating a Post." } ]
+    output = display_link_to_previous
 
-    assert_equal [ partial, options ], display_link_to_previous
+    assert_equal expected, output
   end
 
   should "remove_filter_link" do
@@ -34,17 +34,20 @@ class Admin::ResourcesHelperTest < ActiveSupport::TestCase
       @resource = "typus_users"
     end
 
-    should_eventually "verify build_list_when_returns_a_table" do
-      self.stubs(:build_table).returns("a_list_with_items")
+    should "verify_build_list_when_returns_a_table" do
+      expected = [ "admin/typus_users/list", { :items => [] } ]
       output = build_list(@model, @fields, @items, @resource)
-      assert_equal "a_list_with_items", output
+      assert_equal expected, output
     end
 
     should "verify build_list_when_returns_a_template" do
       self.stubs(:render).returns("a_template")
       File.stubs(:exist?).returns(true)
+
+      expected = "a_template"
       output = build_list(@model, @fields, @items, @resource)
-      assert_equal "a_template", output
+
+      assert_equal expected, output
     end
 
   end

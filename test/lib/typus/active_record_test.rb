@@ -2,70 +2,82 @@ require "test_helper"
 
 class ActiveRecordTest < ActiveSupport::TestCase
 
-  should "verify model fields is an instance of active support ordered hash" do
-    assert TypusUser.model_fields.instance_of?(ActiveSupport::OrderedHash)
-  end
+  context "model_fields" do
 
-  should "return model fields for TypusUser" do
-    expected_fields = [[:id, :integer],
-                       [:first_name, :string],
-                       [:last_name, :string],
-                       [:role, :string],
-                       [:email, :string],
-                       [:status, :boolean],
-                       [:token, :string],
-                       [:salt, :string],
-                       [:crypted_password, :string],
-                       [:preferences, :string],
-                       [:created_at, :datetime],
-                       [:updated_at, :datetime]]
-    assert_equal expected_fields.map { |i| i.first }, TypusUser.model_fields.keys
-    assert_equal expected_fields.map { |i| i.last }, TypusUser.model_fields.values
-  end
-
-  should "return model fields for post" do
-    expected_fields = [[:id, :integer],
-                       [:title, :string],
-                       [:body, :text],
-                       [:status, :string],
-                       [:favorite_comment_id, :integer],
-                       [:created_at, :datetime],
-                       [:updated_at, :datetime],
-                       [:published_at, :datetime],
-                       [:typus_user_id, :integer]]
-    assert_equal expected_fields.map { |i| i.first }, Post.model_fields.keys
-    assert_equal expected_fields.map { |i| i.last }, Post.model_fields.values
-  end
-
-  should "verify_model_relationships_is_an_instance_of_active_support_ordered_hash" do
-    assert TypusUser.model_relationships.instance_of?(ActiveSupport::OrderedHash)
-  end
-
-  should "return_model_relationships_for_post" do
-    expected = [[:comments, :has_many],
-                [:categories, :has_and_belongs_to_many],
-                [:user, nil],
-                [:assets, :has_many]]
-    expected.each do |i|
-      assert_equal i.last, Post.model_relationships[i.first]
+    should "be an ActiveSupport::OrderedHash" do
+      assert TypusUser.model_fields.instance_of?(ActiveSupport::OrderedHash)
     end
+
+    should "verify TypusUser model_fields" do
+      expected_fields = [[:id, :integer],
+                         [:first_name, :string],
+                         [:last_name, :string],
+                         [:role, :string],
+                         [:email, :string],
+                         [:status, :boolean],
+                         [:token, :string],
+                         [:salt, :string],
+                         [:crypted_password, :string],
+                         [:preferences, :string],
+                         [:created_at, :datetime],
+                         [:updated_at, :datetime]]
+      assert_equal expected_fields.map { |i| i.first }, TypusUser.model_fields.keys
+      assert_equal expected_fields.map { |i| i.last }, TypusUser.model_fields.values
+    end
+
+    should "verify Post model_fields" do
+      expected_fields = [[:id, :integer],
+                         [:title, :string],
+                         [:body, :text],
+                         [:status, :string],
+                         [:favorite_comment_id, :integer],
+                         [:created_at, :datetime],
+                         [:updated_at, :datetime],
+                         [:published_at, :datetime],
+                         [:typus_user_id, :integer]]
+      assert_equal expected_fields.map { |i| i.first }, Post.model_fields.keys
+      assert_equal expected_fields.map { |i| i.last }, Post.model_fields.values
+    end
+
   end
 
-  should "return_description_of_a_model" do
-    assert_equal "System Users Administration", TypusUser.typus_description
+  context "model_relationships" do
+
+    should "be an ActiveSupport::OrderedHash" do
+      assert TypusUser.model_relationships.instance_of?(ActiveSupport::OrderedHash)
+    end
+
+    should "verify Post model_relationships" do
+      expected = [[:comments, :has_many],
+                  [:categories, :has_and_belongs_to_many],
+                  [:user, nil],
+                  [:assets, :has_many]]
+      expected.each do |i|
+        assert_equal i.last, Post.model_relationships[i.first]
+      end
+    end
+
   end
 
-  context "Typus fields for" do
+  context "typus_description" do
 
-    should "verify typus_fields_for accepts strings" do
+    should "return the description of a model" do
+      assert_equal "System Users Administration", TypusUser.typus_description
+    end
+
+  end
+
+  context "typus_fields_for" do
+
+    should "accept strings" do
       assert_equal %w( email role status ), TypusUser.typus_fields_for("list").keys
     end
 
-    should "verify typus_fields_for accepts symbols" do
+    should "accept symbols" do
       assert_equal %w( email role status ), TypusUser.typus_fields_for(:list).keys
     end
 
-    should "return_typus_fields_for_list_for_typus_user" do
+    should "return list fields for TypusUser" do
       expected_fields = [["email", :string],
                          ["role", :selector],
                          ["status", :boolean]]
@@ -73,7 +85,7 @@ class ActiveRecordTest < ActiveSupport::TestCase
       assert_equal expected_fields.map { |i| i.last }, TypusUser.typus_fields_for(:list).values
     end
 
-    should "return_typus_fields_for_form_for_typus_user" do
+    should "return form fields for TypusUser" do
       expected_fields = [["first_name", :string],
                          ["last_name", :string],
                          ["role", :selector],
@@ -85,30 +97,30 @@ class ActiveRecordTest < ActiveSupport::TestCase
       assert_equal expected_fields.map { |i| i.last }, TypusUser.typus_fields_for(:form).values
     end
 
-    should "return_typus_fields_for_form_for_picture" do
+    should "return form fields for Picture" do
       expected_fields = [["title", :string],
                          ["picture", :file]]
       assert_equal expected_fields.map { |i| i.first }, Picture.typus_fields_for(:form).keys
       assert_equal expected_fields.map { |i| i.last }, Picture.typus_fields_for(:form).values
     end
 
-    should "return_typus_fields_for_a_model_without_configuration" do
+    should "return form fields for a Model without configuration" do
       assert Class.new(ActiveRecord::Base).typus_fields_for(:form).empty?
     end
 
-    should "return_typus_fields_for_relationship_for_typus_user" do
+    should "return relationship fields for TypusUser" do
       assert_equal %w( first_name last_name role email language), TypusUser.typus_fields_for(:relationship).keys
     end
 
-    should "return_all_fields_for_undefined_field_type_on_typus_user" do
+    should "return undefined fields for TypusUser" do
       assert_equal %w( first_name last_name role email language), TypusUser.typus_fields_for(:undefined).keys
     end
 
   end
 
-  context "Typus filters" do
+  context "typus_filters" do
 
-    should "return_filters_for_typus_user" do
+    should "return filters for TypusUser" do
       expected = [["status", :boolean], ["role", :string]]
 
       assert_equal expected.map { |i| i.first }.join(", "), Typus::Configuration.config["TypusUser"]["filters"]
@@ -116,7 +128,7 @@ class ActiveRecordTest < ActiveSupport::TestCase
       assert_equal expected.map { |i| i.last }, TypusUser.typus_filters.values
     end
 
-    should "return_post_typus_filters" do
+    should "return filters for Post" do
       expected = [["status", :string], ["created_at", :datetime]]
       assert_equal expected.map { |i| i.first }.join(", "), Typus::Configuration.config["Post"]["filters"]
       assert_equal expected.map { |i| i.first }, Post.typus_filters.keys
@@ -125,52 +137,63 @@ class ActiveRecordTest < ActiveSupport::TestCase
 
   end
 
-  context "Typus actions on" do
+  context "typus_actions_on" do
 
-    should "verify typus_actions_on accepts strings" do
+    should "accept strings" do
       assert_equal %w( cleanup ), Post.typus_actions_on("index")
     end
 
-    should "verify typus_actions_on accepts symbols" do
+    should "accept symbols" do
       assert_equal %w( cleanup ), Post.typus_actions_on(:index)
     end
 
-    should "return_actions_on_list_for_typus_user" do
+    should "return actions on list for TypusUser" do
       assert TypusUser.typus_actions_on(:list).empty?
     end
 
-    should "return Post actions on edit" do
+    should "return actions on edit for Post" do
       assert_equal %w( send_as_newsletter preview ), Post.typus_actions_on(:edit)
-    end
-
-    should "return Post actions" do
-      assert_equal %w( cleanup preview send_as_newsletter ), Post.typus_actions.sort
     end
 
   end
 
-  context "Typus options for" do
+  context "typus_options_for" do
 
-    should "verify typus_options_for accepts strings" do
+    should "accept strings" do
       assert_equal 15, Post.typus_options_for("form_rows")
     end
 
-    should "verify typus_options_for accepts symbols" do
+    should "accept symbols" do
       assert_equal 15, Post.typus_options_for(:form_rows)
     end
 
-    should "verify typus_options_for returns nil when options doesnt exist" do
+    should "return nil when options do not exist" do
       assert_nil TypusUser.typus_options_for(:unexisting)
     end
 
-    should "return options for post and page" do
+    should "return options for Post" do
       assert_equal 15, Post.typus_options_for(:form_rows)
+    end
+
+    should "return options for Page" do
       assert_equal 25, Page.typus_options_for(:form_rows)
     end
 
   end
 
-  context "Typus field options for" do
+  context "typus_application" do
+
+    should "return application for Post" do
+      assert_equal "Blog", Post.typus_application
+    end
+
+    should "return application for View" do
+      assert_equal "Unknown", View.typus_application
+    end
+
+  end
+
+  context "typus_field_options_for" do
 
     should "verify on models" do
       assert_equal [ :status ], Post.typus_field_options_for(:selectors)
@@ -180,65 +203,110 @@ class ActiveRecordTest < ActiveSupport::TestCase
 
   end
 
-  context "Typus boolean" do
+  context "typus_boolean" do
 
-    should "verify typus_boolean accepts strings" do
+    should "accept strings" do
       expected = {"Inactive"=>"false", "Active"=>"true"}
       assert_equal expected, TypusUser.typus_boolean("status")
     end
 
-    should "verify typus_boolean accepts symbols" do
+    should "accept symbols" do
       expected = {"Inactive"=>"false", "Active"=>"true"}
       assert_equal expected, TypusUser.typus_boolean(:status)
     end
 
-    should "return_booleans_for_typus_users" do
+    should "return booleans for TypusUser" do
       expected = {"Active" => "true", "Inactive" => "false"}
       assert_equal expected, TypusUser.typus_boolean(:status)
     end
 
-    should "return_booleans_for_post" do
+    should "return booleans for Post" do
       expected = {"True" => "true", "False" => "false"}
       assert_equal expected, Post.typus_boolean(:status)
     end
 
   end
 
-  context "Typus date format" do
+  context "typus_date_format" do
 
-    should "verify typus_date_format accepts strings" do
+    should "accept strings" do
       assert_equal :db, Post.typus_date_format("unknown")
     end
 
-    should "verify typus_date_format accepts symbols" do
+    should "accept symbols" do
       assert_equal :db, Post.typus_date_format(:unknown)
     end
 
-    should "return typus_date_formats for Post" do
+    should "return date_format for Post" do
       assert_equal :db, Post.typus_date_format
       assert_equal :post_short, Post.typus_date_format(:created_at)
     end
 
   end
 
-  context "Typus defaults for" do
+  context "typus_template" do
 
-    should "verify typus_defaults_for on Model accepts strings" do
+    should "accept strings" do
+      assert_equal "datepicker", Post.typus_template("published_at")
+    end
+
+    should "accept symbols" do
+      assert_equal "datepicker", Post.typus_template(:published_at)
+    end
+
+    should "return nil if template does not exist" do
+      assert_nil Post.typus_template(:created_at)
+    end
+
+  end
+
+  context "typus_defaults_for" do
+
+    should "accept strings" do
       assert_equal %w( title ), Post.typus_defaults_for("search")
     end
 
-    should "verify typus_defaults_for on Model accepts symbols" do
+    should "accepts symbols" do
       assert_equal %w( title ), Post.typus_defaults_for(:search)
     end
 
     should "return default_for relationships on Post" do
       assert_equal %w( assets categories comments views ), Post.typus_defaults_for(:relationships)
-      assert Post.typus_defaults_for(:relationships).any?
     end
 
   end
 
-  context "Typus order by" do
+  context "typus_search_fields" do
+
+    should "return a hash with the search modifiers" do
+      search = ["=id", "^title", "body"]
+      Post.stubs(:typus_defaults_for).with(:search).returns(search)
+      expected = {"body"=>"@", "title"=>"^", "id"=>"="}
+      assert_equal expected, Post.typus_search_fields
+    end
+
+    should "return and empty hash" do
+      search = []
+      Post.stubs(:typus_defaults_for).with(:search).returns(search)
+      expected = {}
+      assert_equal expected, Post.typus_search_fields
+    end
+
+  end
+
+  context "typus_export_formats" do
+
+    should "return post formats" do
+      assert_equal ["csv", "xml"], Post.typus_export_formats
+    end
+
+    should "return picture formats" do
+      assert_equal [], Picture.typus_export_formats
+    end
+
+  end
+
+  context "typus_order_by" do
 
     should "return defaults_for order_by on Post" do
       assert_equal "posts.title ASC, posts.created_at DESC", Post.typus_order_by
@@ -247,7 +315,7 @@ class ActiveRecordTest < ActiveSupport::TestCase
 
   end
 
-  context "Build conditions" do
+  context "build_conditions" do
 
     should "generate conditions for id" do
       Post.stubs(:typus_defaults_for).with(:search).returns(["id"])
@@ -368,7 +436,7 @@ class ActiveRecordTest < ActiveSupport::TestCase
 
   end
 
-  context "Class methods" do
+  context "class_methods" do
 
     should "verify typus_user_id exists on Post" do
       assert Post.typus_user_id?

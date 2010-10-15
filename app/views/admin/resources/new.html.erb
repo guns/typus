@@ -10,7 +10,7 @@
 </h2>
 
 <%= display_link_to_previous %>
-<%= typus_block %>
+<%= typus_render :partial => 'new' %>
 
 <%
   options = { :action => 'create',
@@ -21,4 +21,4 @@
   button = _t("Create %{resource}", :resource => @resource.model_name.human)
 %>
 
-<%= render form_partial, :options => options, :button => button %>
+<%= typus_render :partial => 'form', :options => options, :button => button %>

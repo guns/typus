@@ -21,7 +21,7 @@ class Admin::MailerTest < ActiveSupport::TestCase
     assert_equal expected, @email.subject
   end
 
-  should "verify default email mime type" do
+  should "verify default email mime_type" do
     assert_equal "text/plain", @email.mime_type
   end
 

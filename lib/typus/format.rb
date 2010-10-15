@@ -1,3 +1,8 @@
+if RUBY_VERSION >= '1.9'
+  require 'csv'
+  FasterCSV = CSV
+end
+
 module Typus
 
   module Format
@@ -5,7 +10,6 @@ module Typus
     protected
 
     def generate_html
-
       items_count = @resource.count(:joins => @joins, :conditions => @conditions)
       items_per_page = @resource.typus_options_for(:per_page)
 
@@ -14,7 +18,6 @@ module Typus
       end
 
       @items = @pager.page(params[:page])
-
     end
 
     #--
@@ -23,27 +26,13 @@ module Typus
     #       We should find a way to be able to process data.
     #++
     def generate_csv
-
       fields = @resource.typus_fields_for(:csv)
-
-      require 'csv'
-      if CSV.const_defined?(:Reader)
-        # Old CSV version so we enable faster CSV.
-        begin
-          require 'fastercsv'
-        rescue Exception => error
-          raise error.message
-        end
-        csv = FasterCSV
-      else
-        csv = CSV
-      end
 
       filename = Rails.root.join("tmp", "export-#{@resource.to_resource}-#{Time.zone.now.to_s(:number)}.csv")
 
       options = { :conditions => @conditions, :batch_size => 1000 }
 
-      csv.open(filename, 'w', :col_sep => ';') do |csv|
+      FasterCSV.open(filename, 'w', :col_sep => ';') do |csv|
         csv << fields.keys
         @resource.find_in_batches(options) do |records|
           records.each do |record|
@@ -63,11 +52,15 @@ module Typus
       end
 
       send_file filename
-
     end
 
-    def generate_json; export(:json); end
-    def generate_xml; export(:xml); end
+    def generate_json
+      export(:json)
+    end
+
+    def generate_xml
+      export(:xml)
+    end
 
     def export(format)
       fields = @resource.typus_fields_for(format).collect { |i| i.first }

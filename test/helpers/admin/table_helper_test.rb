@@ -15,12 +15,9 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
     default_url_options[:host] = "test.host"
   end
 
-=begin
+  should_eventually "test_build_table" do
 
-  # FIXME
-  def test_build_table
-
-    @current_user = Factory(:typus_user)
+    current_user = Factory(:typus_user)
 
     params = { :controller => 'admin/typus_users', :action => 'index' }
     self.expects(:params).at_least_once.returns(params)
@@ -41,14 +38,10 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   end
 
-=end
+  should_eventually "test_table_header" do
 
-=begin
-
-  def test_table_header
-
-    @current_user = mock()
-    @current_user.expects(:can?).with("delete", TypusUser).returns(true)
+    current_user = mock()
+    current_user.expects(:can?).with("delete", TypusUser).returns(true)
 
     fields = TypusUser.typus_fields_for(:list)
 
@@ -66,14 +59,10 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   end
 
-=end
+  should_eventually "test_table_header_with_params" do
 
-=begin
-
-  def test_table_header_with_params
-
-    @current_user = mock()
-    @current_user.expects(:can?).with("delete", TypusUser).returns(true)
+    current_user = mock()
+    current_user.expects(:can?).with("delete", TypusUser).returns(true)
 
     fields = TypusUser.typus_fields_for(:list)
 
@@ -92,14 +81,10 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   end
 
-=end
+  should_eventually "test_table_header_when_user_cannot_delete_items" do
 
-=begin
-
-  def test_table_header_when_user_cannot_delete_items
-
-    @current_user = mock()
-    @current_user.expects(:can?).with("delete", TypusUser).returns(false)
+    current_user = mock()
+    current_user.expects(:can?).with("delete", TypusUser).returns(false)
 
     fields = TypusUser.typus_fields_for(:list)
 
@@ -117,14 +102,10 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   end
 
-=end
+  should_eventually "test_table_header_when_user_cannot_delete_items_with_params" do
 
-=begin
-
-  def test_table_header_when_user_cannot_delete_items_with_params
-
-    @current_user = mock()
-    @current_user.expects(:can?).with("delete", TypusUser).returns(false)
+    current_user = mock()
+    current_user.expects(:can?).with("delete", TypusUser).returns(false)
 
     fields = TypusUser.typus_fields_for(:list)
 
@@ -141,13 +122,9 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   end
 
-=end
+  should_eventually "test_table_belongs_to_field" do
 
-=begin
-
-  def test_table_belongs_to_field
-
-    @current_user = Factory(:typus_user)
+    current_user = Factory(:typus_user)
 
     comment = comments(:without_post_id)
     output = table_belongs_to_field("post", comment)
@@ -164,11 +141,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   end
 
-=end
-
-=begin
-
-  def test_table_has_and_belongs_to_many_field
+  should_eventually "test_table_has_and_belongs_to_many_field" do
     post = Factory(:post)
 
     output = table_has_and_belongs_to_many_field("comments", post)
@@ -177,9 +150,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
     assert_equal expected.strip, output
   end
 
-=end
-
-  should "test_table_string_field" do
+  should_eventually "test_table_string_field" do
     post = Factory(:post)
 
     output = table_string_field(:title, post, :created_at)
@@ -188,7 +159,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
     assert_equal expected.strip, output
   end
 
-  should "test_table_string_field_with_link" do
+  should_eventually "test_table_string_field_with_link" do
     post = Factory(:post)
 
     output = table_string_field(:title, post, :title)
@@ -197,7 +168,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
     assert_equal expected.strip, output
   end
 
-  should "table_tree_field_when_displays_a_parent" do
+  should_eventually "table_tree_field_when_displays_a_parent" do
     page = Factory(:page)
 
     output = table_tree_field("test", page)
@@ -206,7 +177,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
     assert_equal expected, output
   end
 
-  should "table_tree_field_when_displays_a_children" do
+  should_eventually "table_tree_field_when_displays_a_children" do
     page = Factory(:page, :status => "unpublished")
 
     output = table_tree_field("test", page)
@@ -215,7 +186,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
     assert_equal expected, output
   end
 
-  should "test_table_datetime_field" do
+  should_eventually "test_table_datetime_field" do
     post = Factory(:post)
     Time::DATE_FORMATS[:post_short] = "%m/%y"
 
@@ -225,7 +196,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
     assert_equal expected.strip, output
   end
 
-  should "test_table_datetime_field_with_link" do
+  should_eventually "test_table_datetime_field_with_link" do
     post = Factory(:post)
     Time::DATE_FORMATS[:post_short] = "%m/%y"
 
@@ -235,10 +206,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
     assert_equal expected.strip, output
   end
 
-=begin
-
-  # FIXME: NameError: undefined local variable or method `controller' for
-  def test_table_boolean_field
+  should_eventually "test_table_boolean_field" do
 
     post = Factory(:typus_user)
     output = table_boolean_field("status", post)
@@ -257,7 +225,5 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
     assert_equal expected.strip, output
 
   end
-
-=end
 
 end

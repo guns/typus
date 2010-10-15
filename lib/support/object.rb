@@ -1,5 +1,6 @@
 class Object
 
+  ##
   # Instead of having to translate strings and defining a default value:
   #
   #     t("Hello World!", :default => 'Hello World!')

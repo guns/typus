@@ -14,13 +14,11 @@ module Admin
         return link
       end
 
-      file = { :preview => Typus.file_preview, :thumbnail => Typus.file_thumbnail }
-
-      has_file_preview = item.send(attribute).styles.member?(file[:preview])
-      has_file_thumbnail = item.send(attribute).styles.member?(file[:thumbnail])
+      has_file_preview = item.send(attribute).styles.member?(Typus.file_preview)
+      has_file_thumbnail = item.send(attribute).styles.member?(Typus.file_thumbnail)
 
       href = if has_file_preview && file_preview_is_image
-               url = item.send(attribute).url(file[:preview])
+               url = item.send(attribute).url(Typus.file_preview)
                # FIXME: This has changed on Rails3.
                # ActionController::Base.relative_url_root + url
              else
@@ -28,7 +26,7 @@ module Admin
              end
 
       content = if has_file_thumbnail && file_preview_is_image
-                  image_tag item.send(attribute).url(file[:thumbnail])
+                  image_tag item.send(attribute).url(Typus.file_thumbnail)
                 else
                   item.send(attribute)
                 end

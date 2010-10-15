@@ -29,7 +29,7 @@ class Admin::AccountControllerTest < ActionController::TestCase
     end
 
     should "sign_up a valid email" do
-      assert_difference "TypusUser.count" do
+      assert_difference('TypusUser.count') do
         post :create, :typus_user => { :email => "john@example.com" }
       end
 

@@ -28,14 +28,6 @@ module Admin
       return html
     end
 
-    def form_partial
-      resource = @resource.to_resource
-      template_file = Rails.root.join("app/views/admin/#{resource}/_form.html.erb")
-      partial = File.exists?(template_file) ? resource : "resources"
-
-      return "admin/#{partial}/form"
-    end
-
     def typus_tree_field(attribute, form)
       render "admin/templates/tree",
              :attribute => attribute,
@@ -55,7 +47,7 @@ module Admin
 
         association = @resource.reflect_on_association(relationship.to_sym)
 
-        next if @current_user.cannot?('read', association.class_name.constantize)
+        next if current_user.cannot?('read', association.class_name.constantize)
 
         case association.macro
         when :has_and_belongs_to_many

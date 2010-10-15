@@ -27,7 +27,4 @@ Typus::Resources.setup do |config|
   # Defines start_year.
   # config.start_year = nil
 
-  # Sets a has and belongs to many limit for the dropdowns.
-  # config.habtm_limit = 500
-
 end

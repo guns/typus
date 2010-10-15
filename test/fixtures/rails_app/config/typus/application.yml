@@ -1,7 +1,6 @@
 Asset:
   fields:
-    list: caption
-    form: caption
+    default: caption
   application: Site
 
 Category:
@@ -23,8 +22,7 @@ Comment:
 
 Delayed::Task:
   fields:
-    list: name
-    form: name
+    default: name
   search: name
   application: System
 
@@ -67,9 +65,8 @@ Post:
 
 Picture:
   fields:
+    default: title, picture
     list: title, created_at
-    form: title, picture
-    show: title, picture
   search: title
   application: Blog
 
@@ -79,5 +76,4 @@ CustomUser:
 
 View:
   fields:
-    list: ip, post
-    form: ip, post
+    default: ip, post

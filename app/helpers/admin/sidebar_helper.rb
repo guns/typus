@@ -14,7 +14,7 @@ module Admin
       end
 
       Typus.application(app_name).sort_by { |name| sortmap[name] }.each do |resource|
-        next unless @current_user.resources.include?(resource)
+        next unless current_user.resources.include?(resource)
         klass = resource.constantize
 
         resources[resource] = default_actions(klass)
@@ -30,7 +30,7 @@ module Admin
     def default_actions(klass)
       actions = []
 
-      if @current_user.can?("create", klass)
+      if current_user.can?("create", klass)
         actions << link_to_unless_current(_t("Add new"), :action => "new")
       end
 
@@ -45,7 +45,7 @@ module Admin
 
     def custom_actions(klass)
       klass.typus_actions_on(params[:action]).map do |action|
-        if @current_user.can?(action, klass)
+        if current_user.can?(action, klass)
           link_to_unless_current(_t(action.humanize), params.merge(:action => action))
         end
       end

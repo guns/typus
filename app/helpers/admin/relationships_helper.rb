@@ -38,11 +38,9 @@ module Admin
 
       setup_relationship(field)
 
-      if @model_to_relate.count < @model_to_relate.typus_options_for(:habtm_limit)
-        @items_to_relate = (@model_to_relate.all - @item.send(field))
-        if set_condition && !@items_to_relate.empty?
-          form = build_relate_form
-        end
+      @items_to_relate = (@model_to_relate.all - @item.send(field))
+      if set_condition && !@items_to_relate.empty?
+        form = build_relate_form
       end
 
       build_pagination
@@ -89,22 +87,22 @@ module Admin
                           :resource => @resource.name, :resource_id => @item.id,
                           :back_to => @back_to }
 
-      return unless set_condition && @current_user.can?("create", @model_to_relate)
+      return unless set_condition && current_user.can?("create", @model_to_relate)
 
       link_to _t("Add new"), default_options.merge(options)
     end
 
     def set_condition
-      if @resource.typus_user_id? && @current_user.is_not_root?
-        @item.owned_by?(@current_user)
+      if @resource.typus_user_id? && current_user.is_not_root?
+        @item.owned_by?(current_user)
       else
         true
       end
     end
 
     def set_conditions
-      if @model_to_relate.typus_options_for(:only_user_items) && @current_user.is_not_root?
-        { Typus.user_fk => @current_user }
+      if @model_to_relate.typus_options_for(:only_user_items) && current_user.is_not_root?
+        { Typus.user_fk => current_user }
       end
     end
 
@@ -172,7 +170,7 @@ module Admin
                                     :action => 'new',
                                     :back_to => back_to,
                                     :selected => related_fk },
-                                    :confirm => confirm.join("\n\n") if @current_user.can?('create', related)
+                                    :confirm => confirm.join("\n\n") if current_user.can?('create', related)
 
       render "admin/templates/belongs_to",
              :resource => @resource,

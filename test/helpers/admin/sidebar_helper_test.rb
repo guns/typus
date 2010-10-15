@@ -16,11 +16,10 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     default_url_options[:host] = 'test.host'
   end
 
-=begin
-  def test_actions
+  should_eventually "test_actions" do
   end
 
-  def test_export
+  should_eventually "test_export" do
     @resource = Post
 
     params = { :controller => 'admin/posts', :action => 'index' }
@@ -34,12 +33,12 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     assert_equal expected, output
   end
 
-  def test_build_typus_list_with_empty_content_and_empty_header
+  should_eventually "test_build_typus_list_with_empty_content_and_empty_header" do
     output = build_typus_list([], :header => nil)
     assert output.empty?
   end
 
-  def test_build_typus_list_with_content_and_header
+  should_eventually "test_build_typus_list_with_content_and_header" do
     output = build_typus_list(['item1', 'item2'], :header => "Chunky Bacon")
     assert !output.empty?
 
@@ -50,7 +49,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     assert_equal expected, output
   end
 
-  def test_build_typus_list_with_content_without_header
+  should_eventually "test_build_typus_list_with_content_without_header" do
     output = build_typus_list(['item1', 'item2'])
     expected = [ "admin/helpers/list", { :header => nil,
                                          :options => {},
@@ -58,7 +57,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     assert_equal expected, output
   end
 
-  def test_search
+  should_eventually "test_search" do
 
     @resource = TypusUser
 
@@ -81,23 +80,20 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
 
   end
 
-  def test_filters
+  should_eventually "test_filters" do
     @resource = TypusUser
     @resource.expects(:typus_filters).returns(Array.new)
     output = filters
     assert output.nil?
   end
 
-  def test_filters_with_filters
+  should_eventually "test_filters_with_filters" do
   end
 
-  def test_relationship_filter
+  should_eventually "test_relationship_filter" do
   end
 
-  def test_date_filter
-
-    # FIXME
-    return
+  should_eventually "test_date_filter" do
 
     @resource = TypusUser
     filter = 'created_at'
@@ -137,10 +133,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
 
   end
 
-  def test_boolean_filter
-
-    # FIXME
-    return
+  should_eventually "test_boolean_filter" do
 
     @resource = TypusUser
     filter = 'status'
@@ -176,7 +169,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
 
   end
 
-  def test_string_filter_when_values_are_strings
+  should_eventually "test_string_filter_when_values_are_strings" do
 
     @resource = TypusUser
     filter = 'role'
@@ -234,7 +227,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
 
   end
 
-  def test_string_filter_when_values_are_arrays_of_strings
+  should_eventually "test_string_filter_when_values_are_arrays_of_strings" do
 
     @resource = TypusUser
     filter = 'role'
@@ -271,7 +264,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
 
   end
 
-  def test_string_filter_when_empty_values
+  should_eventually "test_string_filter_when_empty_values" do
     @resource = TypusUser
     filter = 'role'
     request = 'role=admin&page=1'
@@ -280,7 +273,5 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
 
     assert output.empty?
   end
-
-=end
 
 end

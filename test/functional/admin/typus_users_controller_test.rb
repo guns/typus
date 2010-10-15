@@ -35,7 +35,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
     end
 
     should "not be able to destroy herself" do
-      assert_difference('TypusUser.count', 0) do
+      assert_no_difference('TypusUser.count') do
         delete :destroy, :id => @typus_user.id
       end
 
@@ -77,7 +77,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Editor can't perform action. (new)", flash[:notice].to_s
+      assert_equal "Editor can't perform action. (new)", flash[:notice]
     end
 
   end

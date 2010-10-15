@@ -2,9 +2,14 @@ module Admin
 
   module BaseHelper
 
-    def typus_block(resource = @resource.to_resource, partial = params[:action])
-      render "admin/#{resource}/#{partial}"
-    rescue ActionView::MissingTemplate
+    def typus_render(*args)
+      options = args.extract_options!
+      options[:resource] ||= @resource.to_resource
+
+      template_file = Rails.root.join("app", "views", "admin", options[:resource], "_#{options[:partial]}.html.erb")
+      resource = File.exists?(template_file) ? options[:resource] : "resources"
+
+      render "admin/#{resource}/#{options[:partial]}", :options => options
     end
 
     def title(page_title)
@@ -19,19 +24,19 @@ module Admin
       render "admin/helpers/apps"
     end
 
-    def login_info(user = @current_user)
-      return if user.kind_of?(Admin::FakeUser)
+    def login_info
+      return unless current_user.kind_of?(Typus.user_class)
 
       admin_edit_typus_user_path = { :controller => "/admin/#{Typus.user_class.to_resource}",
                                      :action => 'edit',
-                                     :id => user.id }
+                                     :id => current_user.id }
 
       message = _t("Are you sure you want to sign out and end your session?")
 
-      user_details = if user.can?('edit', Typus.user_class_name)
-                       link_to user.name, admin_edit_typus_user_path
+      user_details = if current_user.can?('edit', Typus.user_class_name)
+                       link_to current_user.name, admin_edit_typus_user_path
                      else
-                       user.name
+                       current_user.name
                      end
 
       render "admin/helpers/login_info", :message => message, :user_details => user_details

@@ -1,25 +1,13 @@
-<div id="filters">
+<%= form_tag nil, :method => :get do %>
 
-  <ul>
-
-    <%= form_tag nil, :method => :get do %>
-
+  <div id="filters">
+    <ul>
       <% filters.each do |filter| %>
-
-        <li>
-          <%= select_tag filter[:filter], options_for_select(filter[:items], params[filter[:filter]]) %>
-        </li>
-
+        <li><%= select_tag filter[:filter], options_for_select(filter[:items], params[filter[:filter]]) %></li>
       <% end %>
+      <%= hidden_field_tag :search, params[:search] if params[:search] %>
+      <li><%= submit_tag _t("Filter"), :name => nil %></li>
+    </ul>
+  </div>
 
-    <%= hidden_field_tag :search, params[:search] %>
-
-    <li>
-      <%= submit_tag _t("Filter"), :name => nil %>
-    </li>
-
-    <% end %>
-
-  </ul>
-
-</div>
+<% end %>

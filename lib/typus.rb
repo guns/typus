@@ -11,11 +11,19 @@ require "typus/orm/active_record"
 require "typus/user"
 
 autoload :Paginator, "vendor/paginator"
+autoload :FakeUser, "support/fake_user"
 
 module Typus
 
   autoload :Configuration, "typus/configuration"
   autoload :Resources, "typus/resources"
+
+  module Authentication
+    autoload :Base, "typus/authentication/base"
+    autoload :None, "typus/authentication/none"
+    autoload :HttpBasic, "typus/authentication/http_basic"
+    autoload :Session, "typus/authentication/session"
+  end
 
   mattr_accessor :admin_title
   @@admin_title = "Typus"

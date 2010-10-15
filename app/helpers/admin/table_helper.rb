@@ -63,10 +63,10 @@ module Admin
     end
 
     def table_default_action(model, item)
-      action = if model.typus_user_id? && @current_user.is_not_root?
+      action = if model.typus_user_id? && current_user.is_not_root?
                  # If there's a typus_user_id column on the table and logged user is not root ...
-                 item.owned_by?(@current_user) ? item.class.typus_options_for(:default_action_on_item) : "show"
-               elsif @current_user.cannot?("edit", model)
+                 item.owned_by?(current_user) ? item.class.typus_options_for(:default_action_on_item) : "show"
+               elsif current_user.cannot?("edit", model)
                  'show'
                else
                  item.class.typus_options_for(:default_action_on_item)
@@ -104,12 +104,12 @@ module Admin
 
       case params[:action]
       when 'index'
-        condition = if model.typus_user_id? && @current_user.is_not_root?
-                      item.owned_by?(@current_user)
-                    elsif (@current_user.id.eql?(item.id) && model.eql?(Typus.user_class))
+        condition = if model.typus_user_id? && current_user.is_not_root?
+                      item.owned_by?(current_user)
+                    elsif (current_user.id.eql?(item.id) && model.eql?(Typus.user_class))
                       false
                     else
-                      @current_user.can?('destroy', model)
+                      current_user.can?('destroy', model)
                     end
         confirm = _t("Remove %{resource}?", :resource => item.class.model_name.human)
       when 'edit'
@@ -122,8 +122,8 @@ module Admin
         # the owners of the owner record.
         # If the owner record doesn't have a foreign key (Typus.user_fk) we look
         # each item to verify the ownership.
-        condition = if @resource.typus_user_id? && @current_user.is_not_root?
-                      @item.owned_by?(@current_user)
+        condition = if @resource.typus_user_id? && current_user.is_not_root?
+                      @item.owned_by?(current_user)
                     end
         confirm = _t("Unrelate %{unrelate_model} from %{unrelate_model_from}?",
                     :unrelate_model => model.model_name.human,
@@ -145,7 +145,7 @@ module Admin
       unless att_value.nil?
         content = att_value.to_label
         action = item.send(attribute).class.typus_options_for(:default_action_on_item)
-        if @current_user.can?(action, att_value.class.name)
+        if current_user.can?(action, att_value.class.name)
           content = link_to content, :controller => "admin/#{att_value.class.to_resource}", :action => action, :id => att_value.id
         end
       end

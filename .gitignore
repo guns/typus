@@ -3,5 +3,6 @@
 *.gem
 *.log
 *.csv
+*.sqlite3
 rdoc/
 

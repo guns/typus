@@ -8,7 +8,7 @@ module Admin
 
       search_by = typus_search.collect { |x| resource.human_attribute_name(x) }.to_sentence
       search_params = params.dup
-      %w(action controller id search page).each { |p| search_params.delete(p) }
+      %w(action controller id search page utf8).each { |p| search_params.delete(p) }
       hidden_params = search_params.map { |k, v| hidden_field_tag(k, v) }
 
       render "admin/helpers/search/search", :hidden_params => hidden_params, :search_by => search_by

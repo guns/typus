@@ -9,9 +9,7 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
 
   def render(*args); args; end
 
-=begin
-
-  def test_header_with_root_path
+  should_eventually "test_header_with_root_path" do
 
     # ActionView::Helpers::UrlHelper does not support strings, which are returned by named routes
     # link root_path
@@ -29,11 +27,7 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
 
   end
 
-=end
-
-=begin
-
-  def test_header_without_root_path
+  should_eventually "test_header_without_root_path" do
 
     Rails.application.routes.named_routes.routes.reject! { |key, route| key == :root }
 
@@ -47,8 +41,6 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
     assert_equal [ partial, options ], output
 
   end
-
-=end
 
   should "display_flash_message" do
     message = { :test => "This is the message." }
