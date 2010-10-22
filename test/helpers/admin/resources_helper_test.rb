@@ -9,23 +9,32 @@ class Admin::ResourcesHelperTest < ActiveSupport::TestCase
 
   def render(*args); args; end
 
-  should "verify display_link_to_previous" do
-    @resource = Post
-    params = { :action => "edit", :back_to => "/back_to_param" }
-    self.expects(:params).at_least_once.returns(params)
+  context "display_link_to_previous" do
 
-    expected = [ "admin/helpers/resources/display_link_to_previous", { :message => "You're updating a Post." } ]
-    output = display_link_to_previous
+    should "verify display_link_to_previous" do
+      @resource = Post
+      params = { :action => "edit", :back_to => "/back_to_param" }
+      self.expects(:params).at_least_once.returns(params)
 
-    assert_equal expected, output
+      expected = [ "admin/helpers/resources/display_link_to_previous", { :message => "You're updating a Post." } ]
+      output = display_link_to_previous
+
+      assert_equal expected, output
+    end
   end
 
-  should "remove_filter_link" do
-    output = remove_filter_link("")
-    assert_nil output
+  context "remove_filter_link" do
+
+    should "return nil when blank" do
+      output = remove_filter_link("")
+      assert_nil output
+    end
+
+    should "return link when it's present"
+
   end
 
-  context "Build list" do
+  context "build_list" do
 
     setup do
       @model = TypusUser
@@ -34,13 +43,13 @@ class Admin::ResourcesHelperTest < ActiveSupport::TestCase
       @resource = "typus_users"
     end
 
-    should "verify_build_list_when_returns_a_table" do
+    should "return a table" do
       expected = [ "admin/typus_users/list", { :items => [] } ]
       output = build_list(@model, @fields, @items, @resource)
       assert_equal expected, output
     end
 
-    should "verify build_list_when_returns_a_template" do
+    should "return a template" do
       self.stubs(:render).returns("a_template")
       File.stubs(:exist?).returns(true)
 

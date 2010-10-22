@@ -23,20 +23,20 @@ module Typus
       #++
       def current_user
 
-        user = Typus.user_class.find(session[:typus_user_id])
+        @current_user ||= Typus.user_class.find(session[:typus_user_id])
 
-        unless Typus::Configuration.roles.has_key?(user.role)
+        unless Typus::Configuration.roles.has_key?(@current_user.role)
           raise _t("Role does no longer exists.")
         end
 
-        unless user.status
+        unless @current_user.status
           back_to = (request.env['REQUEST_URI'] == admin_dashboard_path) ? nil : request.env['REQUEST_URI']
           raise _t("Typus user has been disabled.")
         end
 
-        I18n.locale = user.preferences[:locale]
+        I18n.locale = @current_user.preferences[:locale]
 
-        return user
+        return @current_user
 
       rescue Exception => error
         session[:typus_user_id] = nil

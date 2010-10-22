@@ -14,8 +14,6 @@ es:
   "Are you sure you want to sign out and end your session?": "¿Estás seguro que quieres salir y cerrar la sessión?"
   "As you're not the admin or the owner of this record you cannot edit it": "Como no eres el admin o el propietario de este registro no puedes editarlo."
 
-  "Back to list": "Volver al listado"
-
   "Cancel and go back":
   "Change password": "Cambiar contraseña"
   "Change %{attribute}?": "Cambiar %{attribute}?"
@@ -26,7 +24,6 @@ es:
 
   "Dashboard": "Panel de control"
   "Do you want to cancel it?": "¿Quieres cancelarlo?"
-  "Documentation": "Documentación"
   "Down": "Bajar"
 
   "Edit": "Editar"
@@ -48,7 +45,7 @@ es:
   "Last few days": "Últimos dias"
   "Last 30 days": "Últimos 30 dias"
   "Last 7 days": "Últimos 7 dias"
-  "License": "Licencia"
+  "List": "Lista"
   "Logged as": "Autenticado como"
   "Login": "Login"
 
@@ -105,6 +102,7 @@ es:
   "You're updating a %{resource_from}": "Estás actualizando un %{resource_from}."
   "You're updating a %{resource_from} for %{resource_to}": "Estás actualizando un %{resource_from} de %{resource_to}."
 
+  "View all %{attribute}":
   "View site": "Ver web"
 
   "%{attachment} can't be removed": "%{attachment} no puede ser borrado."

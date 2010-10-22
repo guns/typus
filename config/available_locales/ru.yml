@@ -14,8 +14,6 @@ ru:
   "Are you sure you want to sign out and end your session?":
   "As you're not the admin or the owner of this record you cannot edit it": "Вы не администратор и не владелец записи и не можете ее редактировать"
 
-  "Back to list": "Назад к списку"
-
   "Cancel and go back":
   "Change password": "Сменить пароль"
   "Change %{attribute}?": "Изменить %{attribute}?"
@@ -26,7 +24,6 @@ ru:
 
   "Dashboard": "Обзор"
   "Do you want to cancel it?": "Вы хотите отменить это?"
-  "Documentation":
   "Down": "Вниз"
 
   "Edit": "Изменить"
@@ -48,7 +45,7 @@ ru:
   "Last few days": "Последние дней"
   "Last 7 days": "Последние 7 дней"
   "Last 30 days": "Последние 30 дней"
-  "License":
+  "List":
   "Logged as": "Вы вошли как"
   "Login": "Редактировать"
 
@@ -94,6 +91,7 @@ ru:
   "Unrelate %{unrelate_model} from %{unrelate_model_from}?": "Отсоединить %{unrelate_model} от %{unrelate_model_from}?"
   "Up": "Вверх"
 
+  "View all %{attribute}":
   "View site": "Перейти к сайту"
 
   "You can update your password at": "Вы можете установить свой пароль на"

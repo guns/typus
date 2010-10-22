@@ -14,8 +14,6 @@
   "Are you sure you want to sign out and end your session?":
   "As you're not the admin or the owner of this record you cannot edit it":
 
-  "Back to list":
-
   "Change %{attribute}?":
   "Change password":
   "Checked if active":
@@ -25,7 +23,6 @@
 
   "Dashboard":
   "Do you want to cancel it?":
-  "Documentation":
   "Down":
 
   "Edit":
@@ -46,7 +43,7 @@
   "Last few days":
   "Last 30 days":
   "Last 7 days":
-  "License":
+  "List":
   "Logged as":
   "Login":
 
@@ -92,6 +89,7 @@
   "Unrelate %{unrelate_model} from %{unrelate_model_from}?":
   "Up":
 
+  "View all %{attribute}":
   "View site":
 
   "You're adding a new %{resource_from}":

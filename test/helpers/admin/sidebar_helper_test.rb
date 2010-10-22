@@ -16,8 +16,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     default_url_options[:host] = 'test.host'
   end
 
-  should_eventually "test_actions" do
-  end
+  should "test_actions"
 
   should_eventually "test_export" do
     @resource = Post
@@ -87,11 +86,9 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     assert output.nil?
   end
 
-  should_eventually "test_filters_with_filters" do
-  end
+  should "test_filters_with_filters"
 
-  should_eventually "test_relationship_filter" do
-  end
+  should "test_relationship_filter"
 
   should_eventually "test_date_filter" do
 

@@ -29,7 +29,7 @@
 
 <% if @items.any? -%>
   <%= raw build_list(@resource, @fields, @items) %>
-  <%= pagination %>
+  <%= will_paginate(@items, :renderer => Typus::Pagination) %>
 <% end %>
 
 <% if @items.empty? && !@resource.count.zero? %>

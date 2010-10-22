@@ -258,15 +258,15 @@ fieldset.buttons { }
 
 /* @group Pagination */
 
-#pagination { margin: 1.5em auto; text-align: center; }
+.pagination { margin: 1.5em auto; text-align: center; }
 
-#pagination a { padding: 3px 5px; text-decoration: none; }
-#pagination a:hover { background: #000; color: #FFF; }
+.pagination a { padding: 3px 5px; text-decoration: none; }
+.pagination a:hover { background: #000; color: #FFF; }
 
-#pagination span.disabled { color: #D3D3D3; margin: 2px; padding: 2px 3px; }
+.pagination span.disabled { color: #D3D3D3; margin: 2px; padding: 2px 3px; }
 
-#pagination .left { float: left; }
-#pagination .right { float: right; }
+.pagination .left { float: left; }
+.pagination .right { float: right; }
 
 /* @end */
 

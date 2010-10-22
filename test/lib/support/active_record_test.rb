@@ -71,9 +71,16 @@ class ActiveRecordTest < ActiveSupport::TestCase
 
   end
 
-  should "verify to_resource instance method" do
-    assert_equal "typus_users", TypusUser.to_resource
-    assert_equal "delayed/tasks", Delayed::Task.to_resource
+  context "to_resource" do
+
+    should "work for models" do
+      assert_equal "typus_users", TypusUser.to_resource
+    end
+
+    should "work for namespaced models" do
+      assert_equal "delayed/tasks", Delayed::Task.to_resource
+    end
+
   end
 
 end

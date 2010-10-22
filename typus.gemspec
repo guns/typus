@@ -1,9 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-lib = File.expand_path('../lib/', __FILE__)
-$:.unshift lib unless $:.include?(lib)
-
-require "typus/version"
+$LOAD_PATH << File.join(File.dirname(__FILE__), 'lib')
+require 'typus/version'
 
 Gem::Specification.new do |s|
   s.name = "typus"
@@ -22,4 +20,6 @@ Gem::Specification.new do |s|
 
   s.files = Dir.glob("**/*")
   s.require_path = "lib"
+
+  s.add_runtime_dependency 'will_paginate', '~> 3.0.pre2'
 end

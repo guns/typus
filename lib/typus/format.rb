@@ -12,12 +12,7 @@ module Typus
     def generate_html
       items_count = @resource.count(:joins => @joins, :conditions => @conditions)
       items_per_page = @resource.typus_options_for(:per_page)
-
-      @pager = ::Paginator.new(items_count, items_per_page) do |offset, per_page|
-        data(:limit => per_page, :offset => offset)
-      end
-
-      @items = @pager.page(params[:page])
+      @items = data.paginate(:per_page => items_per_page, :page => params[:page])
     end
 
     #--
@@ -69,11 +64,9 @@ module Typus
       render format => data.send("to_#{format}", :methods => methods, :except => except)
     end
 
-    def data(*args)
+    def data
       eager_loading = @resource.reflect_on_all_associations(:belongs_to).map { |i| i.name }
-      options = { :joins => @joins, :conditions => @conditions, :order => @order, :include => eager_loading }
-      options.merge!(args.extract_options!)
-      @resource.all(options)
+      @resource.joins(@joins).where(@conditions).order(@order).includes(eager_loading)
     end
 
   end

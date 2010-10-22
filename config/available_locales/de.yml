@@ -14,8 +14,6 @@ de:
   "Are you sure you want to sign out and end your session?": "Wollen Sie sich abmelden und die Sitzung beenden?"
   "As you're not the admin or the owner of this record you cannot edit it": "Nur der Administrator oder der Eigent7uuml;er des Datensates kann ihn bearbeiten"
 
-  "Back to list": "Zur&uuml;ck zur Liste"
-
   "Cancel and go back":
   "Change password": "Passwort &auml;ndern"
   "Change %{attribute}?": "%{attribute}&auml;ndern?"
@@ -26,7 +24,6 @@ de:
 
   "Dashboard": "Dashboard"
   "Do you want to cancel it?": "Wollen Sie abbrechen?"
-  "Documentation": "Dokumentation"
   "Down": "Runter"
 
   "Edit": "Bearbeiten"
@@ -48,7 +45,7 @@ de:
   "Last few days": "Letzten Tage"
   "Last 30 days": "Letzten 30 Tage"
   "Last 7 days": "Letzten 7 Tage"
-  "License": "Lizenz"
+  "List":
   "Logged as": "Aufgezeichnet als"
   "Login": "Anmeldem"
 
@@ -94,6 +91,7 @@ de:
   "Unrelate %{unrelate_model} from %{unrelate_model_from}?": "Verkn&uuml;pfung zwischen %{unrelate_model} und %{unrelate_model_from}entfernen?"
   "Up": "Hoch"
 
+  "View all %{attribute}":
   "View site": "Site anzeigen"
 
   "You're adding a new %{resource_from}": "Sie erstellen eine neue %{resource_from}"

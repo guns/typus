@@ -46,11 +46,6 @@ module Admin
       render File.join(path, "display_link_to_previous"), :message => message
     end
 
-    def pagination(*args)
-      @options = args.extract_options!
-      render File.join(path, "pagination") if @items.prev || @items.next
-    end
-
     private
 
     def path

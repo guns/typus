@@ -143,46 +143,36 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   should_eventually "test_table_has_and_belongs_to_many_field" do
     post = Factory(:post)
-
     output = table_has_and_belongs_to_many_field("comments", post)
     expected = %(<td>John, Me, Me</td>)
-
     assert_equal expected.strip, output
   end
 
   should_eventually "test_table_string_field" do
     post = Factory(:post)
-
     output = table_string_field(:title, post, :created_at)
     expected = %(<td class="title">#{post.title}</td>)
-
     assert_equal expected.strip, output
   end
 
   should_eventually "test_table_string_field_with_link" do
     post = Factory(:post)
-
     output = table_string_field(:title, post, :title)
     expected = %(<td class="title">#{post.title}</td>)
-
     assert_equal expected.strip, output
   end
 
   should_eventually "table_tree_field_when_displays_a_parent" do
     page = Factory(:page)
-
     output = table_tree_field("test", page)
     expected = "<td>&#151;</td>"
-
     assert_equal expected, output
   end
 
   should_eventually "table_tree_field_when_displays_a_children" do
     page = Factory(:page, :status => "unpublished")
-
     output = table_tree_field("test", page)
     expected = "<td>&#151;</td>"
-
     assert_equal expected, output
   end
 

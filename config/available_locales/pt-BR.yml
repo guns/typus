@@ -14,8 +14,6 @@ pt-BR:
   "Are you sure you want to sign out and end your session?": "Tem certeza que quer sair e encerrar sua sessão?"
   "As you're not the admin or the owner of this record you cannot edit it": "Como você não é o dono desse registro ou o admin, você não pode editá-lo."
 
-  "Back to list": "Voltar à lista"
-
   "Cancel and go back":
   "Change password": "Trocar senha"
   "Change %{attribute}?": "Mudar %{attribute}?"
@@ -26,7 +24,6 @@ pt-BR:
 
   "Dashboard": "Painel"
   "Do you want to cancel it?": "Quer cancelar?"
-  "Documentation":
   "Down": "Descer"
 
   "Edit": "Editar"
@@ -48,7 +45,7 @@ pt-BR:
   "Last few days": "Últimos dias"
   "Last 30 days": "Últimos 30 dias"
   "Last 7 days": "Últimos 7 dias"
-  "License":
+  "List":
   "Logged as": "Logado como"
   "Login": "Login"
 
@@ -94,6 +91,7 @@ pt-BR:
   "Unrelate %{unrelate_model} from %{unrelate_model_from}?": "Desvincular %{unrelate_model} de %{unrelate_model_from}?"
   "Up": "Subir"
 
+  "View all %{attribute}":
   "View site": "Ver site"
 
   "You're adding a new %{resource_from} to %{resource_to}": "Você está adicionando um novo %{resource_from} a %{resource_to}."

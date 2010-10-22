@@ -9,8 +9,6 @@ it:
   "Are you sure you want to leave this page?": "Sei sicuro di volere lasciare questa pagina?"
   "Are you sure you want to sign out and end your session?": "Sei sicuro che vuoi disconnetterti dal sistema?"
   "As you're not the admin or the owner of this record you cannot edit it": "Non puoi modificare questo elemento poichè non sei un amministratore o il proprietario dello stesso"
-
-  "Back to list": "Torna alla lista"
   
   "Cancel and go back": "Annulla e torna indietro"
   "Change %{attribute}?": "Vuoi cambiare %{attribute}?"
@@ -23,7 +21,6 @@ it:
   "Dashboard": "Panoramica"
   "Developed by": "Realizzato da"
   "Do you want to cancel it?": "Vuoi annullare e tornare indietro?"
-  "Documentation": "Documentazione"
   "Down": "Giù"
 
   "Edit": "Modifica"
@@ -47,7 +44,6 @@ it:
   "Last few days": "Ultimi giorni"
   "Last 30 days": "Ultimi 30 giorni"
   "Last 7 days": "Ultimi 7 giorni"
-  "License": "Licenza"
   "List": "Lista"
   "Loading": "Caricamento"
   "Logged as": "Loggato come"

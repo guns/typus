@@ -14,8 +14,6 @@ ca:
   "Are you sure you want to sign out and end your session?": "Estàs segur que vols sortir i tancar la sessió?"
   "As you're not the admin or the owner of this record you cannot edit it": "Com que no ets l'administrador o el propietari d'aquest registre no el pots editar."
 
-  "Back to list": "Tornar al llistat"
-
   "Cancel and go back":
   "Change password": "Canviar contrasenya"
   "Change %{attribute}?": "Canviar %{attribute}?"
@@ -26,7 +24,6 @@ ca:
 
   "Dashboard": "Panell de control"
   "Do you want to cancel it?": "Vols cancel·lar-lo?"
-  "Documentation": "Documentació"
   "Down": "Baixar"
 
   "Edit": "Editar"
@@ -48,7 +45,7 @@ ca:
   "Last few days": "Últims dies"
   "Last 30 days": "Últims 30 dies"
   "Last 7 days": "Últims 7 dies"
-  "License": "Llicència"
+  "List": "Llista"
   "Logged as": "Identificat com"
   "Login": "Login"
 
@@ -98,13 +95,14 @@ ca:
   "You're adding a new %{resource_from} to %{resource_to}": "Estàs afegint un nou %{resource_from} a %{resource_to}."
   "You're not allowed to remove Typus Users": "No pots esborrar usuaris de typus."
   "You're not allowed to toggle status": "No pots canviar el teu estat."
-  "You can update your password at": "Pots actualitzar la teva contrasenya a "
+  "You can update your password at": "Pots actualitzar la teva contrasenya a"
   "You can't change your role": "No pots canviar-te tu mateix el rol."
   "You can't remove yourself": "No et pots eliminar a tu mateix."
   "You can't toggle your status": "No pots canviar-te l'estat."
   "You're updating a %{resource_from}": "Estàs actualitzant un %{resource_from}."
   "You're updating a %{resource_from} for %{resource_to}": "Estàs actualitzant un %{resource_from} de %{resource_to}."
 
+  "View all %{attribute}":
   "View site": "Veure la web"
 
   "%{attachment} can't be removed": "%{attachment} no es pot esborrar."

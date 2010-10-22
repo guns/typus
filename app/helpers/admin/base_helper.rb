@@ -25,7 +25,7 @@ module Admin
     end
 
     def login_info
-      return unless current_user.kind_of?(Typus.user_class)
+      return if [:none, :http_basic].include?(Typus.authentication)
 
       admin_edit_typus_user_path = { :controller => "/admin/#{Typus.user_class.to_resource}",
                                      :action => 'edit',

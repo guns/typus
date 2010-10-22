@@ -14,8 +14,6 @@ hu:
   "Are you sure you want to sign out and end your session?": "Biztosan ki akarsz lépni?"
   "As you're not the admin or the owner of this record you cannot edit it": "Ezt a bejegyzést csak a tuljadonosa és az adminok szerkeszthetik."
 
-  "Back to list": "Vissza a listához"
-
   "Cancel and go back":
   "Change %{attribute}?": "Megváltoztatod ezt: %{attribute}?"
   "Change password": "Jelszó megváltoztatása"
@@ -26,7 +24,6 @@ hu:
 
   "Dashboard": "Admin nyitólap"
   "Do you want to cancel it?": "Szeretnéd visszavonni?"
-  "Documentation": "Dokumentáció"
   "Down": "Le"
 
   "Edit": "Szerkesztés"
@@ -48,8 +45,8 @@ hu:
   "Last few days": "Utóbbi néhány nap"
   "Last 30 days": "Az elmúlt 30 nap"
   "Last 7 days": "Az elmúlt 7 nap"
-  "License": "Licensz"
-  "Logged as": "Bejelentkezve "
+  "List":
+  "Logged as": "Bejelentkezve"
   "Login": "Belépés"
 
   "New": "Új"
@@ -94,6 +91,7 @@ hu:
   "Unrelate %{unrelate_model} from %{unrelate_model_from}?": "Unrelate %{unrelate_model} from %{unrelate_model_from}?"
   "Up": "Fel"
 
+  "View all %{attribute}":
   "View site": "A weboldal megtekintése"
 
   "You're adding a new %{resource_from}": "%{resource_from} hozzáadása"

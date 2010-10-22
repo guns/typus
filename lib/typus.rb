@@ -10,12 +10,14 @@ require "typus/engine"
 require "typus/orm/active_record"
 require "typus/user"
 
-autoload :Paginator, "vendor/paginator"
+require 'will_paginate'
+
 autoload :FakeUser, "support/fake_user"
 
 module Typus
 
   autoload :Configuration, "typus/configuration"
+  autoload :Pagination, "typus/pagination"
   autoload :Resources, "typus/resources"
 
   module Authentication

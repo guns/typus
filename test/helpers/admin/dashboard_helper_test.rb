@@ -11,13 +11,9 @@ class Admin::DashboardHelperTest < ActiveSupport::TestCase
 
   should "render resources" do
     current_user = Factory(:typus_user)
-
     output = resources(current_user)
-    partial = "admin/helpers/dashboard/resources"
-    options = { :resources => ["Git", "Status", "WatchDog"] }
-
-    assert_equal partial, output.first
-    assert_equal options, output.last
+    expected = ["admin/helpers/dashboard/resources", { :resources => ["Git", "Status", "WatchDog"] }]
+    assert_equal expected, output
   end
 
 end
