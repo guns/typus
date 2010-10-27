@@ -54,7 +54,7 @@ module Admin
           html << typus_form_has_and_belongs_to_many(relationship)
         when :has_many
           if association.options[:through]
-            # Here we will shot the relationship. Better this than raising an error.
+            html << typus_form_has_many(relationship)
           else
             html << typus_form_has_many(relationship)
           end
@@ -102,7 +102,7 @@ module Admin
       html = ""
 
       items.each do |item|
-        html << %{<option #{"selected" if @item.send(attribute) == item.id} value="#{item.id}">#{"&nbsp;" * item.ancestors.size * 2} &#8627; #{item.to_label}</option>\n}
+        html << %{<option #{"selected" if @item.send(attribute) == item.id} value="#{item.id}">#{"&nbsp;" * item.ancestors.size * 2} #{item.to_label}</option>\n}
         html << expand_tree_into_select_field(item.children, attribute) unless item.children.empty?
       end
 

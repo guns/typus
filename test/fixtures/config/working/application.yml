@@ -22,7 +22,7 @@ Comment:
 
 Page:
   fields:
-    # Body field is overwrited from a Page class method.
+    # Body field is overrided from a Page class method.
     list: title
     form: title, body
   actions:
@@ -31,6 +31,7 @@ Page:
   application: Site
   options:
     form_rows: 25
+    sortable: false
 
 Post:
   fields:

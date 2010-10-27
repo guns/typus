@@ -19,7 +19,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
     current_user = Factory(:typus_user)
 
-    params = { :controller => 'admin/typus_users', :action => 'index' }
+    params = { :controller => '/admin/typus_users', :action => 'index' }
     self.expects(:params).at_least_once.returns(params)
 
     fields = TypusUser.typus_fields_for(:list)
@@ -45,7 +45,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
     fields = TypusUser.typus_fields_for(:list)
 
-    params = { :controller => "admin/typus_users", :action => "index" }
+    params = { :controller => "/admin/typus_users", :action => "index" }
     self.expects(:params).at_least_once.returns(params)
 
     output = table_header(TypusUser, fields)
@@ -66,7 +66,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
     fields = TypusUser.typus_fields_for(:list)
 
-    params = { :controller => "admin/typus_users", :action => "index", :search => "admin" }
+    params = { :controller => "/admin/typus_users", :action => "index", :search => "admin" }
     self.expects(:params).at_least_once.returns(params)
 
     output = table_header(TypusUser, fields)
@@ -88,7 +88,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
     fields = TypusUser.typus_fields_for(:list)
 
-    params = { :controller => "admin/typus_users", :action => "index" }
+    params = { :controller => "/admin/typus_users", :action => "index" }
     self.expects(:params).at_least_once.returns(params)
 
     output = table_header(TypusUser, fields)
@@ -109,7 +109,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
     fields = TypusUser.typus_fields_for(:list)
 
-    params = { :controller => "admin/typus_users", :action => "index", :search => "admin" }
+    params = { :controller => "/admin/typus_users", :action => "index", :search => "admin" }
     self.expects(:params).at_least_once.returns(params)
 
     output = table_header(TypusUser, fields)

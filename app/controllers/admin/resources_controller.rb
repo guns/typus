@@ -166,6 +166,9 @@ class Admin::ResourcesController < Admin::BaseController
       if options.has_key?(:as) # We are in a polymorphic relationship
         interface = options[:as]
         saved_succesfully = resource.update_attributes("#{interface}_type" => nil, "#{interface}_id" => nil)
+      elsif options.has_key?(:through)
+        resource_parent = reflection.active_record.find(params[:id])
+        saved_succesfully = resource_parent.send(resource_tableized).delete(resource)
       else
         # We have to verify we can unrelate. For example: A Category which has
         # many posts and Post validates_presence_of Category should not be removed.

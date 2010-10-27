@@ -3,7 +3,7 @@
 
   <h2>
     <%= link_to model_to_relate.model_name.human.pluralize,
-                { :controller => "admin/#{model_to_relate_as_resource}", foreign_key => @item.id },
+                { :controller => "/admin/#{model_to_relate_as_resource}", foreign_key => @item.id },
                 :title => _t("%{model} filtered by %{filtered_by}",
                             :model => model_to_relate.model_name.human.pluralize,
                             :filtered_by => @item.to_label) %>

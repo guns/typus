@@ -35,7 +35,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
       assert_difference('Post.count') do
         post :create, { :post => { :title => 'This is another title', :body => 'Body' } }
         assert_response :redirect
-        assert_redirected_to :controller => 'admin/posts', :action => 'edit', :id => Post.last
+        assert_redirected_to :controller => '/admin/posts', :action => 'edit', :id => Post.last
       end
     end
 
@@ -54,7 +54,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
     should "update" do
       post :update, { :id => @post.id, :title => 'Updated' }
       assert_response :redirect
-      assert_redirected_to :controller => 'admin/posts', :action => 'edit', :id => @post.id
+      assert_redirected_to :controller => '/admin/posts', :action => 'edit', :id => @post.id
     end
 
   end

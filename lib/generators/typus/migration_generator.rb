@@ -34,25 +34,45 @@ Examples:
         Time.zone.now.utc.to_s(:number)
       end
 
-      def generate_migration
-        migration_template "migration.rb", "db/migrate/create_#{admin_users_table_name}"
+      def generate_model
+        invoke "active_record:model", [options[:user_class_name]], :migration => false unless model_exists?
+      end
+
+      def inject_mixins_into_model
+        inject_into_class "app/models/#{model_filename}.rb", options[:user_class_name] do
+          <<-MSG
+
+  ROLE = Typus::Configuration.roles.keys.sort
+  LANGUAGE = Typus.locales
+
+  enable_as_typus_user
+
+          MSG
+        end
       end
 
       def generate_initializer
         template "config/initializers/typus_authentication.rb", "config/initializers/typus_authentication.rb"
       end
 
-      def generate_models
+      def generate_typus_yaml
         template "config/typus/typus.yml", "config/typus/typus.yml"
+      end
+
+      def generate_typus_roles_yaml
         template "config/typus/typus_roles.yml", "config/typus/typus_roles.yml"
-        template "model.rb", "app/models/#{options[:user_class_name].underscore}.rb"
       end
 
       def generate_controllers
-        klass = options[:user_class_name].constantize
-        @resource = klass.model_name.pluralize
-        template "controller.rb", "app/controllers/admin/#{klass.to_resource}_controller.rb"
-        template "functional_test.rb",  "test/functional/admin/#{klass.to_resource}_controller_test.rb"
+        invoke "controller", ["admin/#{admin_users_table_name}"]
+      end
+
+      def make_controllers_inherit_from_resources_controller
+        gsub_file "app/controllers/admin/#{admin_users_table_name}_controller.rb", /ApplicationController/, "Admin::ResourcesController"
+      end
+
+      def generate_migration
+        migration_template "migration.rb", "db/migrate/create_#{admin_users_table_name}"
       end
 
       protected
@@ -61,20 +81,20 @@ Examples:
         options[:user_class_name].tableize
       end
 
-      def configuration
-        @configuration
-      end
-
-      def inherits_from
-        "Admin::ResourcesController"
-      end
-
       def migration_name
         "Create#{options[:user_class_name]}s"
       end
 
-      def resource
-        @resource
+      def model_exists?
+        File.exists?(File.join(destination_root, model_path))
+      end
+
+      def model_path
+        @model_path ||= File.join("app", "models", "#{model_filename}.rb")
+      end
+
+      def model_filename
+        options[:user_class_name].underscore
       end
 
     end

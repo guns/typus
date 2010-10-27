@@ -21,7 +21,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
   should_eventually "test_export" do
     @resource = Post
 
-    params = { :controller => 'admin/posts', :action => 'index' }
+    params = { :controller => '/admin/posts', :action => 'index' }
     self.expects(:params).at_least_once.returns(params)
     output = export
     expected = [ "admin/helpers/list", { :items => [ %(<a href="http://test.host/admin/posts?format=csv">CSV</a>),
@@ -60,7 +60,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
 
     @resource = TypusUser
 
-    params = { :controller => 'admin/typus_users', :action => 'index' }
+    params = { :controller => '/admin/typus_users', :action => 'index' }
     self.expects(:params).at_least_once.returns(params)
 
     output = search
@@ -95,7 +95,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     @resource = TypusUser
     filter = 'created_at'
 
-    params = { :controller => 'admin/typus_users', :action => 'index' }
+    params = { :controller => '/admin/typus_users', :action => 'index' }
     self.expects(:params).at_least_once.returns(params)
 
     # With an empty request.
@@ -135,7 +135,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     @resource = TypusUser
     filter = 'status'
 
-    params = { :controller => 'admin/typus_users', :action => 'index' }
+    params = { :controller => '/admin/typus_users', :action => 'index' }
     self.expects(:params).at_least_once.returns(params)
 
     # Status is true
@@ -171,7 +171,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     @resource = TypusUser
     filter = 'role'
 
-    params = { :controller => 'admin/typus_users', :action => 'index' }
+    params = { :controller => '/admin/typus_users', :action => 'index' }
     self.expects(:params).at_least_once.returns(params)
 
     # Roles is admin
@@ -229,7 +229,7 @@ class Admin::SidebarHelperTest < ActiveSupport::TestCase
     @resource = TypusUser
     filter = 'role'
 
-    params = { :controller => 'admin/typus_users', :action => 'index' }
+    params = { :controller => '/admin/typus_users', :action => 'index' }
     self.expects(:params).at_least_once.returns(params)
 
     request = 'role=admin&page=1'

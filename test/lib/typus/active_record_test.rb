@@ -179,6 +179,11 @@ class ActiveRecordTest < ActiveSupport::TestCase
       assert_equal 25, Page.typus_options_for(:form_rows)
     end
 
+    should "return sortable options as a boolean" do
+      assert Post.typus_options_for(:sortable)
+      assert !Page.typus_options_for(:sortable)
+    end
+
   end
 
   context "typus_application" do

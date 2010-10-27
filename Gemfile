@@ -4,7 +4,6 @@ gem "acts_as_list"
 gem "acts_as_tree"
 gem "paperclip"
 gem "fastercsv", "1.5.3" unless RUBY_VERSION >= '1.9'
-gem "paginator", "1.1.1"
 
 group :test do
   gem "capybara"
@@ -15,6 +14,7 @@ group :test do
   gem "rails", "3.0.0"
   gem "shoulda"
   gem "sqlite3-ruby"
+  gem "will_paginate", "~> 3.0.pre2"
 
   gem "mocha"
 end

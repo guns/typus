@@ -17,7 +17,7 @@ module Admin
         key = key.gsub(".", " ") if key.match(/\./)
         content = model.human_attribute_name(key)
 
-        if params[:action] == "index"
+        if params[:action] == "index" && model.typus_options_for(:sortable)
           association = model.reflect_on_association(key.to_sym)
           order_by = association ? association.primary_key_name : key
 
@@ -72,7 +72,7 @@ module Admin
                  item.class.typus_options_for(:default_action_on_item)
                end
 
-      options = { :controller => "admin/#{item.class.to_resource}",
+      options = { :controller => "/admin/#{item.class.to_resource}",
                   :action => action,
                   :id => item.id }
 
@@ -95,7 +95,7 @@ module Admin
         action = "trash"
         options = { :action => 'destroy', :id => item.id }
         method = :delete
-      when "edit", "show"
+      when "edit", "show", "update"
         action = "unrelate"
         options = { :action => 'unrelate', :id => params[:id], :resource => model, :resource_id => item.id }
       end
@@ -112,7 +112,7 @@ module Admin
                       current_user.can?('destroy', model)
                     end
         confirm = _t("Remove %{resource}?", :resource => item.class.model_name.human)
-      when 'edit'
+      when 'edit', 'update'
         # If we are editing content, we can relate and unrelate always!
         confirm = _t("Unrelate %{unrelate_model} from %{unrelate_model_from}?",
                     :unrelate_model => model.model_name.human,
@@ -146,7 +146,7 @@ module Admin
         content = att_value.to_label
         action = item.send(attribute).class.typus_options_for(:default_action_on_item)
         if current_user.can?(action, att_value.class.name)
-          content = link_to content, :controller => "admin/#{att_value.class.to_resource}", :action => action, :id => att_value.id
+          content = link_to content, :controller => "/admin/#{att_value.class.to_resource}", :action => action, :id => att_value.id
         end
       end
 
@@ -227,7 +227,7 @@ module Admin
                   Typus::Resources.human_nil
                 else
                   message = _t(boolean_hash[status.to_s])
-                  options = { :controller => "admin/#{item.class.to_resource}",
+                  options = { :controller => "/admin/#{item.class.to_resource}",
                               :action => "toggle",
                               :id => item.id,
                               :field => attribute.gsub(/\?$/,'') }

@@ -78,7 +78,7 @@ class Admin::AccountControllerTest < ActionController::TestCase
 
       assert_equal @typus_user.id, @request.session[:typus_user_id]
       assert_response :redirect
-      assert_redirected_to :controller => "admin/typus_users", :action => "edit", :id => @typus_user.id
+      assert_redirected_to :controller => "/admin/typus_users", :action => "edit", :id => @typus_user.id
     end
 
     should "test_should_return_404_on_reset_passsword_if_token_is_not_valid" do

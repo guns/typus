@@ -9,7 +9,7 @@ class Admin::CategoriesControllerTest < ActionController::TestCase
 
   context "Categories Views" do
 
-    should "verify form partial can overwrited by model" do
+    should "verify form partial can overrided by model" do
       get :new
       assert_match "categories#_form.html.erb", @response.body
     end

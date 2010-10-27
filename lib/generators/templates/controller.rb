@@ -1,2 +1,2 @@
-class Admin::<%= resource %>Controller < <%= inherits_from %>
+class Admin::<%= resource %>Controller < Admin::ResourcesController
 end

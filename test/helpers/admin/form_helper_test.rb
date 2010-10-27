@@ -7,7 +7,7 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
 
   should_eventually "verify_belongs_to_field" do
 
-    params = { :controller => 'admin/post', :id => 1, :action => :create }
+    params = { :controller => '/admin/post', :id => 1, :action => :create }
     self.stubs(:params).returns(params)
 
     current_user = mock()
@@ -31,7 +31,7 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
 
   should_eventually "test_typus_belongs_to_field_with_different_attribute_name" do
 
-    params = { :controller => 'admin/post', :id => 1, :action => :edit }
+    params = { :controller => '/admin/post', :id => 1, :action => :edit }
     self.stubs(:params).returns(params)
 
     current_user = mock()

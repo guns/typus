@@ -12,6 +12,9 @@ module Typus
       yield self
     end
 
+    mattr_accessor :action_after_save
+    @@action_after_save = "edit"
+
     mattr_accessor :default_action_on_item
     @@default_action_on_item = "edit"
 
@@ -21,14 +24,11 @@ module Typus
     mattr_accessor :form_rows
     @@form_rows = 15
 
-    mattr_accessor :action_after_save
-    @@action_after_save = "edit"
+    mattr_accessor :human_nil
+    @@human_nil = "nil"
 
     mattr_accessor :minute_step
     @@minute_step = 5
-
-    mattr_accessor :human_nil
-    @@human_nil = "nil"
 
     mattr_accessor :only_user_items
     @@only_user_items = false
@@ -36,12 +36,11 @@ module Typus
     mattr_accessor :per_page
     @@per_page = 15
 
+    mattr_accessor :sortable
+    @@sortable = true
+
     mattr_accessor :start_year
     @@start_year = nil
-
-    # Sets a has and belongs to many limit for the dropdowns.
-    mattr_accessor :habtm_limit
-    @@habtm_limit = 500
 
     def self.method_missing(*args)
       nil

@@ -28,7 +28,7 @@ Delayed::Task:
 
 Page:
   fields:
-    # Body field is overwrited from a Page class method.
+    # Body field is overrided from a Page class method.
     list: title
     form: title, body
   actions:

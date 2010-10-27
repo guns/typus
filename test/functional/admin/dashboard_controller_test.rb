@@ -68,6 +68,10 @@ class Admin::DashboardControllerTest < ActionController::TestCase
       get :show
     end
 
+    teardown do
+      TypusUser.delete_all
+    end
+
     should "render dashboard" do
       assert_response :success
       assert_template "show"
@@ -102,6 +106,19 @@ class Admin::DashboardControllerTest < ActionController::TestCase
     should "verify we can set our own partials" do
       partials = %w( _sidebar.html.erb )
       partials.each { |p| assert_match p, @response.body }
+    end
+
+  end
+
+  context "Security" do
+
+    setup do
+      @typus_user = Factory(:typus_user)
+      @request.session[:typus_user_id] = @typus_user.id
+    end
+
+    teardown do
+      TypusUser.delete_all
     end
 
     should "block users_on_the_fly" do

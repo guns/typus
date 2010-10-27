@@ -144,9 +144,9 @@ module Typus
                   "es"    => "Español",
                   "fr"    => "Français",
                   "hu"    => "Magyar",
+                  "it"    => "Italiano",
                   "pt-BR" => "Portuguese",
-                  "ru"    => "Russian",
-                  "it"    => "Italiano" }
+                  "ru"    => "Russian" }
       mapping.default = "Unknown"
       return mapping
     end

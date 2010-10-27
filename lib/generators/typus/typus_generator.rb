@@ -23,10 +23,6 @@ Description:
 
       DESC
 
-      def self.next_migration_number(path)
-        Time.zone.now.utc.to_s(:number)
-      end
-
       def copy_config_readme
         copy_file "config/typus/README"
       end
@@ -42,17 +38,12 @@ Description:
         end
       end
 
-      #--
-      # Generate files for models:
-      #   `#{controllers_path}/#{resource}_controller.rb`
-      #   `#{tests_path}/#{resource}_controller_test.rb`
-      #++
       def generate_controllers
         Typus.application_models.each do |model|
           klass = model.constantize
           @resource = klass.name.pluralize
-          template "controller.rb", "#{controllers_path}/#{klass.to_resource}_controller.rb"
-          template "functional_test.rb",  "#{tests_path}/#{klass.to_resource}_controller_test.rb"
+          template "controller.rb", "app/controllers/admin/#{klass.to_resource}_controller.rb"
+          template "functional_test.rb", "test/functional/admin/#{klass.to_resource}_controller_test.rb"
         end
       end
 
@@ -74,10 +65,6 @@ Description:
         @configuration
       end
 
-      def inherits_from
-        "Admin::ResourcesController"
-      end
-
       def resource
         @resource
       end
@@ -94,18 +81,6 @@ Description:
 
       def templates_path
         File.join(Typus.root, "lib", "generators", "templates")
-      end
-
-      def controllers_path
-        "app/controllers/admin"
-      end
-
-      def tests_path
-        "test/functional/admin"
-      end
-
-      def views_path
-        "app/views/admin"
       end
 
       def generate_yaml_files
