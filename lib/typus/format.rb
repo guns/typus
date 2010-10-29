@@ -11,7 +11,7 @@ module Typus
 
     def generate_html
       items_count = @resource.count(:joins => @joins, :conditions => @conditions)
-      items_per_page = @resource.typus_options_for(:per_page)
+      items_per_page = (params[:per_page] || @resource.typus_options_for(:per_page)).to_i
       @items = data.paginate(:per_page => items_per_page, :page => params[:page])
     end
 

@@ -60,7 +60,7 @@ module Admin
 
     def build_pagination
       options = { :order => @model_to_relate.typus_order_by, :conditions => set_conditions }
-      items_per_page = @model_to_relate.typus_options_for(:per_page)
+      items_per_page = (params[:per_page] || @model_to_relate.typus_options_for(:per_page)).to_i
       data = @resource.find(params[:id]).send(@field).all(options)
       @items = data.paginate(:per_page => items_per_page, :page => params[:page])
     end
