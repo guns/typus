@@ -82,12 +82,16 @@ class Admin::ResourcesController < Admin::BaseController
   end
 
   def update
-    if @item.update_attributes(params[@object_name])
-      set_attributes_on_update
-      reload_locales
-      redirect_on_success
-    else
-      select_template(:edit)
+    respond_to do |format|
+      if @item.update_attributes(params[@object_name])
+        set_attributes_on_update
+        reload_locales
+        format.html { redirect_on_success }
+        format.json { render :json => @item }
+      else
+        format.html { select_template(:edit) }
+        format.json { render :json => @item.errors.full_messages }
+      end
     end
   end
 
