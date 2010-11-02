@@ -304,6 +304,7 @@ module Typus
               conditions = merge_conditions(conditions, condition)
             end
           when :integer, :string
+            value = nil if value == 'nil' # allow IS NULL queries
             condition = { key => value }
             conditions = merge_conditions(conditions, condition)
           when :has_and_belongs_to_many

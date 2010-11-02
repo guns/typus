@@ -42,7 +42,8 @@ module Admin
       %w(controller action page).each { |p| params_without_filter.delete(p) }
       params_without_filter.delete(related_fk)
 
-      items = model.all(:order => model.typus_order_by).collect{|v| [v.to_label, v.id] }
+      items   = [['&#151;'.html_safe, 'nil']] # allow IS NULL queries
+      items  += model.all(:order => model.typus_order_by).collect{ |v| [v.to_label, v.id] }
       message = _t("View all %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase.pluralize)
 
       return related_fk, items, message
