@@ -105,7 +105,10 @@ class Admin::ResourcesController < Admin::BaseController
                :model => @resource.model_name.human,
                :attribute => params[:field].humanize.downcase)
 
-    redirect_to set_path, :notice => notice
+    respond_to do |format|
+      format.html { redirect_to set_path, :notice => notice }
+      format.json { render :json => @item }
+    end
   end
 
   ##
