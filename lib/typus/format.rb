@@ -65,7 +65,7 @@ module Typus
     end
 
     def data
-      eager_loading = @resource.reflect_on_all_associations(:belongs_to).map { |i| i.name }
+      eager_loading = @resource.reflect_on_all_associations(:belongs_to).reject { |i| i.options[:polymorphic] }.map { |i| i.name }
       @resource.joins(@joins).where(@conditions).order(@order).includes(eager_loading)
     end
 
