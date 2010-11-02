@@ -139,14 +139,20 @@ module Admin
     end
 
     def table_belongs_to_field(attribute, item)
-      att_value = item.send(attribute)
-      content = "&mdash;".html_safe
+      att_value = item.send(attribute) || attribute.camelize.constantize.new
+      action    = att_value.class.typus_options_for(:default_action_on_item)
+      content   = '&mdash;'.html_safe
 
-      unless att_value.nil?
-        content = att_value.to_label
-        action = item.send(attribute).class.typus_options_for(:default_action_on_item)
-        if current_user.can?(action, att_value.class.name)
-          content = link_to content, :controller => "/admin/#{att_value.class.to_resource}", :action => action, :id => att_value.id
+      if current_user.can?(action, att_value.class.name) and action == 'edit'
+        url_opts  = { :controller => "/admin/#{item.class.to_resource}", :action => 'update', :id => item.id }
+        html_opts = { 'data-remote' => 'ajax-update' }
+        content   = form_for item, :url => url_opts, :html => html_opts do |f|
+          @table_options_for_select ||= {}
+          @table_options_for_select[attribute] ||= (
+            name_method = (att_value.class.new.respond_to? :typus_select_name) ? :typus_select_name : :name
+            att_value.class.all.map { |r| [(r.send name_method), r.id] }.sort
+          )
+          f.select attribute + '_id', @table_options_for_select[attribute], :selected => att_value.id, :include_blank => true
         end
       end
 
