@@ -161,7 +161,7 @@ module Admin
     def table_string_field(attribute, item, link_options = {})
       raw_content = item.send(attribute)
       content = raw_content.blank? ? "&#151;".html_safe : raw_content
-      return content_tag(:td, content, :class => attribute)
+      return content_tag(:td, truncate(content.to_s), :class => attribute)
     end
 
     def table_selector(attribute, item)
