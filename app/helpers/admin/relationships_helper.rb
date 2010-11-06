@@ -176,7 +176,7 @@ module Admin
              :related_fk => related_fk,
              :message => message,
              :label_text => @resource.human_attribute_name(attribute),
-             :values => related.all(:order => related.typus_order_by).collect { |p| [p.to_label, p.id] },
+             :values => related.all(:order => related.typus_order_by).collect { |p| [p.to_label, p.id] }.sort,
              # :html_options => { :disabled => attribute_disabled?(attribute) },
              :html_options => {},
              :options => { :include_blank => true }

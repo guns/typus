@@ -149,8 +149,7 @@ module Admin
         content   = form_for item, :url => url_opts, :html => html_opts do |f|
           @table_options_for_select ||= {}
           @table_options_for_select[attribute] ||= (
-            name_method = (att_value.class.new.respond_to? :typus_select_name) ? :typus_select_name : :name
-            att_value.class.all.map { |r| [(r.send name_method), r.id] }.sort
+            att_value.class.all.map { |r| [r.to_label, r.id] }.sort
           )
           f.select attribute + '_id', @table_options_for_select[attribute], :selected => att_value.id, :include_blank => true
         end
