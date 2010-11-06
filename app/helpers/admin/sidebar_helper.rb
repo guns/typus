@@ -6,15 +6,8 @@ module Admin
       resources = ActiveSupport::OrderedHash.new
       app_name = @resource.typus_application
 
-      # sort models by their appearance order in application.yml, which is
-      # alphabetically sorted on creation
-      sortmap = ActiveSupport::OrderedHash.new
-      Typus::Configuration.config.keys.each_with_index do |name, idx|
-        sortmap[name] = idx
-      end
-
-      Typus.application(app_name).sort_by { |name| sortmap[name] }.each do |resource|
-        next unless current_user.resources.include?(resource)
+      Typus.application(app_name).sort {|a,b| a.constantize.model_name.human <=> b.constantize.model_name.human}.each do |resource|
+        next unless @current_user.resources.include?(resource)
         klass = resource.constantize
 
         resources[resource] = default_actions(klass)
