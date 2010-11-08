@@ -8,8 +8,8 @@
   <ul>
 
     <li>
-      <%= form.label :email, Typus.user_class.human_attribute_name(:email) %>
-      <%= form.text_field :email, :size => 20, :class => "text" %>
+      <%= form.label :email, Typus.user_class.human_attribute_name(:email), :for => 'autofocus' %>
+      <%= form.text_field :email, :size => 20, :class => "text", :id => 'autofocus', :autofocus => 'autofocus' %>
     </li>
 
     <li>
@@ -22,5 +22,9 @@
     </li>
 
   </ul>
+
+  <script type="text/javascript">
+    (function() { document.getElementById('autofocus').focus(); })();
+  </script>
 
 <% end %>
