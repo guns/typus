@@ -206,7 +206,7 @@ module Admin
       url_opts  = { :controller => item.class.to_resource, :action => "position", :id => item.id }
       html_opts = { :class => 'sprite position', 'data-remote' => 'ajax-position' }
       content   = content_tag :div, html_opts do
-        form_for(item, :url => url_opts) { |t| t.hidden_field item.position }
+        form_for(item, :url => url_opts) { |t| t.hidden_field :position }
       end
 
       return content_tag(:td, content)
