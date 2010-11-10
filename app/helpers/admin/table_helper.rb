@@ -203,8 +203,11 @@ module Admin
     end
 
     def table_position_field(attribute, item)
-      options = { :controller => item.class.to_resource, :action => "position", :id => item.id, :go => item.id }
-      content  = tag :div, :class => 'sprite position', 'data-url' => (url_for options)
+      url_opts  = { :controller => item.class.to_resource, :action => "position", :id => item.id, :go => item.position }
+      html_opts = { :class => 'sprite position', 'data-remote' => 'ajax-position' }
+      content   = content_tag :div, html_opts do
+        form_for(item, :url => url_opts) {}
+      end
 
       return content_tag(:td, content)
     end
