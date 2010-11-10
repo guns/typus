@@ -6,7 +6,6 @@ class Admin::ResourcesController < Admin::BaseController
 
   before_filter :get_model
 
-  before_filter :get_objects, :only => [ :index ]
   before_filter :get_object,
                 :only => [ :show,
                            :edit, :update, :destroy, :toggle,
@@ -35,6 +34,8 @@ class Admin::ResourcesController < Admin::BaseController
   def index
     @conditions, @joins = @resource.build_conditions(params)
     check_resource_ownerships if @resource.typus_options_for(:only_user_items)
+
+    get_objects
 
     respond_to do |format|
       format.html { generate_html and select_template }
