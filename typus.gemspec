@@ -4,7 +4,7 @@ $LOAD_PATH << File.join(File.dirname(__FILE__), 'lib')
 require 'typus/version'
 
 Gem::Specification.new do |s|
-  s.name = "typus"
+  s.name = "typus-guns"
   s.version = Typus::VERSION
   s.date = Date.today
 
