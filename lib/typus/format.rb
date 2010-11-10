@@ -10,9 +10,8 @@ module Typus
     protected
 
     def generate_html
-      items_count = @resource.count(:joins => @joins, :conditions => @conditions)
       items_per_page = (params[:per_page] || @resource.typus_options_for(:per_page)).to_i
-      @items = data.paginate(:per_page => items_per_page, :page => params[:page])
+      @items = @items.paginate(:per_page => items_per_page, :page => params[:page])
     end
 
     #--
@@ -61,12 +60,7 @@ module Typus
       fields = @resource.typus_fields_for(format).collect { |i| i.first }
       methods = fields - @resource.column_names
       except = @resource.column_names - fields
-      render format => data.send("to_#{format}", :methods => methods, :except => except)
-    end
-
-    def data
-      eager_loading = @resource.reflect_on_all_associations(:belongs_to).reject { |i| i.options[:polymorphic] }.map { |i| i.name }
-      @resource.joins(@joins).where(@conditions).order(@order).includes(eager_loading)
+      render format => @items.send("to_#{format}", :methods => methods, :except => except)
     end
 
   end
