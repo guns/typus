@@ -203,7 +203,10 @@ module Admin
     end
 
     def table_position_field(attribute, item)
-      return content_tag(:td, (tag :div, :class => 'sprite position'))
+      options = { :controller => item.class.to_resource, :action => "position", :id => item.id, :go => item.id }
+      content  = tag :div, :class => 'sprite position', 'data-url' => (url_for options)
+
+      return content_tag(:td, content)
     end
 
     def table_datetime_field(attribute, item, link_options = {} )
