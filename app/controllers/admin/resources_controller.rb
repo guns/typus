@@ -124,11 +124,21 @@ class Admin::ResourcesController < Admin::BaseController
   #   params[:go] = 'move_to_top'
   #
   # Available positions are move_to_top, move_higher, move_lower, move_to_bottom.
+  # If params[:go] is an integer, item is inserted at that position.
   #
   def position
-    @item.send(params[:go])
+    if params[:go] =~ /\A\d+\z/
+      @item.insert_at params[:go].to_i
+    else
+      @item.send(params[:go])
+    end
+
     notice = _t("Record moved %{to}.", :to => params[:go].gsub(/move_/, '').humanize.downcase)
-    redirect_to set_path, :notice => notice
+
+    respond_to do |format|
+      format.html { redirect_to set_path, :notice => notice }
+      format.json { render :json => { :notice => notice } }
+    end
   end
 
   ##

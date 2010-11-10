@@ -203,18 +203,7 @@ module Admin
     end
 
     def table_position_field(attribute, item)
-      html_position = []
-
-      { :move_higher => "Up", :move_lower => "Down" }.each do |key, value|
-        options = { :controller => item.class.to_resource, :action => "position", :id => item.id, :go => key }
-        first_or_last = (item.respond_to?(:first?) && (key == :move_higher && item.first?)) || (item.respond_to?(:last?) && (key == :move_lower && item.last?))
-        html_position << link_to_unless(first_or_last, _t(value), params.merge(options)) do |name|
-          %(<span class="inactive">#{name}</span>)
-        end
-      end
-
-      content = html_position.join(' ')
-      return content_tag(:td, content)
+      return content_tag(:td, (tag :div, :class => 'sprite position'))
     end
 
     def table_datetime_field(attribute, item, link_options = {} )
