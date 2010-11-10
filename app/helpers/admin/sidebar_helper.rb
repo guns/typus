@@ -7,7 +7,7 @@ module Admin
       app_name = @resource.typus_application
 
       Typus.application(app_name).sort {|a,b| a.constantize.model_name.human <=> b.constantize.model_name.human}.each do |resource|
-        next unless @current_user.resources.include?(resource)
+        next unless current_user.resources.include?(resource)
         klass = resource.constantize
 
         resources[resource] = default_actions(klass)
