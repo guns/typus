@@ -332,7 +332,7 @@ fieldset.buttons { }
 .sprite { background: url(../images/ui-icons.png) no-repeat; text-indent: -10000px; }
 .trash { background-position: -177px -97px; height: 15px; width: 15px; }
 .unrelate { background-position: -145px -129px; height: 15px; width: 15px; }
-.position { background-position: 0 -81px; height: 15px; width: 15px; }
+.position { background-position: 0 -81px; height: 15px; width: 15px; cursor: move; }
 
 /* @end */
 
