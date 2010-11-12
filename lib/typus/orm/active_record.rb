@@ -250,7 +250,7 @@ module Typus
                      when "@" then "%#{query}%"
                      end
             key = "LOWER(TEXT(#{key}))" if adapter == 'postgresql'
-            search << "#{key} LIKE '#{_query}'"
+            search << "`#{table_name}`.#{key} LIKE '#{_query}'"
           end
           conditions = merge_conditions(conditions, search.join(" OR "))
         end
