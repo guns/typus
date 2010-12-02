@@ -13,6 +13,7 @@ class <%= migration_name %> < ActiveRecord::Migration
       t.string :preferences
       t.timestamps
     end
+    add_index :<%= admin_users_table_name %>, :email, :unique => true
   end
 
   def self.down

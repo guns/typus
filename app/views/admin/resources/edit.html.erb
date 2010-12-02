@@ -3,7 +3,9 @@
   title(page_title)
 %>
 
-<% content_for :sidebar, build_sidebar %>
+<% content_for :sidebar do %>
+  <% build_sidebar.present? ? build_sidebar : render("admin/templates/profile_sidebar") %>
+<% end %>
 
 <h2>
   <%= page_title %>

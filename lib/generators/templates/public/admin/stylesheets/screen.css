@@ -244,12 +244,12 @@ fieldset.buttons { }
   margin: 0 0 1em 0;
 }
 
-#account #box h1 { margin: 0.5em 0 0.5em 0; }
+#account #box h1 { margin: 0.5em 0; }
 #account #box ul { margin: 1.5em 0 0.5em 0; }
 #account #box li { margin: 1em 0; }
 
 #account #box input.text { font-size: 2em; padding: 0.25em; width: 17.25em; }
-#account #box input.button { margin: 0.5em 0 0 0; }
+#account #box input.button { margin: 0.5em 1em 0 0; }
 
 #account #footer { font-size: 0.9em; line-height: 1.8em; text-align: center; }
 #account #footer a { font-weight: bold; }
@@ -258,15 +258,23 @@ fieldset.buttons { }
 
 /* @group Pagination */
 
-.pagination { margin: 1.5em auto; text-align: center; }
+.pagination {
+  border-top: 1px solid #D3D3D3;
+  margin: 1.5em auto;
+  padding: 1em 0;
+  text-align: center;
+}
 
+.pagination em { font-style: normal!important; }
+.pagination em,
 .pagination a { padding: 3px 5px; text-decoration: none; }
-.pagination a:hover { background: #000; color: #FFF; }
+.pagination a:hover,
+.pagination em { background: #000; color: #FFF; }
 
 .pagination span.disabled { color: #D3D3D3; margin: 2px; padding: 2px 3px; }
 
-.pagination .left { float: left; }
-.pagination .right { float: right; }
+.pagination .previous_page { float: left; }
+.pagination .next_page { float: right; }
 
 /* @end */
 
@@ -276,7 +284,7 @@ fieldset.buttons { }
 .alert,
 .notice {
   padding: 0.8em;
-  margin-bottom: 1em;
+  margin: 1em 0;
   border: 1px solid #ddd;
   -moz-border-radius: 8px;
   -webkit-border-radius: 8px;

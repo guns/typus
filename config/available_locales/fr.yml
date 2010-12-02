@@ -15,13 +15,11 @@ fr:
   "Are you sure you want to sign out and end your session?": "Etes-vous sûre de vouloir vous déconnecter et mettre fin à votre session ?"
   "As you're not the admin or the owner of this record you cannot edit it": "Vous n'êtes pas le propriétaire de cette entrée, ou un administrateur, par conséquent vous ne pouvez pas la modifier"
 
-  "Cancel and go back": "Annuler et retourner en arrière"
   "Change password": "Modifier le mot de passe"
   "Change %{attribute}?": "Changer %{attribute} ?"
   "Checked if active": "Coché si actif"
   "Click OK to continue, or click Cancel to stay on this page": "Cliquez sur Ok pour continuer, ou Annuler pour rester sur cette page."
   "Create %{resource}": "Créer %{resource}"
-  "Create one now": "Ajouter une entrée"
 
   "Dashboard": "Tableau de bord"
   "Do you want to cancel it?": "Voulez-vous annuler ?"
@@ -52,7 +50,9 @@ fr:
   "Login": "Identification"
 
   "New": "Nouveau"
+  "New %{resource}": "Nouveau %{resource}"
   "Next": "Suivant"
+  "No %{resources} found":
 
   "Options": "Options"
 
@@ -84,9 +84,6 @@ fr:
   "System Users Administration": "Modifier les utilisateurs de l'admin"
 
   "That doesn't seem like a valid email address": "L'adresse email ne semble pas valide"
-  "The email and/or password you entered is invalid": "L'email ou le mot de passe que vous avez saisi n'est pas valide"
-  "There are no %{records}": "Il n'y aucun(e) %{records}."
-  "There are no %{records} under this filter": "Il n'y a aucun(e) %{records} avec ce filtre."
   "Today": "Ajourd'hui"
   "Toggle is disabled": "Le basculement est désactivé"
   "True": "Vrai"
@@ -110,10 +107,7 @@ fr:
 
   "%{attachment} can't be removed": "%{attachment} ne peut pas être supprimé"
   "%{attachment} removed": "%{attachment} supprimé"
-  "%{current_user_role} can't delete this item": "%{current_user_role} ne peut supprimer cette entrée"
-  "%{current_user_role} can't display items": "Un utilisateur de rôle %{current_user_role} ne peut pas afficher ces éléments."
-  "%{current_user_role} can't perform action (%{action})": "%{current_user_role} ne peut effectuer l'action (%{action})"
-  "%{current_user_role} can't perform action. (%{action})": "%{current_user_role} ne peut effectuer l'action. (%{action})"
+  "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} successfully created": "%{model} correctement créé(e)."
   "%{model} successfully removed": "%{model} correctement supprimé(e)."
   "%{model} successfully updated": "%{model} correctement mis(e)-à-jour."
@@ -123,5 +117,3 @@ fr:
   "%{model_a} related to %{model_b}": "%{model_a} associé à %{model_b}."
   "%{model_a} successfully assigned to %{model_b}": "%{model_a} associé à %{model_b}."
   "%{model_a} unrelated from %{model_b}": "%{model_a} dissocié de %{model_b}."
-
-

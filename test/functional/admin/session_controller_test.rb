@@ -50,7 +50,6 @@ class Admin::SessionControllerTest < ActionController::TestCase
 
       assert_response :redirect
       assert_redirected_to new_admin_session_path
-      assert_equal "The email and/or password you entered is invalid.", flash[:alert]
     end
 
     should "not_create_session_for_a_disabled_user" do

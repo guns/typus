@@ -20,7 +20,7 @@ module Typus
 
       # Model description for admin panel.
       def typus_description
-        read_model_config(self.name)['description']
+        read_model_config['description']
       end
 
       # Form and list fields
@@ -29,8 +29,8 @@ module Typus
         fields_with_type = ActiveSupport::OrderedHash.new
 
         begin
-          fields = read_model_config(name)['fields'][filter.to_s]
-          fields = fields.extract_settings.collect { |f| f.to_sym }
+          fields = read_model_config['fields'][filter.to_s]
+          fields = fields.extract_settings.map { |f| f.to_sym }
         rescue
           return [] if filter == 'default'
           filter = 'default'
@@ -70,20 +70,19 @@ module Typus
           end
 
         rescue
-          fields = read_model_config(name)['fields']['default'].extract_settings
+          fields = read_model_config['fields']['default'].extract_settings
           retry
         end
 
-        return fields_with_type
-
+        fields_with_type
       end
 
       def typus_filters
         fields_with_type = ActiveSupport::OrderedHash.new
 
-        data = read_model_config(name)['filters']
+        data = read_model_config['filters']
         return [] unless data
-        fields = data.extract_settings.collect { |i| i.to_sym }
+        fields = data.extract_settings.map { |i| i.to_sym }
 
         fields.each do |field|
           attribute_type = model_fields[field.to_sym]
@@ -93,50 +92,43 @@ module Typus
           fields_with_type[field.to_s] = attribute_type
         end
 
-        return fields_with_type
+        fields_with_type
       end
 
       # Extended actions for this model on Typus.
       def typus_actions_on(filter)
-        read_model_config(name)['actions'][filter.to_s].extract_settings
-      rescue
-        []
+        actions = read_model_config['actions']
+        actions && actions[filter.to_s] ? actions[filter.to_s].extract_settings : []
       end
 
       # Used for +search+, +relationships+
       def typus_defaults_for(filter)
-        data = read_model_config(name)[filter.to_s]
-        return data.try(:extract_settings) || []
+        read_model_config[filter.to_s].try(:extract_settings) || []
       end
 
       def typus_search_fields
-        data = typus_defaults_for(:search)
-
-        search = {}
-
-        data.each do |field|
-          if field.starts_with?("=")
-            field.slice!(0)
-            search[field] = "="
-          elsif field.starts_with?("^")
-            field.slice!(0)
-            search[field] = "^"
-          else
-            search[field] = "@"
+        Hash.new.tap do |search|
+          typus_defaults_for(:search).each do |field|
+            if field.starts_with?("=")
+              field.slice!(0)
+              search[field] = "="
+            elsif field.starts_with?("^")
+              field.slice!(0)
+              search[field] = "^"
+            else
+              search[field] = "@"
+            end
           end
         end
-
-        return search
       end
 
       def typus_application
-        read_model_config(name)["application"] || "Unknown"
+        read_model_config['application'] || 'Unknown'
       end
 
       def typus_field_options_for(filter)
-        read_model_config(name)['fields']['options'][filter.to_s].extract_settings.collect { |i| i.to_sym }
-      rescue
-        []
+        options = read_model_config['fields']['options']
+        options && options[filter.to_s] ? options[filter.to_s].extract_settings.map { |i| i.to_sym } : []
       end
 
       #--
@@ -155,17 +147,17 @@ module Typus
       #         per_page: 15
       #++
       def typus_options_for(filter)
-        data = read_model_config(name)
+        options = read_model_config['options']
 
-        unless data['options'].nil? || data['options'][filter.to_s].nil?
-          value = data['options'][filter.to_s]
+        unless options.nil? || options[filter.to_s].nil?
+          options[filter.to_s]
         else
           Typus::Resources.send(filter)
         end
       end
 
       def typus_export_formats
-        read_model_config(name)['export'].try(:extract_settings) || []
+        read_model_config['export'].try(:extract_settings) || []
       end
 
       def typus_order_by
@@ -186,20 +178,27 @@ module Typus
       #
       #++
       def typus_boolean(attribute = :default)
-        boolean = read_model_config(name)['fields']['options']['booleans'][attribute.to_s]
-        boolean = boolean.extract_settings
+        options = read_model_config['fields']['options']
+
+        boolean = if options && options['booleans'] && boolean = options['booleans'][attribute.to_s]
+                    boolean.kind_of?(String) ? boolean.extract_settings : boolean
+                  else
+                    ["True", "False"]
+                  end
+
         { boolean.first => "true", boolean.last => "false" }
-      rescue
-        { "True" => "true", "False" => "false" }
       end
 
       #--
       # Custom date formats.
       #++
       def typus_date_format(attribute = :default)
-        read_model_config(name)['fields']['options']['date_formats'][attribute.to_s].to_sym
-      rescue
-        :db
+        options = read_model_config['fields']['options']
+        if options && options['date_formats'] && options['date_formats'][attribute.to_s]
+          options['date_formats'][attribute.to_s].to_sym
+        else
+          :default
+        end
       end
 
       #--
@@ -215,9 +214,10 @@ module Typus
       # Templates are stored on <tt>app/views/admin/templates</tt>.
       #++
       def typus_template(attribute)
-        read_model_config(name)['fields']['options']['templates'][attribute.to_s]
-      rescue
-        nil
+        options = read_model_config['fields']['options']
+        if options && options['templates'] && options['templates'][attribute.to_s]
+          options['templates'][attribute.to_s]
+        end
       end
 
       #--
@@ -228,13 +228,12 @@ module Typus
       # - Integer & String: *_id and "selectors" (p.ej. category_id)
       #++
       def build_conditions(params)
-
         adapter = ActiveRecord::Base.configurations[Rails.env]['adapter']
 
         conditions, joins = merge_conditions, []
 
         query_params = params.dup
-        %w(action controller).each { |param| query_params.delete(param) }
+        %w(action controller).each { |p| query_params.delete(p) }
 
         # Remove from params those with empty string.
         query_params.delete_if { |k, v| v.empty? }
@@ -249,8 +248,8 @@ module Typus
                      when "^" then "#{query}%"
                      when "@" then "%#{query}%"
                      end
-            key = "LOWER(TEXT(#{key}))" if adapter == 'postgresql'
-            search << "`#{table_name}`.#{key} LIKE '#{_query}'"
+            table_key = (adapter == 'postgresql') ? "LOWER(TEXT(#{table_name}.#{key}))" : "`#{table_name}`.#{key}"
+            search << "#{table_key} LIKE '#{_query}'"
           end
           conditions = merge_conditions(conditions, search.join(" OR "))
         end
@@ -270,7 +269,7 @@ module Typus
                        when 'last_7_days'   then 6.days.ago.beginning_of_day..Time.zone.now.beginning_of_day.tomorrow
                        when 'last_30_days'  then Time.zone.now.beginning_of_day.prev_month..Time.zone.now.beginning_of_day.tomorrow
                        end
-            condition = ["#{key} BETWEEN ? AND ?", interval.first.to_s(:db), interval.last.to_s(:db)]
+            condition = ["`#{table_name}`.#{key} BETWEEN ? AND ?", interval.first.to_s(:db), interval.last.to_s(:db)]
             conditions = merge_conditions(conditions, condition)
           when :date
             if value.kind_of?(Hash)
@@ -279,12 +278,12 @@ module Typus
               begin
                 unless value["from"].blank?
                   date_from = Date.strptime(value["from"], date_format)
-                  conditions = merge_conditions(conditions, ["#{key} >= ?", date_from])
+                  conditions = merge_conditions(conditions, ["`#{table_name}`.#{key} >= ?", date_from])
                 end
 
                 unless value["to"].blank?
                   date_to = Date.strptime(value["to"], date_format)
-                  conditions = merge_conditions(conditions, ["#{key} <= ?", date_to])
+                  conditions = merge_conditions(conditions, ["`#{table_name}`.#{key} <= ?", date_to])
                 end
               rescue
               end
@@ -297,9 +296,9 @@ module Typus
                          when 'last_30_days'  then (Date.today << 1)..Date.tomorrow
                          end
               if interval
-                condition = ["#{key} BETWEEN ? AND ?", interval.first, interval.last]
+                condition = ["`#{table_name}`.#{key} BETWEEN ? AND ?", interval.first, interval.last]
               elsif value == 'today'
-                condition = ["#{key} = ?", Date.today]
+                condition = ["`#{table_name}`.#{key} = ?", Date.today]
               end
               conditions = merge_conditions(conditions, condition)
             end
@@ -315,19 +314,20 @@ module Typus
 
         end
 
-        return conditions, joins
-
+        [conditions, joins]
       end
 
       def typus_user_id?
         columns.map { |u| u.name }.include?(Typus.user_fk)
       end
-      
-      def read_model_config(name)
-        data = Typus::Configuration.config[name]
-        raise "No typus configuration specified for #{name}" unless data
-        return data
-      end      
+
+      def read_model_config
+        if data = Typus::Configuration.config[name]
+          data
+        else
+          raise "No typus configuration specified for #{name}"
+        end
+      end
 
     end
 

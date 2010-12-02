@@ -14,13 +14,11 @@ ru:
   "Are you sure you want to sign out and end your session?":
   "As you're not the admin or the owner of this record you cannot edit it": "Вы не администратор и не владелец записи и не можете ее редактировать"
 
-  "Cancel and go back":
   "Change password": "Сменить пароль"
   "Change %{attribute}?": "Изменить %{attribute}?"
   "Checked if active": "Отмечено, если активно"
   "Click OK to continue, or click Cancel to stay on this page": "нажмите Ок, чтобы продолжить или Отмена, чтобы остаться на этой странице."
   "Create %{resource}": "Создать %{resource}"
-  "Create one now":
 
   "Dashboard": "Обзор"
   "Do you want to cancel it?": "Вы хотите отменить это?"
@@ -50,7 +48,9 @@ ru:
   "Login": "Редактировать"
 
   "New": "Новый"
+  "New %{resource}": "Новый %{resource}"
   "Next": "Следующий"
+  "No %{resources} found":
 
   "Options": "Опции"
 
@@ -81,9 +81,6 @@ ru:
   "System Users Administration": "Администрирование системных пользователей"
 
   "That doesn't seem like a valid email address": "E-Mail некорректен"
-  "The email and/or password you entered is invalid": "E-Mail или пароль введены неверно"
-  "There are no %{records}": "%{records} не найдены"
-  "There are no %{records} under this filter": "%{records} по такому фильтру не найдены"
   "Today": "Сегодня"
   "Toggle is disabled": "Переключение отключено"
   "True": "ВЕРНО"
@@ -107,10 +104,8 @@ ru:
 
   "%{attachment} can't be removed":
   "%{attachment} removed":
+  "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}":
-  "%{current_user_role} can't delete this item": "%{current_user_role} не может удалить эту запись"
-  "%{current_user_role} can't display items": "%{current_user_role} не может отобразить записи"
-  "%{current_user_role} can't perform action. (%{action})": "%{current_user_role} не может выполнить действие. (%{action})"
   "%{model} successfully created": "%{model} создан"
   "%{model} successfully removed": "%{model} удален"
   "%{model} successfully updated": "%{model} успешно обновлен"

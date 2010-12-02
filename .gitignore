@@ -5,4 +5,7 @@
 *.csv
 *.sqlite3
 rdoc/
+*~
+*#
+.rvmrc
 

@@ -1,4 +1,4 @@
-<%= form_for @item, :url  => options[:options], :html => { :multipart => true } do |form| %>
+<%= form_for @item, :url  => options[:options], :html => { :class => "resource", :multipart => true } do |form| %>
 
   <% if @item.errors.any? %>
   <div id="errorExplanation">
@@ -19,7 +19,7 @@
 
   <fieldset class="buttons">
     <ol>
-      <li><%= submit_tag options[:button] , :class => "commit" %> or <%= link_to _t("Cancel and go back").downcase, :action => "index" %></li>
+      <li><%= submit_tag options[:button] , :class => "commit", :onclick => "setConfirmUnload(false);" %></li>
     </ol>
   </fieldset>
 

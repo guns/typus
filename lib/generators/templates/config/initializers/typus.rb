@@ -20,6 +20,12 @@ Typus.setup do |config|
   # config.username = "admin"
   # config.password = "columbia"
 
+  # Pagination options:
+  # These options are passed to `will_paginate`. You can see the available
+  # options in the plugin source. (https://github.com/mislav/will_paginate/blob/rails3/lib/will_paginate/view_helpers.rb)
+  # config.pagination = { :previous_label => "&larr; " + _t("Previous"),
+  #                       :next_label => _t("Next") + " &rarr;" }
+
   # Define available languages on the admin interface.
   # config.available_locales = [:en]
 

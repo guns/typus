@@ -30,7 +30,7 @@ Post:
       read_only: permalink
       auto_generated: created_at
       date_formats:
-        created_at: post_short
+        created_at: short
   relationships: assets, categories
   actions:
     index: cleanup

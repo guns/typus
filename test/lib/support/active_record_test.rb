@@ -56,8 +56,9 @@ class ActiveRecordTest < ActiveSupport::TestCase
 
   context "to_label" do
 
-    should "return email as is an alias for to_label on TypusUser" do
-      assert_equal "admin@example.com", Factory(:typus_user).to_label
+    should "return email for TypusUser" do
+      typus_user = Factory(:typus_user)
+      assert_equal typus_user.email, typus_user.to_label
     end
 
     should "return name for Category" do

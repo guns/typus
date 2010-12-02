@@ -1,10 +1,10 @@
-require 'integration_test_helper'
+require 'test_helper'
 
 class LoginTest < ActionController::IntegrationTest
 
-  feature "Admin goes to login page" do
+  context "Admin goes to login page" do
 
-    scenario "views page" do
+    should "views page" do
       visit '/admin'
     end
 

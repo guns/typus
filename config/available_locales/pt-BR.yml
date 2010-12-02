@@ -14,13 +14,11 @@ pt-BR:
   "Are you sure you want to sign out and end your session?": "Tem certeza que quer sair e encerrar sua sessão?"
   "As you're not the admin or the owner of this record you cannot edit it": "Como você não é o dono desse registro ou o admin, você não pode editá-lo."
 
-  "Cancel and go back":
   "Change password": "Trocar senha"
   "Change %{attribute}?": "Mudar %{attribute}?"
   "Checked if active": "Marcar para ativar"
   "Click OK to continue, or click Cancel to stay on this page": "Clique OK para continuar, ou clique em Cancelar para ficar nesta página."
   "Create %{resource}": "Criar %{resource}"
-  "Create one now":
 
   "Dashboard": "Painel"
   "Do you want to cancel it?": "Quer cancelar?"
@@ -50,7 +48,9 @@ pt-BR:
   "Login": "Login"
 
   "New": "Novo"
+  "New %{resource}": "Novo %{resource}"
   "Next": "Próximo"
+  "No %{resources} found":
 
   "Options": "Opções"
 
@@ -81,9 +81,6 @@ pt-BR:
   "System Users Administration": "Administrar usuários do sistema"
 
   "That doesn't seem like a valid email address": "Este não parece um email válido"
-  "The email and/or password you entered is invalid": "O email e/ou a senha que você colocou são inválidos."
-  "There are no %{records}": "Não há %{records}."
-  "There are no %{records} under this filter": "Não há %{records} com este filtro."
   "Toggle is disabled": "Toggle está desabilitado."
   "Today": "Hoje"
   "True": "Verdadeiro"
@@ -107,9 +104,7 @@ pt-BR:
 
   "%{attachment} can't be removed":
   "%{attachment} removed":
-  "%{current_user_role} can't delete this item": "%{current_user_role} não pode apagar este item."
-  "%{current_user_role} can't display items": "%{current_user_role} não pode mostrar os items."
-  "%{current_user_role} can't perform action. (%{action})": "%{current_user_role} não pode realizar a ação. (%{action})"
+  "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} filtrados por %{filtered_by}"
   "%{model} successfully updated": "%{model} atualizado com sucesso."
   "%{model} successfully created": "%{model} criado com sucesso."

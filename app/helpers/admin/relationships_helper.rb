@@ -4,24 +4,23 @@ module Admin
 
     def setup_relationship(field)
       @field = field
-      @model_to_relate = @resource.reflect_on_association(field.to_sym).class_name.constantize
+      @model_to_relate = @resource.reflect_on_association(field.to_sym).class_name.typus_constantize
       @model_to_relate_as_resource = @model_to_relate.to_resource
       @reflection = @resource.reflect_on_association(field.to_sym)
       @association = @reflection.macro
     end
 
     def typus_form_has_many(field)
-
       setup_relationship(field)
+
+      @items_to_relate = @model_to_relate.all - @item.send(field)
+
+      if set_condition && @items_to_relate.any?
+        form = build_relate_form
+      end
 
       unless @reflection.through_reflection
         foreign_key = @reflection.primary_key_name
-      end
-
-      @items_to_relate = @model_to_relate.all
-
-      if set_condition && !@items_to_relate.empty?
-        form = build_relate_form
       end
 
       options = { foreign_key => @item.id }
@@ -35,27 +34,27 @@ module Admin
              :add_new => raw(build_add_new(options)),
              :form => form,
              :table => build_relationship_table
-
     end
 
     def typus_form_has_and_belongs_to_many(field)
-
       setup_relationship(field)
 
-      @items_to_relate = (@model_to_relate.all - @item.send(field))
-      if set_condition && !@items_to_relate.empty?
+      @items_to_relate = @model_to_relate.all - @item.send(field)
+
+      if set_condition && @items_to_relate.any?
         form = build_relate_form
       end
+
+      options = {}
 
       build_pagination
 
       render "admin/templates/has_n",
              :model_to_relate => @model_to_relate,
              :model_to_relate_as_resource => @model_to_relate_as_resource,
-             :add_new => raw(build_add_new),
+             :add_new => raw(build_add_new(options)),
              :form => form,
              :table => build_relationship_table
-
     end
 
     def build_pagination
@@ -85,9 +84,9 @@ module Admin
                           :resource => @resource.name, :resource_id => @item.id,
                           :back_to => @back_to }
 
-      return unless set_condition && current_user.can?("create", @model_to_relate)
-
-      link_to _t("Add new"), default_options.merge(options)
+      if set_condition && current_user.can?("create", @model_to_relate)
+        link_to _t("Add new"), default_options.merge(options)
+      end
     end
 
     def set_condition
@@ -110,7 +109,7 @@ module Admin
     def typus_form_has_one(field)
       html = ""
 
-      model_to_relate = @resource.reflect_on_association(field.to_sym).class_name.constantize
+      model_to_relate = @resource.reflect_on_association(field.to_sym).class_name.typus_constantize
       model_to_relate_as_resource = model_to_relate.to_resource
 
       reflection = @resource.reflect_on_association(field.to_sym)
@@ -134,8 +133,8 @@ module Admin
                            options,
                            association)
       else
-        message = _t("There are no %{records}.",
-                    :records => model_to_relate.model_name.human.downcase)
+        message = _t("No %{resources} found.",
+                     :resources => model_to_relate.model_name.human.pluralize.downcase)
         html << <<-HTML
   <div id="flash" class="notice"><p>#{message}</p></div>
         HTML
@@ -148,20 +147,19 @@ module Admin
     end
 
     def typus_belongs_to_field(attribute, form)
-
       ##
-      # We only can pass parameters to 'new' and 'edit', so this hack makes
-      # the work to replace the current action.
+      # We can only pass parameters to 'new' and 'edit'. This hack replaces
+      # the current action.
       #
       params[:action] = (params[:action] == 'create') ? 'new' : params[:action]
 
       back_to = url_for(:controller => params[:controller], :action => params[:action], :id => params[:id])
 
-      related = @resource.reflect_on_association(attribute.to_sym).class_name.constantize
+      related = @resource.reflect_on_association(attribute.to_sym).class_name.typus_constantize
       related_fk = @resource.reflect_on_association(attribute.to_sym).primary_key_name
 
       confirm = [ _t("Are you sure you want to leave this page?"),
-                  _t("If you have made any changes to the fields without clicking the Save/Update entry button, your changes will be lost."),
+                  _t("If you have made any changes to the fields without clicking the Create/Save entry button, your changes will be lost."),
                   _t("Click OK to continue, or click Cancel to stay on this page.") ]
 
       message = link_to _t("Add"), { :controller => "/admin/#{related.to_resource}",
@@ -172,15 +170,15 @@ module Admin
 
       render "admin/templates/belongs_to",
              :resource => @resource,
+             :attribute => attribute,
              :form => form,
              :related_fk => related_fk,
              :message => message,
              :label_text => @resource.human_attribute_name(attribute),
-             :values => related.all(:order => related.typus_order_by).collect { |p| [p.to_label, p.id] }.sort,
+             :values => related.order(related.typus_order_by).map { |p| [p.to_label, p.id] }.sort,
              # :html_options => { :disabled => attribute_disabled?(attribute) },
              :html_options => {},
              :options => { :include_blank => true }
-
     end
 
   end

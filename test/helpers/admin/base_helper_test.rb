@@ -11,6 +11,63 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
   # include ActionView::Rendering
   # include ActionView::Partials
 
+  context "login info" do
+
+    setup do
+      current_user = mock
+      self.stubs(:current_user).returns(current_user)
+      current_user.stubs(:name).returns("Admin")
+      current_user.stubs(:id).returns(1)
+    end
+
+    should "skip rendering when we're using a fake user" do
+      current_user.stubs(:is_a?).with(FakeUser).returns(true)
+      output = login_info
+      assert_nil output
+    end
+
+    context "when the current user is not a FakeUser" do
+
+      setup do
+        current_user.stubs(:is_a?).with(FakeUser).returns(false)
+        @partial = "admin/helpers/login_info"
+        @default_message =  "Are you sure you want to sign out and end your session?"
+      end
+
+      context "when the user cannot edit his informations" do
+
+        should "render a partial with the user name" do
+          current_user.stubs(:can?).with('edit', 'TypusUser').returns(false)
+
+          output = login_info
+          options = {:user_details => "Admin", :message => @default_message}
+
+          assert_equal [@partial, options], output
+        end
+
+      end
+
+      context "when the user can edit his informations" do
+
+        should "render a partial with a link" do
+          link_options = { :action => 'edit', :controller => '/admin/typus_users', :id => 1 }
+
+          current_user.stubs(:can?).with('edit', 'TypusUser').returns(true)
+          self.stubs(:link_to).with("Admin", link_options).returns(%(<a href="/admin/typus_users/edit/1">Admin</a>))
+
+          output = login_info
+          options = { :user_details => %(<a href="/admin/typus_users/edit/1">Admin</a>),
+                      :message => @default_message }
+
+          assert_equal [@partial, options], output
+        end
+
+      end
+
+    end
+
+  end
+
   context "header" do
 
     should_eventually "render with root_path" do

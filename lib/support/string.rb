@@ -9,7 +9,11 @@ class String
   end
 
   def extract_class
-    remove_prefix.camelize.classify.constantize
+    remove_prefix.classify.typus_constantize
+  end
+
+  def typus_constantize
+    Typus::Configuration.models_constantized[self]
   end
 
 end

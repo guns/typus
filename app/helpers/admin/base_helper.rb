@@ -25,21 +25,8 @@ module Admin
     end
 
     def login_info
-      return if [:none, :http_basic].include?(Typus.authentication)
-
-      admin_edit_typus_user_path = { :controller => "/admin/#{Typus.user_class.to_resource}",
-                                     :action => 'edit',
-                                     :id => current_user.id }
-
-      message = _t("Are you sure you want to sign out and end your session?")
-
-      user_details = if current_user.can?('edit', Typus.user_class_name)
-                       link_to current_user.name, admin_edit_typus_user_path
-                     else
-                       current_user.name
-                     end
-
-      render "admin/helpers/login_info", :message => message, :user_details => user_details
+      return if current_user.is_a?(FakeUser)
+      render "admin/helpers/login_info"
     end
 
     def display_flash_message(message = flash)

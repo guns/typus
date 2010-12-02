@@ -81,14 +81,10 @@ module Typus
       end
 
       #--
-      # TODO: Rename action to mapping and refactor the _action case
-      #       statement.
+      # TODO: Rename action to mapping and refactor the _action case statement.
       #++
       def can?(action, resource, options = {})
-
-        # Sometimes we are getting a Class, so we need to convert it
-        # to string.
-        resource = resource.to_s
+        resource = resource.name if resource.kind_of?(Class)
 
         return false if !resources.include?(resource)
         return true if resources[resource].include?("all")
@@ -108,7 +104,6 @@ module Typus
                   end
 
         resources[resource].extract_settings.include?(_action)
-
       end
 
       def cannot?(*args)

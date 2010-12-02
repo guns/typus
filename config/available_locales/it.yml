@@ -12,14 +12,12 @@ it:
   "Are you sure you want to leave this page?": "Sei sicuro di volere lasciare questa pagina?"
   "Are you sure you want to sign out and end your session?": "Sei sicuro che vuoi disconnetterti dal sistema?"
   "As you're not the admin or the owner of this record you cannot edit it": "Non puoi modificare questo elemento poichè non sei un amministratore o il proprietario dello stesso"
-  
-  "Cancel and go back": "Annulla e torna indietro"
+
   "Change %{attribute}?": "Vuoi cambiare %{attribute}?"
   "Change password": "Cambia la password"
   "Checked if active": "È spuntato se attivo"
   "Click OK to continue, or click Cancel to stay on this page": "Clicca OK per continuare o Cancella per rimanere su questa pagina"
   "Create %{resource}": "Inserisci %{resource}"
-  "Create one now": "Creane una ora"
 
   "Dashboard": "Panoramica"
   "Developed by": "Realizzato da"
@@ -53,8 +51,9 @@ it:
   "Login": "Login"
 
   "New": "Nuovo"
-  "New %{resource}": "Inserisci %{resource}"
+  "New %{resource}": "Nuovo %{resource}"
   "Next": "Successivo"
+  "No %{resources} found":
 
   "Options": "Opzioni"
   "Or": "Oppure"
@@ -91,9 +90,6 @@ it:
   "System Users Administration": "Amministrazione utenti del sistema"
 
   "That doesn't seem like a valid email address": "Sembra che non sia un indirizzo email valido"
-  "The email and/or password you entered is invalid": "L'email e/o la password inserita non è valida"
-  "There are no %{records}": "Non ci sono %{records}"
-  "There are no %{records} under this filter": "Non ci sono %{records} con questo filtro"
   "Today": "Oggi"
   "Toggle is disabled": "La modifica è disabilitata"
   "Trash": "Elimina"
@@ -120,9 +116,7 @@ it:
 
   "%{attachment} can't be removed": "%{attachment} non può essere eliminato"
   "%{attachment} removed": "%{attachment} eliminato"
-  "%{current_user_role} can't delete this item.": "%{current_user_role} non può eliminare questo elemento"
-  "%{current_user_role} can't display items.": "%{current_user_role} non può visualizzare questi elementi"
-  "%{current_user_role} can't perform action. (%{action})": "%{current_user_role} non può fare questa azione. (%{action})"
+  "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} filtrato per %{filtered_by}"
   "%{model} successfully created": "Creazione avvenuta con successo"
   "%{model} successfully removed": "Eliminazione avvenuta con successo"

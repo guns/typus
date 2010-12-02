@@ -47,7 +47,7 @@ class Admin::ResourcesController < Admin::BaseController
     check_ownership_of_referal_item
 
     item_params = params.dup
-    rejections = %w( controller action resource resource_id back_to selected )
+    rejections = %w(controller action resource resource_id back_to selected)
     item_params.delete_if { |k, v| rejections.include?(k) }
 
     @item = @resource.new(item_params)
@@ -146,7 +146,7 @@ class Admin::ResourcesController < Admin::BaseController
   # has_and_belongs_to_many and has_many relationships.
   #
   def relate
-    resource_class = params[:related][:model].constantize
+    resource_class = params[:related][:model].typus_constantize
     resource_tableized = params[:related][:model].tableize
 
     if @item.send(resource_tableized) << resource_class.find(params[:related][:id])
@@ -166,8 +166,7 @@ class Admin::ResourcesController < Admin::BaseController
   # Remove relationship between models, this action never removes items!
   #
   def unrelate
-
-    resource_class = params[:resource].classify.constantize
+    resource_class = params[:resource].typus_constantize
     resource_tableized = params[:resource].tableize
     resource = resource_class.find(params[:resource_id])
 
@@ -212,7 +211,6 @@ class Admin::ResourcesController < Admin::BaseController
     end
 
     redirect_to set_path
-
   end
 
   ##
@@ -225,8 +223,7 @@ class Admin::ResourcesController < Admin::BaseController
                 "%{attachment} can't be removed."
               end
 
-    attachment = @resource.human_attribute_name(params[:attachment])
-    notice = _t(message, :attachment => attachment)
+    notice = _t(message, :attachment => @resource.human_attribute_name(params[:attachment]))
 
     redirect_to set_path, :notice => notice
   end
@@ -238,13 +235,17 @@ class Admin::ResourcesController < Admin::BaseController
     @object_name = ActiveModel::Naming.singular(@resource)
   end
 
+  def set_scope
+    @resource.unscoped
+  end
+
   def get_object
-    @item = @resource.unscoped.find(params[:id])
+    @item = set_scope.find(params[:id])
   end
 
   def get_objects
     eager_loading = @resource.reflect_on_all_associations(:belongs_to).reject { |i| i.options[:polymorphic] }.map { |i| i.name }
-    @items = @resource.unscoped.joins(@joins).where(@conditions).order(@order).includes(eager_loading)
+    @items = set_scope.joins(@joins).where(@conditions).order(set_order).includes(eager_loading)
   end
 
   def set_fields
@@ -259,7 +260,7 @@ class Admin::ResourcesController < Admin::BaseController
 
   def set_order
     params[:sort_order] ||= "desc"
-    @order = params[:order_by] ? "#{@resource.table_name}.#{params[:order_by]} #{params[:sort_order]}" : @resource.typus_order_by
+    params[:order_by] ? "#{@resource.table_name}.#{params[:order_by]} #{params[:sort_order]}" : @resource.typus_order_by
   end
 
   def redirect_on_success
@@ -292,9 +293,8 @@ class Admin::ResourcesController < Admin::BaseController
   # - <tt>has_many</tt> relationships (polymorphic ones).
   #
   def create_with_back_to
-
     if params[:resource] && params[:resource_id]
-      resource_class = params[:resource].classify.constantize
+      resource_class = params[:resource].typus_constantize
       resource_id = params[:resource_id]
       resource = resource_class.find(resource_id)
       association = @resource.reflect_on_association(params[:resource].to_sym).macro rescue :polymorphic
@@ -321,7 +321,6 @@ class Admin::ResourcesController < Admin::BaseController
                                   :model_b => resource_class.model_name.human)
 
     redirect_to path || params[:back_to]
-
   end
 
   def select_template(action = params[:action], resource = @resource.to_resource)

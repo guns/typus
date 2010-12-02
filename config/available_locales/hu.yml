@@ -14,13 +14,11 @@ hu:
   "Are you sure you want to sign out and end your session?": "Biztosan ki akarsz lépni?"
   "As you're not the admin or the owner of this record you cannot edit it": "Ezt a bejegyzést csak a tuljadonosa és az adminok szerkeszthetik."
 
-  "Cancel and go back":
   "Change %{attribute}?": "Megváltoztatod ezt: %{attribute}?"
   "Change password": "Jelszó megváltoztatása"
   "Checked if active": "Bejelölve aktív"
   "Click OK to continue, or click Cancel to stay on this page": "Kattints az OK gombra a továbblépéshez, vagy a mégse gombbal maradhatsz a mostani oldalon"
   "Create %{resource}": "%{resource} létrehozása"
-  "Create one now":
 
   "Dashboard": "Admin nyitólap"
   "Do you want to cancel it?": "Szeretnéd visszavonni?"
@@ -50,7 +48,9 @@ hu:
   "Login": "Belépés"
 
   "New": "Új"
+  "New %{resource}": "Új %{resource}"
   "Next": "Következő"
+  "No %{resources} found":
 
   "Options": "Opciók"
 
@@ -81,9 +81,6 @@ hu:
   "System Users Administration": "Rendszeradminisztrátorok kezelése"
 
   "That doesn't seem like a valid email address": "Ez nem tűnik valódi e-mail címnek"
-  "The email and/or password you entered is invalid": "A megadott felhasználónév és/vagy jelszó nem megfelelő"
-  "There are no %{records}": "Nincsenek %{records}"
-  "There are no %{records} under this filter": "Nincsenek %{records} a szűrővel"
   "Today": "Ma"
   "Toggle is disabled": "Toggle letitlva"
   "True": "Igaz"
@@ -107,9 +104,7 @@ hu:
 
   "%{attachment} can't be removed": "%{attachment} nem törölhető"
   "%{attachment} removed": "%{attachment} törölve"
-  "%{current_user_role} can't delete this item": "%{current_user_role} nem lehet törölni az elemet"
-  "%{current_user_role} can't display items": "%{current_user_role} nem nézheti meg az elemeket"
-  "%{current_user_role} can't perform action. (%{action})": "%{current_user_role} nem futtathatja ez a műveletet (%{action})"
+  "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} szűrve %{filtered_by}"
   "%{model} successfully created": "%{model} sikeresen létrehozva"
   "%{model} successfully removed": "%{model} sikeresen törölve"

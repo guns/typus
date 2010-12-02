@@ -3,6 +3,7 @@ class Admin::SessionController < Admin::BaseController
   skip_before_filter :reload_config_and_roles
   skip_before_filter :set_preferences
   skip_before_filter :authenticate
+  skip_before_filter :set_locale
 
   before_filter :create_an_account?, :except => [:destroy]
 
@@ -12,15 +13,14 @@ class Admin::SessionController < Admin::BaseController
   def create
     user = Typus.user_class.authenticate(params[:typus_user][:email], params[:typus_user][:password])
 
-    if user
-      session[:typus_user_id] = user.id
-      path = params[:back_to] || admin_dashboard_path
-    else
-      alert = _t("The email and/or password you entered is invalid.")
-      path = new_admin_session_path(:back_to => params[:back_to])
-    end
+    path = if user
+             session[:typus_user_id] = user.id
+             params[:back_to] || admin_dashboard_path
+           else
+             new_admin_session_path(:back_to => params[:back_to])
+           end
 
-    redirect_to path, :alert => alert
+    redirect_to path
   end
 
   def destroy

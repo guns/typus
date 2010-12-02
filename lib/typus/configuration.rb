@@ -46,6 +46,12 @@ module Typus
 
     mattr_accessor :roles
 
+    def self.models_constantized!
+      @@models_constantized = config.map { |i| i.first }.inject({}) { |result, model| result[model] = model.constantize; result }
+    end
+
+    mattr_accessor :models_constantized
+
   end
 
 end

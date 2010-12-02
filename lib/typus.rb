@@ -9,6 +9,7 @@ require "support/string"
 require "typus/engine"
 require "typus/orm/active_record"
 require "typus/user"
+require "typus/version"
 
 require 'will_paginate'
 
@@ -17,7 +18,6 @@ autoload :FakeUser, "support/fake_user"
 module Typus
 
   autoload :Configuration, "typus/configuration"
-  autoload :Pagination, "typus/pagination"
   autoload :Resources, "typus/resources"
 
   module Authentication
@@ -52,9 +52,16 @@ module Typus
   @@username = "admin"
 
   ##
+  # Pagination options
+  #
+  mattr_accessor :pagination
+  @@pagination = { :previous_label => "&larr; " + _t("Previous"),
+                   :next_label => _t("Next") + " &rarr;" }
+
+  ##
   # Define a password.
   #
-  # Used as default password for http and advances authentication.
+  # Used as default password for http and advanced authentication.
   #
   mattr_accessor :password
   @@password = "columbia"
@@ -104,12 +111,12 @@ module Typus
     end
 
     def applications
-      Typus::Configuration.config.collect { |i| i.last["application"] }.compact.uniq.sort
+      Typus::Configuration.config.map { |i| i.last["application"] }.compact.uniq.sort
     end
 
     # Lists modules of an application.
     def application(name)
-      Typus::Configuration.config.collect { |i| i.first if i.last["application"] == name }.compact.uniq.sort
+      Typus::Configuration.config.map { |i| i.first if i.last["application"] == name }.compact.uniq.sort
     end
 
     # Lists models from the configuration file.
@@ -127,9 +134,7 @@ module Typus
     # Lists models under <tt>app/models</tt>.
     def detect_application_models
       model_dir = Rails.root.join("app/models")
-      Dir.chdir(model_dir) do
-        models = Dir["**/*.rb"]
-      end
+      Dir.chdir(model_dir) { Dir["**/*.rb"] }
     end
 
     def locales
@@ -166,7 +171,7 @@ module Typus
     end
 
     def user_class
-      user_class_name.constantize
+      user_class_name.typus_constantize
     end
 
     def reload!

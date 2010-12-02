@@ -20,6 +20,10 @@ class FakeUser
     !is_root?
   end
 
+  def preferences
+    { :locale => Typus.available_locales.first }
+  end
+
   def resources
     Typus::Configuration.roles[role].compact
   end

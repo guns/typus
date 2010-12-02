@@ -57,7 +57,7 @@ module Typus
     end
 
     def export(format)
-      fields = @resource.typus_fields_for(format).collect { |i| i.first }
+      fields = @resource.typus_fields_for(format).map { |i| i.first }
       methods = fields - @resource.column_names
       except = @resource.column_names - fields
       render format => @items.send("to_#{format}", :methods => methods, :except => except)

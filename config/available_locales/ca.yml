@@ -14,13 +14,11 @@ ca:
   "Are you sure you want to sign out and end your session?": "Estàs segur que vols sortir i tancar la sessió?"
   "As you're not the admin or the owner of this record you cannot edit it": "Com que no ets l'administrador o el propietari d'aquest registre no el pots editar."
 
-  "Cancel and go back":
   "Change password": "Canviar contrasenya"
   "Change %{attribute}?": "Canviar %{attribute}?"
   "Checked if active": "Marca-ho per activar"
   "Click OK to continue, or click Cancel to stay on this page": "Prem OK per continuar, o prem Cancel·lar per romandre en aquesta página."
   "Create %{resource}": "Crear %{resource}"
-  "Create one now":
 
   "Dashboard": "Panell de control"
   "Do you want to cancel it?": "Vols cancel·lar-lo?"
@@ -50,7 +48,9 @@ ca:
   "Login": "Login"
 
   "New": "Nou"
+  "New %{resource}": "Nou %{resource}"
   "Next": "Següent"
+  "No %{resources} found": "No s'han trobat %{resources}."
 
   "Options": "Opcions"
 
@@ -81,9 +81,6 @@ ca:
   "System Users Administration": "Administrar usuaris del sistema"
 
   "That doesn't seem like a valid email address": "Això no sembla ser una adreça de correu electrònic vàlida."
-  "The email and/or password you entered is invalid": "El correu i/o la contrasenya proporcionats no són vàlids."
-  "There are no %{records}": "No hi han %{records}."
-  "There are no %{records} under this filter": "No hi han %{records} amb aquest filtre."
   "Today": "Avui"
   "Toggle is disabled": "Alternar està desactivat."
   "True": "Cert"
@@ -107,9 +104,7 @@ ca:
 
   "%{attachment} can't be removed": "%{attachment} no es pot esborrar."
   "%{attachment} removed": "%{attachment} esborrat."
-  "%{current_user_role} can't delete this item": "%{current_user_role} no pot esborrar aquest element."
-  "%{current_user_role} can't display items": "%{current_user_role} no pot mostrar els elements."
-  "%{current_user_role} can't perform action. (%{action})": "%{current_user_role} no pot realitzar l'acció. (%{action})"
+  "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} filtrats per %{filtered_by}"
   "%{model} successfully created": "%{model} satisfactòriament creat."
   "%{model} successfully updated": "%{model} satisfactòriament actualitzat."

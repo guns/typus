@@ -19,7 +19,6 @@
   "Checked if active":
   "Click OK to continue, or click Cancel to stay on this page":
   "Create %{resource}":
-  "Create one now":
 
   "Dashboard":
   "Do you want to cancel it?":
@@ -48,7 +47,9 @@
   "Login":
 
   "New":
+  "New %{resource}":
   "Next":
+  "No %{resources} found":
 
   "Options":
 
@@ -79,9 +80,6 @@
   "System Users Administration":
 
   "That doesn't seem like a valid email address":
-  "The email and/or password you entered is invalid":
-  "There are no %{records}":
-  "There are no %{records} under this filter":
   "Today":
   "Toggle is disabled":
   "True":
@@ -105,9 +103,7 @@
 
   "%{attachment} can't be removed":
   "%{attachment} removed":
-  "%{current_user_role} can't delete this item":
-  "%{current_user_role} can't display items":
-  "%{current_user_role} can't perform action. (%{action})":
+  "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}":
   "%{model} successfully created":
   "%{model} successfully removed":

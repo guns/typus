@@ -26,7 +26,6 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
     end
 
     should "allow_admin_to_toggle_other_users_status" do
-
       get :toggle, { :id => @typus_user_editor.id, :field => 'status' }
 
       assert_response :redirect
@@ -54,6 +53,14 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
       assert_equal "Typus user successfully removed.", flash[:notice]
     end
 
+    should "allow admin to change other users role" do
+      post :update, { :id => @typus_user_editor.id, :typus_user => { :role => 'admin' } }
+
+      assert_response :redirect
+      assert_redirected_to "/admin/typus_users/edit/#{@typus_user_editor.id}"
+      assert_equal "Typus user successfully updated.", flash[:notice]
+    end
+
   end
 
   context "No master role" do
@@ -77,7 +84,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Editor can't perform action. (new)", flash[:notice]
+      assert_equal "Editor is not able to perform this action. (new)", flash[:notice]
     end
 
   end
@@ -151,7 +158,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Designer can't display items.", flash[:notice]
+      assert_equal "Designer is not able to perform this action. (index)", flash[:notice]
     end
 
   end

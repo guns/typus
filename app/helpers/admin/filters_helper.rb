@@ -35,7 +35,7 @@ module Admin
     def relationship_filter(request, filter, habtm = false)
       att_assoc = @resource.reflect_on_association(filter.to_sym)
       class_name = att_assoc.options[:class_name] || ((habtm) ? filter.classify : filter.capitalize.camelize)
-      model = class_name.constantize
+      model = class_name.typus_constantize
       related_fk = (habtm) ? filter : att_assoc.primary_key_name
 
       params_without_filter = params.dup
@@ -43,34 +43,34 @@ module Admin
       params_without_filter.delete(related_fk)
 
       items   = [['&#151;'.html_safe, 'nil']] # allow IS NULL queries
-      items  += model.all(:order => model.typus_order_by).collect{ |v| [v.to_label, v.id] }
+      items  += model.order(model.typus_order_by).map{ |v| [v.to_label, v.id] }
       message = _t("View all %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase.pluralize)
 
-      return related_fk, items, message
+      [related_fk, items, message]
     end
 
     def date_filter(request, filter)
       values  = %w(today last_few_days last_7_days last_30_days)
-      items = values.collect {|v| [_t(v.humanize), v ] }
+      items   = values.map { |v| [_t(v.humanize), v] }
       message = _t("Show all dates")
-      return filter, items, message
+      [filter, items, message]
     end
 
     def boolean_filter(request, filter)
       items   = @resource.typus_boolean(filter)
       message = _t("Show by %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase)
-      return filter, items, message
+      [filter, items, message]
     end
 
     def string_filter(request, filter)
       values  = @resource::const_get(filter.to_s.upcase)
       items   = values.kind_of?(Hash) ? values : values.to_hash_with(values)
       message = _t("Show by %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase)
-      return filter, items, message
+      [filter, items, message]
     end
 
-    def remove_filter_link(filter = request.env['QUERY_STRING'])
-      return unless filter && !filter.blank?
+    def remove_filter_link(filter = request.env['QUERY_STRING'], params = params)
+      return unless filter.present?
       message = params.compact.include?(:search) ? "search" : "filter"
       link_to _t("Remove #{message}")
     end

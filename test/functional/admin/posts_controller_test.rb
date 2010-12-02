@@ -299,7 +299,7 @@ title;status
         get :new
 
         assert_response :redirect
-        assert_equal "Designer can't perform action. (new)", flash[:notice]
+        assert_equal "Designer is not able to perform this action. (new)", flash[:notice]
         assert_redirected_to :action => :index
       end
 

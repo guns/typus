@@ -23,17 +23,6 @@ class Admin::ResourcesHelperTest < ActiveSupport::TestCase
     end
   end
 
-  context "remove_filter_link" do
-
-    should "return nil when blank" do
-      output = remove_filter_link("")
-      assert_nil output
-    end
-
-    should "return link when it's present"
-
-  end
-
   context "build_list" do
 
     setup do

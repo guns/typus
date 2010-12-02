@@ -21,7 +21,7 @@ module Admin
           association = model.reflect_on_association(key.to_sym)
           order_by = association ? association.primary_key_name : key
 
-          if (model.model_fields.map(&:first).collect { |i| i.to_s }.include?(key) || model.reflect_on_all_associations(:belongs_to).map(&:name).include?(key.to_sym))
+          if (model.model_fields.map(&:first).map { |i| i.to_s }.include?(key) || model.reflect_on_all_associations(:belongs_to).map(&:name).include?(key.to_sym))
             sort_order = case params[:sort_order]
                          when 'asc' then ['desc', '&darr;']
                          when 'desc' then ['asc', '&uarr;']
@@ -115,8 +115,8 @@ module Admin
       when 'edit', 'update'
         # If we are editing content, we can relate and unrelate always!
         confirm = _t("Unrelate %{unrelate_model} from %{unrelate_model_from}?",
-                    :unrelate_model => model.model_name.human,
-                    :unrelate_model_from => @resource.model_name.human)
+                     :unrelate_model => model.model_name.human,
+                     :unrelate_model_from => @resource.model_name.human)
       when 'show'
         # If we are showing content, we only can relate and unrelate if we are
         # the owners of the owner record.
@@ -126,8 +126,8 @@ module Admin
                       @item.owned_by?(current_user)
                     end
         confirm = _t("Unrelate %{unrelate_model} from %{unrelate_model_from}?",
-                    :unrelate_model => model.model_name.human,
-                    :unrelate_model_from => @resource.model_name.human)
+                     :unrelate_model => model.model_name.human,
+                     :unrelate_model_from => @resource.model_name.human)
       end
 
       message = %(<div class="sprite #{action}">#{_t(action.titleize)}</div>)
@@ -155,23 +155,23 @@ module Admin
         end
       end
 
-      return content_tag(:td, content)
+      content_tag(:td, content)
     end
 
     def table_has_and_belongs_to_many_field(attribute, item)
       content = item.send(attribute).map { |i| i.to_label }.join(", ")
-      return content_tag(:td, content)
+      content_tag(:td, content)
     end
 
     def table_string_field(attribute, item, link_options = {})
       raw_content = item.send(attribute)
       content = raw_content.blank? ? "&#151;".html_safe : raw_content
-      return content_tag(:td, truncate(content.to_s), :class => attribute)
+      content_tag(:td, truncate(content.to_s), :class => attribute)
     end
 
     def table_selector(attribute, item)
       raw_content = item.mapping(attribute)
-      return content_tag(:td, raw_content, :class => attribute)
+      content_tag(:td, raw_content, :class => attribute)
     end
 
     def table_file_field(attribute, item, link_options = {})
@@ -194,12 +194,12 @@ module Admin
                   link_to item.send(attribute), item.send(attribute).url
                 end
 
-      return content_tag(:td, content)
+      content_tag(:td, content)
     end
 
     def table_tree_field(attribute, item)
       content = item.parent ? item.parent.to_label : "&#151;".html_safe
-      return content_tag(:td, content)
+      content_tag(:td, content)
     end
 
     def table_position_field(attribute, item)
@@ -209,14 +209,17 @@ module Admin
         form_for(item, :url => url_opts) { |t| t.hidden_field :position }
       end
 
-      return content_tag(:td, content)
+      content_tag(:td, content)
     end
 
-    def table_datetime_field(attribute, item, link_options = {} )
-      date_format = item.class.typus_date_format(attribute)
-      content = !item.send(attribute).nil? ? item.send(attribute).to_s(date_format) : item.class.typus_options_for(:nil)
+    def table_datetime_field(attribute, item, link_options = {})
+      content = if item.send(attribute).nil?
+                  item.class.typus_options_for(:nil)
+                else
+                  I18n.localize(item.send(attribute), :format => item.class.typus_date_format(attribute))
+                end
 
-      return content_tag(:td, content)
+      content_tag(:td, content)
     end
 
     def table_boolean_field(attribute, item)
@@ -232,16 +235,16 @@ module Admin
                               :id => item.id,
                               :field => attribute.gsub(/\?$/,'') }
                   confirm = _t("Change %{attribute}?",
-                              :attribute => item.class.human_attribute_name(attribute).downcase)
+                               :attribute => item.class.human_attribute_name(attribute).downcase)
                   link_to message, options, :confirm => confirm
                 end
 
-      return content_tag(:td, content)
+      content_tag(:td, content)
     end
 
     def table_transversal(attribute, item)
       _attribute, virtual = attribute.split(".")
-      return content_tag(:td, item.send(_attribute).send(virtual))
+      content_tag(:td, item.send(_attribute).send(virtual))
     end
 
   end

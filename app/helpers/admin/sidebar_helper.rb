@@ -6,9 +6,9 @@ module Admin
       resources = ActiveSupport::OrderedHash.new
       app_name = @resource.typus_application
 
-      Typus.application(app_name).sort {|a,b| a.constantize.model_name.human <=> b.constantize.model_name.human}.each do |resource|
+      Typus.application(app_name).sort {|a,b| a.typus_constantize.model_name.human <=> b.typus_constantize.model_name.human}.each do |resource|
         next unless current_user.resources.include?(resource)
-        klass = resource.constantize
+        klass = resource.typus_constantize
 
         resources[resource] = default_actions(klass)
         resources[resource] += export(klass) if params[:action] == 'index'
@@ -21,15 +21,10 @@ module Admin
     end
 
     def default_actions(klass)
-      actions = []
-
-      if current_user.can?("create", klass)
-        actions << link_to_unless_current(_t("Add new"), :action => "new")
+      Array.new.tap do |tap|
+        tap << link_to_unless_current(_t("Add new"), :action => "new") if current_user.can?("create", klass)
+        tap << link_to_unless_current(_t("List"), :action => "index")
       end
-
-      actions << link_to_unless_current(_t("List"), :action => "index")
-
-      return actions
     end
 
     def export(klass)

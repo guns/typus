@@ -22,25 +22,14 @@ module Typus
       # system current_user will be signed out from Typus.
       #++
       def current_user
-
         @current_user ||= Typus.user_class.find(session[:typus_user_id])
 
-        unless Typus::Configuration.roles.has_key?(@current_user.role)
-          raise _t("Role does no longer exists.")
+        if !Typus::Configuration.roles.has_key?(@current_user.role) || !@current_user.status
+          session[:typus_user_id] = nil
+          redirect_to new_admin_session_path
         end
 
-        unless @current_user.status
-          back_to = (request.env['REQUEST_URI'] == admin_dashboard_path) ? nil : request.env['REQUEST_URI']
-          raise _t("Typus user has been disabled.")
-        end
-
-        I18n.locale = @current_user.preferences[:locale]
-
-        return @current_user
-
-      rescue Exception => error
-        session[:typus_user_id] = nil
-        redirect_to new_admin_session_path(:back_to => back_to), :notice => error.message
+        @current_user
       end
 
       #--
@@ -49,34 +38,28 @@ module Typus
       def check_if_user_can_perform_action_on_user
         return unless @item.kind_of?(Typus.user_class)
 
-        message = case params[:action]
-                  when 'edit'
-                    # Only admin and owner of Typus User can edit.
-                    if current_user.is_not_root? && (current_user != @item)
-                      _t("As you're not the admin or the owner of this record you cannot edit it.")
-                    end
-                  when 'update'
-                    # current_user cannot change her role.
-                    if current_user && !(@item.role == params[@object_name][:role])
-                      _t("You can't change your role.")
-                    end
-                  when 'toggle'
-                    # Only admin can toggle typus user status, but not herself.
-                    if current_user.is_root? && (current_user == @item)
-                      _t("You can't toggle your status.")
-                    elsif current_user.is_not_root?
-                      _t("You're not allowed to toggle status.")
-                    end
-                  when 'destroy'
-                    # Admin can remove anything except herself.
-                    if current_user.is_root? && (current_user == @item)
-                      _t("You can't remove yourself.")
-                    elsif current_user.is_not_root?
-                      _t("You're not allowed to remove Typus Users.")
-                    end
-                  end
-
-        redirect_to set_path, :notice => message if message
+        case params[:action]
+        when 'edit'
+          if current_user.is_not_root? && (current_user != @item)
+            raise "You don't have privileges to edit #{Typus.user_class}."
+          end
+        when 'update'
+          if current_user.is_not_root? && !(@item.role == params[@object_name][:role])
+            redirect_to set_path, :notice => _t("You can't change your role.")
+          end
+        when 'toggle'
+          if current_user.is_root? && (current_user == @item)
+            redirect_to set_path, :notice => _t("You can't toggle your status.")
+          elsif current_user.is_not_root?
+            raise "You don't have privileges to toogle #{Typus.user_class}#status."
+          end
+        when 'destroy'
+          if current_user.is_root? && (current_user == @item)
+            raise "You can't remove yourself."
+          elsif current_user.is_not_root?
+            raise "You don't have privileges to destroy #{Typus.user_class}."
+          end
+        end
       end
 
       #--
@@ -84,24 +67,15 @@ module Typus
       # It works on models, so its available on the `resources_controller`.
       #++
       def check_if_user_can_perform_action_on_resources
-
-        message = case params[:action]
-                  when 'index', 'show'
-                    "%{current_user_role} can't display items."
-                  when 'destroy'
-                    "%{current_user_role} can't delete this item."
-                  else
-                    "%{current_user_role} can't perform action. (%{action})"
-                  end
-
-        message = _t(message,
-                    :current_user_role => current_user.role.capitalize,
-                    :action => params[:action])
+        return if @item.kind_of?(Typus.user_class)
 
         unless current_user.can?(params[:action], @resource)
+          message = _t("%{current_user_role} is not able to perform this action. (%{action})",
+                       :current_user_role => current_user.role.capitalize,
+                       :action => params[:action])
+
           redirect_to set_path, :notice => message
         end
-
       end
 
       #--
@@ -110,8 +84,7 @@ module Typus
       #++
       def check_if_user_can_perform_action_on_resource
         controller = params[:controller].remove_prefix
-        action = params[:action]
-        unless current_user.can?(action, controller.camelize, { :special => true })
+        unless current_user.can?(params[:action], controller.camelize, { :special => true })
           render :text => "Not allowed!", :status => :unprocessable_entity
         end
       end
@@ -125,8 +98,6 @@ module Typus
       #                                                       :relate, :unrelate ]
       #++
       def check_resource_ownership
-
-        # By-pass if current_user is root.
         return if current_user.is_root?
 
         condition_typus_users = @item.respond_to?(Typus.relationship) && !@item.send(Typus.relationship).include?(current_user)
@@ -136,26 +107,24 @@ module Typus
            alert = _t("You don't have permission to access this item.")
            redirect_to set_path, :alert => alert
         end
-
       end
 
+      #--
+      # Show only related items it @resource has a foreign_key (Typus.user_fk)
+      # related to the logged user.
+      #++
       def check_resource_ownerships
-
-        # By-pass if current_user is root.
         return if current_user.is_root?
 
-        # Show only related items it @resource has a foreign_key (Typus.user_fk)
-        # related to the logged user.
         if @resource.typus_user_id?
           condition = { Typus.user_fk => current_user }
           @conditions = @resource.merge_conditions(@conditions, condition)
         end
-
       end
 
       def check_ownership_of_referal_item
         return unless params[:resource] && params[:resource_id]
-        klass = params[:resource].classify.constantize
+        klass = params[:resource].typus_constantize
         return if !klass.typus_user_id?
         item = klass.find(params[:resource_id])
         raise "You're not owner of this record." unless item.owned_by?(current_user) || current_user.is_root?

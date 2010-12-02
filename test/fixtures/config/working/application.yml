@@ -15,10 +15,17 @@ Comment:
     list: email, post, post_id, spam
     form: email, post
     csv: email, post_id
+    options:
+      booleans:
+        spam: ["Yes, its spam", "No, its not spam"]
   export: csv
   filters: post
   search: email, body
   application: Blog
+
+CustomUser:
+  fields:
+    list: first_name, last_name, email
 
 Page:
   fields:
@@ -45,7 +52,7 @@ Post:
       read_only: permalink
       auto_generated: created_at
       date_formats:
-        created_at: post_short
+        created_at: short
       templates:
         published_at: datepicker
   relationships: assets, categories, comments, views
@@ -64,10 +71,6 @@ Picture:
     list: title, created_at
   search: title
   application: Blog
-
-CustomUser:
-  fields:
-    list: first_name, last_name, email
 
 View:
   fields:

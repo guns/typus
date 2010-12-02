@@ -34,6 +34,10 @@ class StringTest < ActiveSupport::TestCase
       assert_equal Delayed::Task, "admin/delayed/tasks".extract_class
     end
 
+    should "work with inflections" do
+      assert_equal SucursalBancaria, "admin/sucursales_bancarias".extract_class
+    end
+
   end
 
 end

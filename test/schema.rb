@@ -2,6 +2,12 @@ ActiveRecord::Migration.verbose = false
 
 ActiveRecord::Schema.define do
 
+  create_table :articles, :force => true do |t|
+    t.string :title
+    t.text :body
+    t.timestamps
+  end
+
   create_table :assets, :force => true do |t|
     t.string :caption
     t.string :resource_type
@@ -34,7 +40,7 @@ ActiveRecord::Schema.define do
   create_table :pages, :force => true do |t|
     t.string :title
     t.text :body
-    t.string :status
+    t.boolean :status
     t.integer :parent_id
   end
 

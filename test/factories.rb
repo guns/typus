@@ -1,26 +1,25 @@
 Factory.define :asset do |f|
-  f.caption "Caption"
+  f.sequence(:caption) { |n| "Asset##{n}" }
 end
 
 Factory.define :category do |f|
-  f.name "Category"
+  f.sequence(:name) { |n| "Category##{n}" }
 end
 
 Factory.define :comment do |f|
   f.name "John"
-  f.email "john@example.com"
+  f.email "john+#{f}@example.com"
   f.body "Body of the comment"
   f.association :post
 end
 
 Factory.define :page do |f|
-  f.title "Title"
+  f.sequence(:title) { |n| "Title##{n}" }
   f.body "Content"
-  f.status "published"
 end
 
 Factory.define :picture do |f|
-  f.title "Some picture"
+  f.sequence(:title) { |n| "Picture##{n}" }
   f.picture_file_name "dog.jpg"
   f.picture_content_type "image/jpeg"
   f.picture_file_size "175938"
@@ -28,13 +27,13 @@ Factory.define :picture do |f|
 end
 
 Factory.define :post do |f|
-  f.title "Post"
+  f.sequence(:title) { |n| "Post##{n}" }
   f.body "Body"
   f.status "published"
 end
 
 Factory.define :typus_user do |f|
-  f.email "admin@example.com"
+  f.sequence(:email) { |n| "admin+#{n}@example.com" }
   f.role "admin"
   f.status true
   f.token "1A2B3C4D5E6F"

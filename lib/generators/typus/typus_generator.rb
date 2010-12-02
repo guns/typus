@@ -1,4 +1,5 @@
 require "rails/generators/migration"
+require "generators/typus/controller_generator"
 
 module Typus
 
@@ -40,10 +41,7 @@ Description:
 
       def generate_controllers
         Typus.application_models.each do |model|
-          klass = model.constantize
-          @resource = klass.name.pluralize
-          template "controller.rb", "app/controllers/admin/#{klass.to_resource}_controller.rb"
-          template "functional_test.rb", "test/functional/admin/#{klass.to_resource}_controller_test.rb"
+          Typus::Generators::ControllerGenerator.new([model.pluralize]).invoke_all
         end
       end
 

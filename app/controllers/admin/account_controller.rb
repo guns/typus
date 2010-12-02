@@ -5,6 +5,7 @@ class Admin::AccountController < Admin::BaseController
   skip_before_filter :reload_config_and_roles
   skip_before_filter :set_preferences
   skip_before_filter :authenticate
+  skip_before_filter :set_locale
 
   before_filter :sign_in?, :except => [:forgot_password, :show]
   before_filter :new?, :only => [:forgot_password]
@@ -25,13 +26,10 @@ class Admin::AccountController < Admin::BaseController
     if user = Typus.user_class.find_by_email(params[:typus_user][:email])
       url = admin_account_url(user.token)
       Admin::Mailer.reset_password_link(user, url).deliver
-      notice = _t("Password recovery link sent to your email.")
-      path = new_admin_session_path
+      redirect_to new_admin_session_path, :notice => _t("Password recovery link sent to your email.")
     else
-      render :action => :forgot_password and return
+      render :action => :forgot_password
     end
-
-    redirect_to path, :notice => notice
   end
 
   def show

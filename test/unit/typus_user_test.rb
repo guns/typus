@@ -24,21 +24,17 @@ class TypusUserTest < ActiveSupport::TestCase
 
   should ensure_length_of(:password).is_at_least(6).is_at_most(40)
 
-  # should validate_uniqueness_of :email
-
   should "verify columns" do
     attributes = %w(id first_name last_name email role status salt crypted_password token preferences created_at updated_at)
-    TypusUser.columns.collect { |u| u.name }.each { |c| assert attributes.include?(c) }
+    TypusUser.columns.map { |u| u.name }.each { |c| assert attributes.include?(c) }
   end
 
   should "verify generate requires the role" do
-    assert TypusUser.generate(:email => 'demo@example.com', :password => 'XXXXXXXX').valid?
-    assert TypusUser.generate(:email => 'demo@example.com', :password => 'XXXXXXXX', :role => 'admin').valid?
+    options = { :email => 'demo@example.com' }
+    assert TypusUser.generate(options).valid?
+    assert TypusUser.generate(options.merge(:password => 'XXXXXXXX')).valid?
+    assert TypusUser.generate(options.merge(:role => 'admin')).valid?
   end
-
-  ##############################################################################
-  #
-  ##############################################################################
 
   context "TypusUser" do
 
@@ -56,13 +52,13 @@ class TypusUserTest < ActiveSupport::TestCase
     end
 
     should "return last_name" do
-      @typus_user.last_name = "Lock"
-      assert_equal "Lock", @typus_user.name
+      @typus_user.last_name = "Locke"
+      assert_equal "Locke", @typus_user.name
     end
 
     should "return name when first_name and last_name are set" do
-      @typus_user.first_name, @typus_user.last_name = "John", "Lock"
-      assert_equal "John Lock", @typus_user.name
+      @typus_user.first_name, @typus_user.last_name = "John", "Locke"
+      assert_equal "John Locke", @typus_user.name
     end
 
     should "verify salt never changes" do
@@ -86,10 +82,6 @@ class TypusUserTest < ActiveSupport::TestCase
 
   end
 
-  ##############################################################################
-  #
-  ##############################################################################
-
   context "Admin Role" do
 
     setup do
@@ -112,10 +104,6 @@ class TypusUserTest < ActiveSupport::TestCase
     end
 
   end
-
-  ##############################################################################
-  #
-  ##############################################################################
 
   context "Editor Role" do
 

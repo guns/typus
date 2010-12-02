@@ -26,7 +26,7 @@ module Admin
 
       options = {}
       options[:resource_from] = @resource.model_name.human
-      options[:resource_to] = params[:resource].classify.constantize.model_name.human if params[:resource]
+      options[:resource_to] = params[:resource].typus_constantize.model_name.human if params[:resource]
 
       editing = %w( edit update ).include?(params[:action])
       message = case
