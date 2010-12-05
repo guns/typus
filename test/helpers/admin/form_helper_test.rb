@@ -10,7 +10,7 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
     params = { :controller => '/admin/post', :id => 1, :action => :create }
     self.stubs(:params).returns(params)
 
-    current_user = mock()
+    current_user = mock
     current_user.stubs(:can?).with('create', Post).returns(false)
     @resource = Comment
 
@@ -34,7 +34,7 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
     params = { :controller => '/admin/post', :id => 1, :action => :edit }
     self.stubs(:params).returns(params)
 
-    current_user = mock()
+    current_user = mock
     current_user.stubs(:can?).with('create', Comment).returns(true)
     @resource = Post
 

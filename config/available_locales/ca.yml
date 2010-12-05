@@ -102,7 +102,6 @@ ca:
   "View all %{attribute}":
   "View site": "Veure la web"
 
-  "%{attachment} can't be removed": "%{attachment} no es pot esborrar."
   "%{attachment} removed": "%{attachment} esborrat."
   "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} filtrats per %{filtered_by}"

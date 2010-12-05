@@ -1,6 +1,6 @@
 Asset:
   fields:
-    default: caption
+    default: caption, file, required_file
   application: Site
 
 Category:

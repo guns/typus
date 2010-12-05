@@ -102,7 +102,6 @@ de:
   "You can't remove yourself": "Sie k&ouml;nnen sich selbst nicht entfernen"
   "You can't toggle your status": "Sie k&ouml;nnen Ihren Status nicht umschalten"
 
-  "%{attachment} can't be removed":
   "%{attachment} removed":
   "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} gefiltert nach %{filtered_by}"

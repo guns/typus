@@ -105,7 +105,6 @@ fr:
   "You're updating a %{resource_from}": "Vous mettez-à-jour un(e) %{resource_from}."
   "You're updating a %{resource_from} for %{resource_to}": "Vous mettez-à-jour un(e) %{resource_from} pour un(e) %{resource_to}."
 
-  "%{attachment} can't be removed": "%{attachment} ne peut pas être supprimé"
   "%{attachment} removed": "%{attachment} supprimé"
   "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} successfully created": "%{model} correctement créé(e)."

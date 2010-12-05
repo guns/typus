@@ -7,7 +7,7 @@ class TypusTest < ActiveSupport::TestCase
   end
 
   should "verify default_config for admin_sub_title" do
-    assert Typus.admin_sub_title.kind_of?(String)
+    assert Typus.admin_sub_title.is_a?(String)
   end
 
   should "verify default_config for authentication" do
@@ -55,18 +55,18 @@ class TypusTest < ActiveSupport::TestCase
   end
 
   should "verify config_folder is a Pathname" do
-    assert Typus.config_folder.kind_of?(Pathname)
+    assert Typus.config_folder.is_a?(Pathname)
   end
 
   should "return root" do
     expected = "."
-    assert Typus.root.kind_of?(String)
+    assert Typus.root.is_a?(String)
     assert_equal expected, Typus.root
   end
 
   should "return applications sorted" do
     assert Typus.respond_to?(:applications)
-    assert Typus.applications.kind_of?(Array)
+    assert Typus.applications.is_a?(Array)
     assert_equal %w(Blog Site Typus), Typus.applications
   end
 
@@ -77,7 +77,7 @@ class TypusTest < ActiveSupport::TestCase
 
   should "return models and should be sorted" do
     assert Typus.respond_to?(:models)
-    assert Typus.models.kind_of?(Array)
+    assert Typus.models.is_a?(Array)
     assert_equal %w(Asset Category Comment CustomUser Page Picture Post TypusUser View), Typus.models
   end
 

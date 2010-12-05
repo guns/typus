@@ -102,7 +102,6 @@ es:
   "View all %{attribute}":
   "View site": "Ver web"
 
-  "%{attachment} can't be removed": "%{attachment} no puede ser borrado."
   "%{attachment} removed": "%{attachment} borrado."
   "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} filtrados por %{filtered_by}"

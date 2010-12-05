@@ -36,7 +36,7 @@ module Typus
       # Action is available on: edit, update, toggle and destroy
       #++
       def check_if_user_can_perform_action_on_user
-        return unless @item.kind_of?(Typus.user_class)
+        return unless @item.is_a?(Typus.user_class)
 
         case params[:action]
         when 'edit'
@@ -67,9 +67,7 @@ module Typus
       # It works on models, so its available on the `resources_controller`.
       #++
       def check_if_user_can_perform_action_on_resources
-        return if @item.kind_of?(Typus.user_class)
-
-        unless current_user.can?(params[:action], @resource)
+        if !@item.is_a?(Typus.user_class) && current_user.cannot?(params[:action], @resource)
           message = _t("%{current_user_role} is not able to perform this action. (%{action})",
                        :current_user_role => current_user.role.capitalize,
                        :action => params[:action])
@@ -114,9 +112,7 @@ module Typus
       # related to the logged user.
       #++
       def check_resource_ownerships
-        return if current_user.is_root?
-
-        if @resource.typus_user_id?
+        if current_user.is_not_root? && @resource.typus_user_id?
           condition = { Typus.user_fk => current_user }
           @conditions = @resource.merge_conditions(@conditions, condition)
         end

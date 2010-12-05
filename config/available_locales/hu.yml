@@ -102,7 +102,6 @@ hu:
   "You can't remove yourself": "Nem törölheted saját magad"
   "You can't toggle your status": "Nincs jogod változtatni a státuszodat"
 
-  "%{attachment} can't be removed": "%{attachment} nem törölhető"
   "%{attachment} removed": "%{attachment} törölve"
   "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} szűrve %{filtered_by}"

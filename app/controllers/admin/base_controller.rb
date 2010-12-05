@@ -10,6 +10,9 @@ class Admin::BaseController < ActionController::Base
 
   helper_method :current_user
 
+  def help
+  end
+
   protected
 
   def reload_config_and_roles

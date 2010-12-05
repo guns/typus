@@ -25,13 +25,15 @@ module Admin
     end
 
     def login_info
-      return if current_user.is_a?(FakeUser)
-      render "admin/helpers/login_info"
+      unless current_user.is_a?(FakeUser)
+        render "admin/helpers/login_info"
+      end
     end
 
     def display_flash_message(message = flash)
-      return if message.empty?
-      render "admin/helpers/flash_message", :flash_type => message.keys.first, :message => message
+      unless message.empty?
+        render "admin/helpers/flash_message", :flash_type => message.keys.first, :message => message
+      end
     end
 
   end

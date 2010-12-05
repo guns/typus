@@ -1,11 +1,7 @@
-# Ignore generated files ...
 .bundle
-*.gem
-*.log
-*.csv
-*.sqlite3
-rdoc/
-*~
-*#
-.rvmrc
+db/*.sqlite3
+log/*.log
+tmp/**/*
 
+test/fixtures/rails_app/public/system/*
+test/fixtures/rails_app/tmp/*

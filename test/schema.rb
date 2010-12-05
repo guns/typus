@@ -10,6 +10,8 @@ ActiveRecord::Schema.define do
 
   create_table :assets, :force => true do |t|
     t.string :caption
+    t.string :file_uid
+    t.string :required_file_uid
     t.string :resource_type
     t.integer :resource_id
     t.integer :position

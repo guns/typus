@@ -1,0 +1,21 @@
+<%
+
+  validators = @item.class.validators.delete_if { |i| i.class != ActiveModel::Validations::PresenceValidator }.map { |i| i.attributes.to_s }.flatten
+
+  if !validators.include?("#{attribute}_file_name") && @item.send(attribute).exists?
+    message = _t("Remove %{attribute}", :attribute => @item.class.human_attribute_name(attribute).downcase)
+    label_text << <<-HTML
+ <small>#{link_to message, { :action => 'detach',
+                             :id => @item.id,
+                             :attribute => attribute },
+                             :confirm => _t("Are you sure?")}</small>
+    HTML
+  end
+
+%>
+
+<li id="<%= attribute %>">
+  <%= form.label attribute, raw(label_text) %>
+  <%= form.file_field attribute, options %>
+  <%= typus_preview(@item, attribute) %>
+</li>

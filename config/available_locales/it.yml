@@ -114,7 +114,6 @@ it:
   "You can't toggle your status": "Non puoi modificare il tuo stato"
   "Your new password is %{password}": "La tua nuova password è %{password}"
 
-  "%{attachment} can't be removed": "%{attachment} non può essere eliminato"
   "%{attachment} removed": "%{attachment} eliminato"
   "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} filtrato per %{filtered_by}"

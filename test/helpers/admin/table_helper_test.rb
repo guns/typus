@@ -58,7 +58,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   should_eventually "test_table_header" do
 
-    current_user = mock()
+    current_user = mock
     current_user.expects(:can?).with("delete", TypusUser).returns(true)
 
     fields = TypusUser.typus_fields_for(:list)
@@ -79,7 +79,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   should_eventually "test_table_header_with_params" do
 
-    current_user = mock()
+    current_user = mock
     current_user.expects(:can?).with("delete", TypusUser).returns(true)
 
     fields = TypusUser.typus_fields_for(:list)
@@ -101,7 +101,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   should_eventually "test_table_header_when_user_cannot_delete_items" do
 
-    current_user = mock()
+    current_user = mock
     current_user.expects(:can?).with("delete", TypusUser).returns(false)
 
     fields = TypusUser.typus_fields_for(:list)
@@ -122,7 +122,7 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
   should_eventually "test_table_header_when_user_cannot_delete_items_with_params" do
 
-    current_user = mock()
+    current_user = mock
     current_user.expects(:can?).with("delete", TypusUser).returns(false)
 
     fields = TypusUser.typus_fields_for(:list)

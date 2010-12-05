@@ -2,6 +2,18 @@ module Admin
 
   module PreviewHelper
 
+    def typus_preview_for_dragonfly(item, attribute)
+      return unless item.send(attribute).present?
+
+      options = { :item => item, :attribute => attribute }
+
+      if item.send(attribute).mime_type =~ /^image\/.+/
+        render "admin/helpers/preview_for_dragonfly", options
+      else
+        link_to item.send(attribute).name, item.send(attribute).url
+      end
+    end
+
     def typus_preview(item, attribute)
       return unless item.send(attribute).exists?
 

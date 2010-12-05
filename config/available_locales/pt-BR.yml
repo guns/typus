@@ -102,7 +102,6 @@ pt-BR:
   "You can update your password at": "Você pode atualizar sua senha em"
   "You can't change your role": "Você não pode mudar sua própria função no sistema."
 
-  "%{attachment} can't be removed":
   "%{attachment} removed":
   "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}": "%{model} filtrados por %{filtered_by}"

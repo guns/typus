@@ -1,11 +1,13 @@
 <%
 
-  if !@item.class.validators.map { |i| i.class }.include?(ActiveModel::Validations::PresenceValidator) && @item.send(attribute).exists?
+  validators = @item.class.validators.delete_if { |i| i.class != ActiveModel::Validations::PresenceValidator }.map { |i| i.attributes.to_s }.flatten
+
+  if !validators.include?(attribute) && @item.send(attribute).present?
     message = _t("Remove %{attribute}", :attribute => @item.class.human_attribute_name(attribute).downcase)
     label_text << <<-HTML
  <small>#{link_to message, { :action => 'detach',
                              :id => @item.id,
-                             :attachment => attribute },
+                             :attribute => attribute },
                              :confirm => _t("Are you sure?")}</small>
     HTML
   end
@@ -15,5 +17,5 @@
 <li id="<%= attribute %>">
   <%= form.label attribute, raw(label_text) %>
   <%= form.file_field attribute, options %>
-  <%= typus_preview(@item, attribute) %>
+  <%= typus_preview_for_dragonfly(@item, attribute) %>
 </li>

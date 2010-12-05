@@ -23,7 +23,7 @@ class Admin::ResourcesController < Admin::BaseController
   before_filter :set_order,
                 :only => [ :index ]
   before_filter :set_fields,
-                :only => [ :index, :new, :edit, :create, :update, :show ]
+                :only => [ :index, :new, :edit, :create, :update, :show, :detach ]
 
   ##
   # This is the main index of the model. With filters, conditions and more.
@@ -94,6 +94,14 @@ class Admin::ResourcesController < Admin::BaseController
         format.html { select_template(:edit) }
         format.json { render :json => @item.errors.full_messages }
       end
+    end
+  end
+
+  def detach
+    if @item.update_attributes(params[:attribute] => nil)
+      redirect_on_success
+    else
+      select_template(:edit)
     end
   end
 
@@ -213,21 +221,6 @@ class Admin::ResourcesController < Admin::BaseController
     redirect_to set_path
   end
 
-  ##
-  # Remove file attachments.
-  #
-  def detach
-    message = if @item.update_attributes(params[:attachment] => nil)
-                "%{attachment} removed."
-              else
-                "%{attachment} can't be removed."
-              end
-
-    notice = _t(message, :attachment => @resource.human_attribute_name(params[:attachment]))
-
-    redirect_to set_path, :notice => notice
-  end
-
   private
 
   def get_model
@@ -271,7 +264,7 @@ class Admin::ResourcesController < Admin::BaseController
       path = { :action => action }
       path.merge!(:id => @item.id) unless action.eql?("index")
       notice = _t("%{model} successfully created.", :model => @resource.model_name.human)
-    when "update"
+    when "update", "detach"
       path = case action
              when "index"
                params[:back_to] ? "#{params[:back_to]}##{@resource.to_resource}" : { :action => action }

@@ -30,19 +30,13 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
 
       setup do
         current_user.stubs(:is_a?).with(FakeUser).returns(false)
-        @partial = "admin/helpers/login_info"
-        @default_message =  "Are you sure you want to sign out and end your session?"
       end
 
       context "when the user cannot edit his informations" do
 
         should "render a partial with the user name" do
           current_user.stubs(:can?).with('edit', 'TypusUser').returns(false)
-
-          output = login_info
-          options = {:user_details => "Admin", :message => @default_message}
-
-          assert_equal [@partial, options], output
+          assert_equal ["admin/helpers/login_info"], login_info
         end
 
       end
@@ -55,11 +49,7 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
           current_user.stubs(:can?).with('edit', 'TypusUser').returns(true)
           self.stubs(:link_to).with("Admin", link_options).returns(%(<a href="/admin/typus_users/edit/1">Admin</a>))
 
-          output = login_info
-          options = { :user_details => %(<a href="/admin/typus_users/edit/1">Admin</a>),
-                      :message => @default_message }
-
-          assert_equal [@partial, options], output
+          assert_equal ["admin/helpers/login_info"], login_info
         end
 
       end

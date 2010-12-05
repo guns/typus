@@ -53,6 +53,8 @@ GEM
     childprocess (0.1.4)
       ffi (~> 0.6.3)
     culerity (0.2.12)
+    dragonfly (0.8.1)
+      rack
     erubis (2.6.6)
       abstract (>= 1.0.0)
     factory_girl (1.3.2)
@@ -77,6 +79,8 @@ GEM
     pg (0.9.0)
     polyglot (0.3.1)
     rack (1.2.1)
+    rack-cache (0.5.3)
+      rack (>= 0.4)
     rack-mount (0.6.13)
       rack (>= 1.0.0)
     rack-test (0.5.6)
@@ -117,12 +121,14 @@ PLATFORMS
 DEPENDENCIES
   acts_as_list
   acts_as_tree
+  dragonfly (~> 0.8.1)
   factory_girl
   fastercsv (= 1.5.3)
   mocha
   mysql
   paperclip
   pg
+  rack-cache
   rails (~> 3.0)
   shoulda
   sqlite3-ruby

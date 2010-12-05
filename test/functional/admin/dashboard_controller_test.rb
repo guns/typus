@@ -94,14 +94,6 @@ class Admin::DashboardControllerTest < ActionController::TestCase
       assert_match link, @response.body
     end
 
-    should "verify resources have a link to new" do
-      %w( typus_users posts pages assets ).each { |r| assert_match "/admin/#{r}/new", @response.body }
-    end
-
-    should "verify tableless resources do have link to new" do
-      %w( statuses orders ).each { |r| assert_no_match /\/admin\/#{r}\n/, @response.body }
-    end
-
     should "verify we can set our own partials" do
       partials = %w( _sidebar.html.erb )
       partials.each { |p| assert_match p, @response.body }

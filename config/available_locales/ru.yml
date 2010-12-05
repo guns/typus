@@ -102,7 +102,6 @@ ru:
   "You're not allowed to remove Typus Users": "Вам не позволено удалять системных пользователей"
   "You're not allowed to toggle status": "Вам не позволено менять статус"
 
-  "%{attachment} can't be removed":
   "%{attachment} removed":
   "%{current_user_role} is not able to perform this action. (%{action})":
   "%{model} filtered by %{filtered_by}":
