@@ -125,7 +125,7 @@ module Admin
       if att_value = item.send(attribute)
         action = item.send(attribute).class.typus_options_for(:default_action_on_item)
         if current_user.can?(action, att_value.class.name)
-          url_opts  = :controller => "/admin/#{att_value.class.to_resource}", :action => 'update', :id => att_value.id
+          url_opts  = { :controller => "/admin/#{att_value.class.to_resource}", :action => 'update', :id => att_value.id }
           html_opts = { 'data-remote' => 'ajax-update' }
           content   = form_for item, :url => url_opts, :html => html_opts do |f|
             @table_options_for_select ||= {} # memoize because this is fairly expensive
@@ -159,10 +159,9 @@ module Admin
     end
 
     def table_position_field(attribute, item, connector = " / ")
-      url_opts = { :controller => item.class.to_resource, :action => "position", :id => item.id }
+      url_opts  = { :controller => item.class.to_resource, :action => "position", :id => item.id }
       html_opts = { :class => 'position', 'data-remote' => 'ajax-position' }
-
-      content = content_tag :div, html_opts do
+      content   = content_tag :div, html_opts do
         form_for(item, :url => url_opts) { |t| t.hidden_field :position }
       end
 
