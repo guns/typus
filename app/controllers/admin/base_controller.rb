@@ -28,9 +28,7 @@ class Admin::BaseController < ActionController::Base
   end
 
   def set_models_constantized
-    if Typus::Configuration.models_constantized.nil?
-      Typus::Configuration.models_constantized!
-    end
+    Typus::Configuration.models_constantized!
   end
 
 end

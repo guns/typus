@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Typus Core: <%= @item[:title] %></title>
+  <link rel="stylesheet" type="text/css" media="all" href="/stylesheets/screen.css" />
+  <meta name="robots" content="all" />
+  <meta name="generator" content="nanoc 3.1.4">
+</head>
+
+<body>
+
+<!-- START NAVIGATION -->
+
+  <div id="nav">
+    <div id="nav_inner"></div>
+  </div>
+
+  <div id="nav2">
+    <a name="top">&nbsp;</a>
+  </div>
+
+  <div id="masthead">
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+      <tr>
+        <td><h1>Typus Core User Guide</h1></td>
+        <td id="breadcrumb_right"><a href="http://typuscms.com/">TypusCMS</a></td>
+      </tr>
+    </table>
+  </div>
+
+<!-- END NAVIGATION -->
+
+<!-- START BREADCRUMB -->
+
+  <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+    <tr>
+      <td id="breadcrumb">
+        <a href="/">Overview</a> &nbsp;&#8250;&nbsp;
+        <% if @item[:parent_title] %>
+          <a href="<%= @item[:parent_link] %>"><%= @item[:parent_title] %></a> &nbsp;&#8250;&nbsp;
+        <% end %>
+        <%= @item[:title] %>
+      </td>
+      <td id="searchbox">
+        <form method="get" action="http://www.google.com/search">
+          <input type="hidden" name="as_sitesearch" id="as_sitesearch" value="core.typuscms.com/" />
+          Search Project User Guide&nbsp;
+          <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;
+          <input type="submit" class="submit" name="sa" value="Go" />
+        </form>
+      </td>
+    </tr>
+  </table>
+
+<!-- END BREADCRUMB -->
+
+  <br clear="all" />
+
+<!-- START CONTENT -->
+
+  <div id="content">
+    <%= yield %>
+  </div>
+
+<!-- END CONTENT -->
+
+  <div id="footer">
+    <p>
+    <% if @item[:previous_link] %>
+      Previous Topic:&nbsp;&nbsp;<a href="<%= @item[:previous_link] %>"><%= @item[:previous_title] %></a>
+      &nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+    <% end %>
+    <a href="#top">Top of Page</a>
+    &nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+    <a href="/">User Guide Home</a>
+    <% if @item[:next_link] %>
+      &nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+      Next Topic:&nbsp;&nbsp;<a href="<%= @item[:next_link] %>"><%= @item[:next_title] %></a>
+    <% end %>
+    </p>
+    <p>
+    <a href="/">Typus</a> &nbsp;&middot;&nbsp; 
+    Copyright &#169; 2007-<%= Time.now.strftime("%Y") %> &nbsp;&middot;&nbsp; 
+    Developed by <a href="http://francescesplugas.com/">Francesc Esplugas</a> &nbsp;&middot;&nbsp; 
+    Built with <a href="http://nanoc.stoneship.org/">nanoc</a>
+    </p>
+  </div>
+
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-381030-10']);
+    _gaq.push(['_setDomainName', '.typuscms.com']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

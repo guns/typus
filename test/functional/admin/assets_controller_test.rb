@@ -11,8 +11,7 @@ class Admin::AssetsControllerTest < ActionController::TestCase
     get :new, { :back_to => "/admin/posts/#{@post.id}/edit",
                 :resource => @post.class.name, :resource_id => @post.id }
 
-    assert_select 'body div#flash', "You're adding a new Asset to Post. Do you want to cancel it?"
-    assert_select 'body div#flash a', "Do you want to cancel it?"
+    assert_select 'body div#flash', "Cancel adding a new Asset?"
   end
 
   should "create a polymorphic relationship" do
@@ -49,7 +48,7 @@ class Admin::AssetsControllerTest < ActionController::TestCase
 
       get :detach, { :id => @asset.id, :attribute => "file" }
       assert_response :redirect
-      assert_redirected_to @request.env['HTTP_REFERER']
+      assert_redirected_to "/admin/assets"
       assert_equal "Asset successfully updated.", flash[:notice]
 
       @asset.reload
@@ -74,8 +73,7 @@ class Admin::AssetsControllerTest < ActionController::TestCase
                    :back_to => "/admin/posts/#{@post.id}/edit",
                    :resource => @post.class.name, :resource_id => @post.id }
 
-      assert_select 'body div#flash', "You're updating a Asset for Post. Do you want to cancel it?"
-      assert_select 'body div#flash a', "Do you want to cancel it?"
+      assert_select 'body div#flash', "Cancel adding a new Asset?"
     end
 
   end
@@ -90,7 +88,7 @@ class Admin::AssetsControllerTest < ActionController::TestCase
                     :resource_id => @post.id }
 
     assert_response :redirect
-    assert_redirected_to :action => "edit", :id => asset.id, :back_to => back_to
+    assert_redirected_to "/admin/assets"
     assert_equal "Asset successfully updated.", flash[:notice]
   end
 

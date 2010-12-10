@@ -4,38 +4,26 @@
 
 fr:
 
-  "A valid token is required": "Un token valide est nécessaire"
   "Actions": "Actions"
   "Active": "Actif"
   "Add": "Ajouter"
-  "Add %{resource}": "Ajouter %{resource}"
   "Add new": "Ajouter nouveau"
   "Are you sure?": "Êtes-vous sûre ?"
-  "Are you sure you want to leave this page?": "Êtes-vous sûre de vouloir quitter cette page ?"
   "Are you sure you want to sign out and end your session?": "Etes-vous sûre de vouloir vous déconnecter et mettre fin à votre session ?"
-  "As you're not the admin or the owner of this record you cannot edit it": "Vous n'êtes pas le propriétaire de cette entrée, ou un administrateur, par conséquent vous ne pouvez pas la modifier"
 
-  "Change password": "Modifier le mot de passe"
   "Change %{attribute}?": "Changer %{attribute} ?"
-  "Checked if active": "Coché si actif"
-  "Click OK to continue, or click Cancel to stay on this page": "Cliquez sur Ok pour continuer, ou Annuler pour rester sur cette page."
   "Create %{resource}": "Créer %{resource}"
 
   "Dashboard": "Tableau de bord"
-  "Do you want to cancel it?": "Voulez-vous annuler ?"
   "Down": "Descendre"
 
   "Edit": "Éditer"
   "Edit %{resource}": "Éditer %{resource}"
   "Enter your email below to create the first user": "Entrez votre adresse email pour créer le premier utilisateur"
-  "Error! Typus User or role doesn't exist": "Une erreur est survenue. L'utilisateur ou le rôle sont inconnus."
-  "Export as %{format}": "Exporter en %{format}"
+  "Export as %{mime}": "Exporter en %{mime}"
 
   "False": "Faux"
   "Filter": "Filtrer"
-  "Filter by %{attribute}": "Filtrer par %{attribute}"
-
-  "Go to": "Aller"
 
   "I remember my password": "Je me souviens du mot de passe"
   "If you didn't request a password update, you can ignore this message": "Si vous n'avez pas demandé à mettre à jour votre mot de passe, vous pouvez ignorer ce message"
@@ -52,9 +40,7 @@ fr:
   "New": "Nouveau"
   "New %{resource}": "Nouveau %{resource}"
   "Next": "Suivant"
-  "No %{resources} found":
-
-  "Options": "Options"
+  "No %{resources} found": "Aucun(e) %{resources} trouvé(e)"
 
   "Password recovery link sent to your email": "Le lien pour retrouver votre mot de passe vous a été envoyé par email"
   "Previous": "Précédent"
@@ -71,24 +57,20 @@ fr:
 
   "Save %{resource}": "Sauvegarder %{resource}"
   "Search": "Recherche"
-  "Search by": "Rechercher par"
-  "Send us feedback": "Nous envoyer votre avis"
-  "Setup": "Configurer"
   "Show": "Voir"
+  "Show all dates":
+  "Show by %{attribute}":
   "Show %{resource}": "Voir %{resource}"
   "Show by %{attribute}": "Afficher par %{attribute}"
   "Sign in": "Entrer"
   "Sign out": "Déconnexion"
   "Sign up": "Ouvrir un compte"
-  "Submit a bug report": "Soumettre un bug"
   "System Users Administration": "Modifier les utilisateurs de l'admin"
 
-  "That doesn't seem like a valid email address": "L'adresse email ne semble pas valide"
   "Today": "Ajourd'hui"
-  "Toggle is disabled": "Le basculement est désactivé"
   "True": "Vrai"
 
-  "Unrelate %{unrelate_model} from %{unrelate_model_from}?": "Dissocier %{unrelate_model} de %{unrelate_model_from} ?"
+  "Unrelate %{resource}?": "Dissocier %{resource}?"
   "Up": "Monter"
 
   "View all %{attribute}": "Voir tou(s/tes) %{attribute}"
@@ -96,23 +78,10 @@ fr:
 
   "You can update your password at": "Vous pouvez modifier votre mot de passe ici"
   "You can't change your role": "Vous ne pouvez pas changer votre propre rôle."
-  "You can't remove yourself": "Vous ne pouvez pas supprimer votre propre compte"
   "You can't toggle your status": "Vous ne pouvez pas basculer votre statut"
-  "You're adding a new %{resource_from}": "Vous ajoutez un nouveau %{resource_from}."
-  "You're adding a new %{resource_from} to %{resource_to}": "Vous ajoutez un(e) %{resource_from} à un(e) %{resource_to}."
-  "You're not allowed to remove Typus Users": "Vous n'avez pas le droit de supprimer des utilisateurs de l'administration"
-  "You're not allowed to toggle status": "Vous n'êtes pas autorisé à basculer votre statut"
-  "You're updating a %{resource_from}": "Vous mettez-à-jour un(e) %{resource_from}."
-  "You're updating a %{resource_from} for %{resource_to}": "Vous mettez-à-jour un(e) %{resource_from} pour un(e) %{resource_to}."
 
-  "%{attachment} removed": "%{attachment} supprimé"
   "%{current_user_role} is not able to perform this action. (%{action})":
+  "%{errors} prohibited this page from being saved:":
   "%{model} successfully created": "%{model} correctement créé(e)."
   "%{model} successfully removed": "%{model} correctement supprimé(e)."
   "%{model} successfully updated": "%{model} correctement mis(e)-à-jour."
-  "%{model} %{attribute} changed": "%{model} %{attribute} modifié."
-  "%{model_a} cannot be related to %{model_b}": "%{model_a} ne peut pas être lié à %{model_b}"
-  "%{model_a} cannot be unrelated from %{model_b}": "%{model_a} ne peut pas être disjoint de %{model_b}"  
-  "%{model_a} related to %{model_b}": "%{model_a} associé à %{model_b}."
-  "%{model_a} successfully assigned to %{model_b}": "%{model_a} associé à %{model_b}."
-  "%{model_a} unrelated from %{model_b}": "%{model_a} dissocié de %{model_b}."

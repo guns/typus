@@ -3,37 +3,25 @@
 
 es:
 
-  "A valid token is required": "Se requiere un token válido."
   "Actions": "Acciones"
   "Active": "Activo"
   "Add": "Añadir"
-  "Add %{resource}": "Añadir %{resource}"
   "Add new": "Añadir nuevo"
   "Are you sure?": "¿Estás seguro?"
-  "Are you sure you want to leave this page?": "¿Estás seguro que quieres abandonar esta página?"
   "Are you sure you want to sign out and end your session?": "¿Estás seguro que quieres salir y cerrar la sessión?"
-  "As you're not the admin or the owner of this record you cannot edit it": "Como no eres el admin o el propietario de este registro no puedes editarlo."
 
-  "Change password": "Cambiar contraseña"
   "Change %{attribute}?": "Cambiar %{attribute}?"
-  "Checked if active": "Marca para activar"
-  "Click OK to continue, or click Cancel to stay on this page": "Pulse OK para continuar, o pulse Cancelar para permanecer en esta página."
   "Create %{resource}": "Crear %{resource}"
 
   "Dashboard": "Panel de control"
-  "Do you want to cancel it?": "¿Quieres cancelarlo?"
   "Down": "Bajar"
 
   "Edit": "Editar"
   "Edit %{resource}": "Editar %{resource}"
   "Enter your email below to create the first user": "Introduce tu email para crear el primer usuario."
-  "Error! Typus User or role doesn't exist": "Error! Typus User o el role no existen."
 
   "False": "Falso"
   "Filter": "Filtrar"
-  "Filter by %{attribute}": "Filtrar por %{attribute}"
-
-  "Go to": "Ir a"
 
   "I remember my password": "Recuerdo mi contraseña"
   "If you didn't request a password update, you can ignore this message": "Si no pediste una actualización de tu contraseña, puedes ignorar este mensaje."
@@ -52,8 +40,6 @@ es:
   "Next": "Siguiente"
   "No %{resources} found": "No se han encontrado %{resources}."
 
-  "Options": "Opciones"
-
   "Password recovery link sent to your email": "Enlace de recuperación de contraseña enviado a tu correo electrónico."
   "Previous": "Anterior"
 
@@ -69,48 +55,30 @@ es:
 
   "Save %{resource}": "Guardar %{resource}"
   "Search": "Búsqueda"
-  "Search by": "Buscar por"
-  "Setup": "Configurar"
-  "Send us feedback": "Envianos tu comentarios"
   "Show": "Mostrar"
+  "Show all dates":
+  "Show by %{attribute}":
   "Show %{resource}": "Mostrar %{resource}"
   "Sign in": "Entrar"
   "Sign out": "Salir"
   "Sign up": "Crear cuenta"
-  "Submit a bug report": "Reporta un error"
   "System Users Administration": "Administrar usuarios del sistema"
 
-  "That doesn't seem like a valid email address": "Eso no parecia una dirección válida de correo electrónico."
   "Today": "Hoy"
-  "Toggle is disabled": "Alternat està desactivado."
   "True": "Verdadero"
 
-  "Unrelate %{unrelate_model} from %{unrelate_model_from}?": "Desvincular %{unrelate_model} de %{unrelate_model_from}?"
+  "Unrelate %{resource}?": "Desvincular %{resource}?"
   "Up": "Subir"
 
-  "You're adding a new %{resource_from}": "Estás añadiendo un nuevo %{resource_from}."
-  "You're adding a new %{resource_from} to %{resource_to}": "Estás añadiendo un nuevo %{resource_from} a %{resource_to}."
-  "You're not allowed to remove Typus Users": "No se te permite borrar usuarios de typus."
-  "You're not allowed to toggle status": "No se te permite cambiar tu estado."
   "You can update your password at": "Puedes actualizar tu contraseña en"
   "You can't change your role": "No puedes cambiar tu propio rol."
-  "You can't remove yourself": "No te puedes eliminar a ti mismo."
   "You can't toggle your status": "No puedes cambiar tu estado."
-  "You're updating a %{resource_from}": "Estás actualizando un %{resource_from}."
-  "You're updating a %{resource_from} for %{resource_to}": "Estás actualizando un %{resource_from} de %{resource_to}."
 
   "View all %{attribute}":
   "View site": "Ver web"
 
-  "%{attachment} removed": "%{attachment} borrado."
   "%{current_user_role} is not able to perform this action. (%{action})":
-  "%{model} filtered by %{filtered_by}": "%{model} filtrados por %{filtered_by}"
+  "%{errors} prohibited this page from being saved:":
   "%{model} successfully created": "%{model} satisfactoriamente creado."
-  "%{model} successfully updated": "%{model} satisfactoriamente actualizado."
   "%{model} successfully removed": "%{model} satisfactoriamente eliminado."
-  "%{model_a} cannot be related to %{model_b}":
-  "%{model_a} cannot be unrelated from %{model_b}":
-  "%{model} %{attribute} changed": "%{model} %{attribute} cambiado."
-  "%{model_a} related to %{model_b}": "%{model_a} relacionado con %{model_b}."
-  "%{model_a} successfully assigned to %{model_b}": "%{model_a} asignado satisfactoriamente a %{model_b}."
-  "%{model_a} unrelated from %{model_b}": "%{model_a} no esta relacionado con %{model_b}."
+  "%{model} successfully updated": "%{model} satisfactoriamente actualizado."

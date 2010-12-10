@@ -27,7 +27,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
       get :toggle, { :id => @typus_user_editor.id, :field => 'status' }
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Typus user status changed.", flash[:notice]
+      assert_equal "Typus user successfully updated.", flash[:notice]
     end
 
     should "not be able to destroy himself" do
@@ -49,7 +49,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
     should "be able to update other users role" do
       post :update, { :id => @typus_user_editor.id, :typus_user => { :role => 'admin' } }
       assert_response :redirect
-      assert_redirected_to "/admin/typus_users/edit/#{@typus_user_editor.id}"
+      assert_redirected_to "/admin/typus_users"
       assert_equal "Typus user successfully updated.", flash[:notice]
     end
 
@@ -78,7 +78,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
     should "be able to update his profile" do
       post :update, { :id => @editor.id, :typus_user => { :role => 'editor' } }
       assert_response :redirect
-      assert_redirected_to "/admin/typus_users/edit/#{@editor.id}"
+      assert_redirected_to "/admin/typus_users"
       assert_equal "Typus user successfully updated.", flash[:notice]
     end
 
@@ -140,7 +140,6 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
     setup do
       @designer = Factory(:typus_user, :email => "designer@example.com", :role => "designer")
       @request.session[:typus_user_id] = @designer.id
-      @request.env['HTTP_REFERER'] = "/admin/typus_users/edit/#{@designer.id}"
     end
 
     should "be able to edit his profile" do
@@ -151,7 +150,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
     should "be able to update his profile" do
       post :update, { :id => @designer.id, :typus_user => { :role => 'designer', :email => 'designer@withafancydomain.com' } }
       assert_response :redirect
-      assert_redirected_to @request.env['HTTP_REFERER']
+      assert_redirected_to "/admin/typus_users"
       assert_equal "Typus user successfully updated.", flash[:notice]
       assert_equal "designer@withafancydomain.com", @designer.reload.email
     end

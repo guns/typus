@@ -239,19 +239,19 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
     output = table_position_field(nil, first_category)
     expected = <<-HTML
-<td><a href="/admin/categories/position/1?go=move_lower">Down</a> / <span class="inactive">Up</span></td>
+<a href="/admin/categories/position/1?go=move_lower">Down</a> / <span class="inactive">Up</span>
     HTML
     assert_equal expected.strip, output
 
     output = table_position_field(nil, second_category)
     expected = <<-HTML
-<td><a href="/admin/categories/position/2?go=move_lower">Down</a> / <a href="/admin/categories/position/2?go=move_higher">Up</a></td>
+<a href="/admin/categories/position/2?go=move_lower">Down</a> / <a href="/admin/categories/position/2?go=move_higher">Up</a>
     HTML
     assert_equal expected.strip, output
 
     output = table_position_field(nil, last_category)
     expected = <<-HTML
-<td><span class="inactive">Down</span> / <a href="/admin/categories/position/3?go=move_higher">Up</a></td>
+<span class="inactive">Down</span> / <a href="/admin/categories/position/3?go=move_higher">Up</a>
     HTML
     assert_equal expected.strip, output
   end

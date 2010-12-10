@@ -1,0 +1,31 @@
+---
+title: Configuration Files
+
+parent_title: Recipes
+parent_link: /recipes/
+
+previous_title: Namespaced Models
+previous_link: /recipes/namespaced-models/
+
+next_title: Testing the Plugin
+next_link: /recipes/testing-the-plugin/
+---
+
+= Configuration Files
+
+You can split your configuration files in several files so it can be easier to 
+mantain.
+
+{{{
+config/typus/001-application.yml
+config/typus/001-application_roles.yml
+config/typus/002-newsletter.yml
+config/typus/002-newsletter_roles.yml
+config/typus/003-blog.yml
+config/typus/003-blog_roles.yml
+}}}
+
+<div class="important">
+**Note:** Remember files are loaded alphabetically and last loaded files
+overwrite previous settings.
+</div>

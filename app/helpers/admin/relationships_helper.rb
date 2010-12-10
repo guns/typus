@@ -7,13 +7,12 @@ module Admin
       @model_to_relate = @resource.reflect_on_association(field.to_sym).class_name.typus_constantize
       @model_to_relate_as_resource = @model_to_relate.to_resource
       @reflection = @resource.reflect_on_association(field.to_sym)
-      @association = @reflection.macro
     end
 
     def typus_form_has_many(field)
       setup_relationship(field)
 
-      @items_to_relate = @model_to_relate.all - @item.send(field)
+      @items_to_relate = @model_to_relate.where(@reflection.primary_key_name => nil) - @item.send(field)
 
       if set_condition && @items_to_relate.any?
         form = build_relate_form
@@ -31,7 +30,7 @@ module Admin
              :model_to_relate => @model_to_relate,
              :model_to_relate_as_resource => @model_to_relate_as_resource,
              :foreign_key => foreign_key,
-             :add_new => raw(build_add_new(options)),
+             :add_new => build_add_new(options),
              :form => form,
              :table => build_relationship_table
     end
@@ -45,14 +44,14 @@ module Admin
         form = build_relate_form
       end
 
-      options = {}
+      options = { :resource => @resource.to_resource }
 
       build_pagination
 
       render "admin/templates/has_n",
              :model_to_relate => @model_to_relate,
              :model_to_relate_as_resource => @model_to_relate_as_resource,
-             :add_new => raw(build_add_new(options)),
+             :add_new => build_add_new(options),
              :form => form,
              :table => build_relationship_table
     end
@@ -76,12 +75,12 @@ module Admin
                  @items,
                  @model_to_relate_as_resource,
                  {},
-                 @association)
+                 @reflection.macro)
     end
 
     def build_add_new(options = {})
       default_options = { :controller => "/admin/#{@field}", :action => "new",
-                          :resource => @resource.name, :resource_id => @item.id,
+                          :resource => @resource.to_resource.singularize, :resource_id => @item.id,
                           :back_to => @back_to }
 
       if set_condition && current_user.can?("create", @model_to_relate)
@@ -158,15 +157,18 @@ module Admin
       related = @resource.reflect_on_association(attribute.to_sym).class_name.typus_constantize
       related_fk = @resource.reflect_on_association(attribute.to_sym).primary_key_name
 
-      confirm = [ _t("Are you sure you want to leave this page?"),
-                  _t("If you have made any changes to the fields without clicking the Create/Save entry button, your changes will be lost."),
-                  _t("Click OK to continue, or click Cancel to stay on this page.") ]
+      if params[:action] == 'edit'
+        options = { :resource => @resource.to_resource,
+                    :resource_id => @item.id }
+      else
+        options = { :resource => @resource.to_resource }
+      end
 
-      message = link_to _t("Add"), { :controller => "/admin/#{related.to_resource}",
-                                    :action => 'new',
-                                    :back_to => back_to,
-                                    :selected => related_fk },
-                                    :confirm => confirm.join("\n\n") if current_user.can?('create', related)
+      default = { :controller => "/admin/#{related.to_resource}", :action => 'new', :back_to => back_to }
+
+      if current_user.can?('create', related)
+        message = link_to _t("Add"), default.merge(options)
+      end
 
       render "admin/templates/belongs_to",
              :resource => @resource,

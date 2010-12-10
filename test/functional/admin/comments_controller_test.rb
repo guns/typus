@@ -14,7 +14,7 @@ class Admin::CommentsControllerTest < ActionController::TestCase
 
     assert_response :redirect
     assert_redirected_to @request.env["HTTP_REFERER"]
-    assert_equal "Comment spam changed.", flash[:notice]
+    assert_equal "Comment successfully updated.", flash[:notice]
     assert @comment.reload.spam
   end
 

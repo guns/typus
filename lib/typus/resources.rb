@@ -13,7 +13,7 @@ module Typus
     end
 
     mattr_accessor :action_after_save
-    @@action_after_save = "edit"
+    @@action_after_save = "index"
 
     mattr_accessor :default_action_on_item
     @@default_action_on_item = "edit"

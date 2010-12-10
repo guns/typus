@@ -35,7 +35,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
       assert_difference('Post.count') do
         post :create, { :post => { :title => 'This is another title', :body => 'Body' } }
         assert_response :redirect
-        assert_redirected_to :controller => '/admin/posts', :action => 'edit', :id => Post.last
+        assert_redirected_to "/admin/posts"
       end
     end
 
@@ -54,7 +54,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
     should "update" do
       post :update, { :id => @post.id, :title => 'Updated' }
       assert_response :redirect
-      assert_redirected_to :controller => '/admin/posts', :action => 'edit', :id => @post.id
+      assert_redirected_to "/admin/posts"
     end
 
   end
@@ -363,7 +363,7 @@ title;status
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Comment related to Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
 
       assert_difference('post_.comments.count', -1) do
         post :unrelate, { :id => post_.id,
@@ -372,7 +372,7 @@ title;status
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Comment unrelated from Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
 
     end
 
@@ -395,7 +395,7 @@ title;status
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Category related to Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
 
       ##
       # Second Step: Unrelate
@@ -407,7 +407,7 @@ title;status
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Category unrelated from Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
     end
 
     ##
@@ -426,7 +426,7 @@ title;status
       end
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Asset unrelated from Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
     end
 
   end
@@ -451,11 +451,6 @@ title;status
         assert_select "#sidebar ul" do
           assert_select "li", "Add new"
         end
-      end
-
-      should "render_index_and_show_trash_item_image" do
-        assert_response :success
-        assert_select '.trash', 'Trash'
       end
 
     end
@@ -529,12 +524,6 @@ title;status
         get :index
         assert_response :success
         assert_no_match /Add Post/, @response.body
-      end
-
-      should "render_index_and_not_show_trash_image" do
-        get :index
-        assert_response :success
-        assert_select ".trash", false
       end
 
     end

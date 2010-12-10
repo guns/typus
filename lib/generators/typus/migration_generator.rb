@@ -10,8 +10,8 @@ module Typus
 
       source_root File.expand_path("../../templates", __FILE__)
 
-      class_option :user_class_name, :default => "AdminUser"
-      class_option :user_fk, :default => "admin_user_id"
+      class_option :user_class_name, :default => "AdminUser", :aliases => "-u"
+      class_option :user_fk, :default => "admin_user_id", :aliases => "-fk"
 
       desc <<-DESC
 Description:

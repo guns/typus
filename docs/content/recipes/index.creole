@@ -1,0 +1,20 @@
+---
+title: Recipes
+---
+
+= Recipes
+
+Here's a list of recipes suggested by some of developers and topics which have 
+been responded on the [[http://groups.google.com/group/typus|mailing list]].
+
+* [[/recipes/rich-text-editor/|Adding a Rich Text Editor]]
+* [[/recipes/custom-actions/|Custom Actions]]
+* [[/recipes/single-table-inheritance/|Single Table Inheritance]]
+* [[/recipes/namespaced-models/|Namespaced Models]]
+* [[/recipes/configuration-files/|Managing Configuration Files]]
+* [[/recipes/testing-the-plugin/|Testing the Plugin]]
+
+== Recipes Published Elsewhere
+
+* [[http://www.joshcrews.com/2010/03/using-heroku-to-host-your-rails-cms/|Using Heroku to host your Rails CMS]]
+* [[http://ruby-toolbox.com/categories/rails_admin_interfaces.html|Rails Admin Interfaces in the Ruby Toolbox]]

@@ -159,7 +159,7 @@ a:hover { color: #333; text-decoration: underline; }
 #sidebar ul li { padding: 0.25em 1em; }
 
 #sidebar a { text-decoration: none; }
-#sidebar a:hover { text-decoration: underline; }
+#sidebar li a:hover { text-decoration: underline; }
 
 /* @end */
 
@@ -332,15 +332,6 @@ fieldset.buttons { }
 
 .clear { clear: both; }
 .box_relationships { margin-top: 2.5em; }
-
-/* @end */
-
-/* @group Sprite */
-
-.sprite { background: url(../images/ui-icons.png) no-repeat; text-indent: -10000px; }
-.trash { background-position: -177px -97px; height: 15px; width: 15px; }
-.unrelate { background-position: -145px -129px; height: 15px; width: 15px; }
-.position { background-position: 0 -81px; height: 15px; width: 15px; cursor: move; }
 
 /* @end */
 

@@ -98,13 +98,13 @@ class ActiveRecordTest < ActiveSupport::TestCase
     end
 
     should "return form fields for Picture" do
-      expected_fields = [["title", :string], ["picture", :paperclip]]
+      expected_fields = [["title", :string], ["picture", :file]]
       assert_equal expected_fields.map { |i| i.first }, Picture.typus_fields_for(:form).keys
       assert_equal expected_fields.map { |i| i.last }, Picture.typus_fields_for(:form).values
     end
 
     should "return form fields for Asset" do
-      expected_fields = [["caption", :string], ["file", :dragonfly], ["required_file", :dragonfly]]
+      expected_fields = [["caption", :string], ["file", :file], ["required_file", :file]]
       assert_equal expected_fields.map { |i| i.first }, Asset.typus_fields_for(:form).keys
       assert_equal expected_fields.map { |i| i.last }, Asset.typus_fields_for(:form).values
     end

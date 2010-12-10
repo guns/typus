@@ -118,14 +118,6 @@ module Typus
         end
       end
 
-      def check_ownership_of_referal_item
-        return unless params[:resource] && params[:resource_id]
-        klass = params[:resource].typus_constantize
-        return if !klass.typus_user_id?
-        item = klass.find(params[:resource_id])
-        raise "You're not owner of this record." unless item.owned_by?(current_user) || current_user.is_root?
-      end
-
       def set_attributes_on_create
         if @resource.typus_user_id?
           @item.attributes = { Typus.user_fk => current_user.id }

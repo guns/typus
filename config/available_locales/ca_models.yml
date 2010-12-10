@@ -1,12 +1,12 @@
-# Catalan translations for Typus
-# by Lleïr Borràs <http://github.com/lleirborras>
+# Catalan (ca) translations for Typus by:
+# - Lleïr Borràs <http://github.com/lleirborras>
 
 ca:
   activerecord:
     models:
-      typus_user: Usuari
+      admin_user: Usuari
     attributes:
-      typus_user:
+      admin_user:
         email: "Correu electrònic"
         first_name: "Nom"
         last_name: "Cognoms"
