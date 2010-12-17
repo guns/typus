@@ -133,7 +133,7 @@ class Admin::ResourcesController < Admin::BaseController
       @item.send(params[:go])
     end
 
-    notice = _t("Record moved %{to}.", :to => params[:go].gsub(/move_/, '').humanize.downcase)
+    notice = _t("Record moved to position %{to}.", :to => params[:go].gsub(/move_/, '').humanize.downcase)
 
     respond_to do |format|
       format.html { redirect_to set_path, :notice => notice }
