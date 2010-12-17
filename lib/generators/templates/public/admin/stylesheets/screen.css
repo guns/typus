@@ -194,7 +194,7 @@ fieldset.inputs { }
   }
 
   fieldset.inputs input[type='text']:focus,
-  fieldset.inputs input[type='password']:focus, {
+  fieldset.inputs input[type='password']:focus {
     background: #FFFCE1;
   }
 
