@@ -200,7 +200,26 @@ module Admin
 
     def table_transversal(attribute, item)
       _attribute, virtual = attribute.split(".")
-      item.send(_attribute).send(virtual)
+      obj = item.send(_attribute).send(virtual)
+
+      # FIXME: ensure attachment instance belongs to item
+      # if we have an attachment at the end of the method call, link to the
+      # current item's edit page, anchoring at the has_many table
+      if get_type_of_attachment(obj) == :paperclip
+        anchor = case obj.content_type
+        when %r:\Aimage/: then image_tag obj.url(Typus.file_thumbnail)
+        when nil          then nil
+        else obj
+        end
+
+        if anchor
+          link_to anchor, "/admin/#{item.class.name.tableize}/edit/#{item.id}##{obj.instance.class.name.tableize}"
+        else
+          anchor
+        end
+      else
+        obj
+      end
     end
 
   end
