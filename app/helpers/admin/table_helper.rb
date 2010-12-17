@@ -161,11 +161,10 @@ module Admin
     def table_position_field(attribute, item, connector = " / ")
       url_opts  = { :controller => item.class.to_resource, :action => "position", :id => item.id }
       html_opts = { :class => 'position', 'data-remote' => 'ajax-position' }
-      content   = content_tag :div, html_opts do
+
+      content_tag :div, html_opts do
         form_for(item, :url => url_opts) { |t| t.hidden_field :position }
       end
-
-      content_tag(:td, content)
     end
 
     def table_datetime_field(attribute, item, link_options = {})
