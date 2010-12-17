@@ -332,6 +332,12 @@ fieldset.buttons { }
 
 .clear { clear: both; }
 .box_relationships { margin-top: 2.5em; }
+.position {
+  background: transparent url(../images/position.png) no-repeat;
+  cursor: move;
+  width: 12px;
+  height: 12px;
+}
 
 /* @end */
 
