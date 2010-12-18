@@ -1,19 +1,5 @@
-<%
-
-  if !@item.class.validators.map { |i| i.class }.include?(ActiveModel::Validations::PresenceValidator) && @item.send(attribute).exists?
-    message = _t("Remove %{attribute}", :attribute => @item.class.human_attribute_name(attribute).downcase)
-    label_text << <<-HTML
- <small>#{link_to message, { :action => 'detach',
-                             :id => @item.id,
-                             :attachment => attribute },
-                             :confirm => _t("Are you sure?")}</small>
-    HTML
-  end
-
-%>
-
 <li id="<%= attribute %>">
-  <%= form.label attribute, raw(label_text) %>
+  <%= form.label attribute, link_to_detach_attribute(attribute) %>
   <%= form.file_field attribute, options %>
-  <%= typus_preview(@item, attribute) %>
+  <%= typus_file_preview(@item, attribute) %>
 </li>

@@ -1,10 +1,14 @@
+# French (fr) translations for Typus by:
+# - Ned Baldessin <http://github.com/nedbaldessin>
+# - Jonathan Meiss <http://github.com/jmeiss>
+
 fr:
   activerecord:
     models:
-      typus_user: "Utilisateur admin"
+      admin_user: "Utilisateur admin"
     attributes:
-      typus_user:
-        email: "Email"
+      admin_user:
+        email:
         first_name: "Prénom"
         last_name: "Nom de famille"
         password: "Mot de passe"

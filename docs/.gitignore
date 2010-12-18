@@ -1,0 +1,7 @@
+tmp/
+
+output/*.html
+output/**/*.html
+output/**/**/*.html
+output/**/**/**/*.html
+

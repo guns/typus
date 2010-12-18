@@ -1,0 +1,49 @@
+---
+title: Roles Configuration
+
+parent_title: Documentation
+parent_link: /documentation/
+---
+
+= <a name="roles_configuration" href="#roles_configuration">Roles Configuration</a>
+
+**Typus** roles are stored on {{{yaml}}} files.
+
+On the {{{config/typus}}} folder you'll find {{{yaml}}} files which ending
+with {{{_roles.yml}}}, there is where the setup is done.
+
+== <a name="anatomy_of_a_role" href="#anatomy_of_a_role">Anatomy of a Role</a>
+
+You can add as many roles as you want and the access control allows you to
+give access to users from a role to the {{{CRUD}}} methods of a model and to
+custom actions you define per model.
+
+{{{
+# Role
+admin:
+  # Model which has access to all actions
+  Category: all
+  # Model which has acces to default methods.
+  Post: create, read, update, delete
+  # Model can't delete but can deliver.
+  Newsletter: create, read, update, deliver
+  # Resource (which is tableless)
+  Redis: all
+}}}
+
+== <a name="example" href="#example">Example</a>
+
+How my roles look like:
+
+{{{
+admin:
+  AdminUser: all
+  Category: all
+  Post: all
+  Redis: all
+
+editor:
+  Category: create, read, update
+  Post: create, read, update
+  Redis: index
+}}}

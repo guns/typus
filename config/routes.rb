@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
   namespace :admin do
 
+    match "help" => "base#help"
+
     resource :dashboard, :only => [:show], :controller => :dashboard
 
     if Typus.authentication == :session

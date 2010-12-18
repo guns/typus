@@ -35,7 +35,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
       assert_difference('Post.count') do
         post :create, { :post => { :title => 'This is another title', :body => 'Body' } }
         assert_response :redirect
-        assert_redirected_to :controller => '/admin/posts', :action => 'edit', :id => Post.last
+        assert_redirected_to "/admin/posts"
       end
     end
 
@@ -54,7 +54,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
     should "update" do
       post :update, { :id => @post.id, :title => 'Updated' }
       assert_response :redirect
-      assert_redirected_to :controller => '/admin/posts', :action => 'edit', :id => @post.id
+      assert_redirected_to "/admin/posts"
     end
 
   end
@@ -113,6 +113,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
 
     setup do
       Typus::Resources.expects(:action_after_save).returns("index")
+      @post = Factory(:post)
     end
 
     should "create an item and redirect to index" do
@@ -124,7 +125,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
     end
 
     should "update an item and redirect to index" do
-      post :update, { :id => Factory(:post).id, :title => 'Updated' }
+      post :update, { :id => @post.id, :title => 'Updated' }
       assert_response :redirect
       assert_redirected_to :action => 'index'
     end
@@ -169,11 +170,25 @@ title;status
     context "Root" do
 
       setup do
-        editor = Factory(:typus_user, :email => "editor@example.com", :role => "editor")
-        @post = Factory(:post, :typus_user => editor)
+        @editor = Factory(:typus_user, :email => "editor@example.com", :role => "editor")
+        @post = Factory(:post, :typus_user => @editor)
       end
 
-      should "verify_root_can_edit_any_record" do
+      should "should list all posts no matter who is the owner" do
+        Post.delete_all
+        admin = TypusUser.where(:role => 'admin').first
+        2.times { Factory(:post, :typus_user => @editor) }
+        2.times { Factory(:post, :typus_user => @typus_user) }
+        Typus::Resources.expects(:only_user_items).returns(true)
+
+        get :index
+
+        assert_equal 4, Post.count
+        assert_equal 4, assigns(:items).size
+        assert_equal [@editor.id, @editor.id, @typus_user.id, @typus_user.id], assigns(:items).map(&:typus_user_id)
+      end
+
+      should "be able to edit any record" do
         Post.all.each do |post|
           get :edit, { :id => post.id }
           assert_response :success
@@ -182,15 +197,14 @@ title;status
       end
 
       should "verify_admin_updating_an_item_does_not_change_typus_user_id_if_not_defined" do
+        _post = @post
         post :update, { :id => @post.id, :post => { :title => 'Updated by admin' } }
-        post_updated = Post.find(@post.id)
-        assert_equal @post.typus_user_id, post_updated.typus_user_id
+        assert_equal _post.typus_user_id, @post.reload.typus_user_id
       end
 
       should "verify_admin_updating_an_item_does_change_typus_user_id_to_whatever_admin_wants" do
         post :update, { :id => @post.id, :post => { :title => 'Updated', :typus_user_id => 108 } }
-        post_updated = Post.find(@post.id)
-        assert_equal 108, post_updated.typus_user_id
+        assert_equal 108, @post.reload.typus_user_id
       end
 
     end
@@ -232,6 +246,20 @@ title;status
       should "verify_editor_tries_to_show_a_post_owned_by_the_admin" do
         get :show, { :id => Factory(:post).id }
         assert_response :success
+      end
+
+      should "only list editor posts" do
+        Post.delete_all
+        admin = TypusUser.where(:role => 'admin').first
+        2.times { Factory(:post, :typus_user => admin) }
+        2.times { Factory(:post, :typus_user => @typus_user) }
+        Typus::Resources.expects(:only_user_items).returns(true)
+
+        get :index
+
+        assert_equal 4, Post.count
+        assert_equal 2, assigns(:items).size
+        assert_equal [@typus_user.id, @typus_user.id], assigns(:items).map(&:typus_user_id)
       end
 
       should "verify_editor_tries_to_show_a_post_owned_by_the_admin whe only user items" do
@@ -303,7 +331,7 @@ title;status
         assert_redirected_to :action => :index
       end
 
-      should "not_be_able_to_destroy_posts" do
+      should "not be able to destroy posts" do
         assert_no_difference('Post.count') do
           get :destroy, { :id => @post.id, :method => :delete }
         end
@@ -335,7 +363,7 @@ title;status
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Comment related to Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
 
       assert_difference('post_.comments.count', -1) do
         post :unrelate, { :id => post_.id,
@@ -344,7 +372,7 @@ title;status
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Comment unrelated from Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
 
     end
 
@@ -367,7 +395,7 @@ title;status
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Category related to Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
 
       ##
       # Second Step: Unrelate
@@ -379,7 +407,7 @@ title;status
 
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Category unrelated from Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
     end
 
     ##
@@ -398,7 +426,7 @@ title;status
       end
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Asset unrelated from Post", flash[:notice]
+      assert_equal "Post successfully updated.", flash[:notice]
     end
 
   end
@@ -423,11 +451,6 @@ title;status
         assert_select "#sidebar ul" do
           assert_select "li", "Add new"
         end
-      end
-
-      should "render_index_and_show_trash_item_image" do
-        assert_response :success
-        assert_select '.trash', 'Trash'
       end
 
     end
@@ -501,12 +524,6 @@ title;status
         get :index
         assert_response :success
         assert_no_match /Add Post/, @response.body
-      end
-
-      should "render_index_and_not_show_trash_image" do
-        get :index
-        assert_response :success
-        assert_select ".trash", false
       end
 
     end

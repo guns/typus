@@ -11,15 +11,16 @@ class Admin::AssetsControllerTest < ActionController::TestCase
     get :new, { :back_to => "/admin/posts/#{@post.id}/edit",
                 :resource => @post.class.name, :resource_id => @post.id }
 
-    assert_select 'body div#flash', "You're adding a new Asset to Post. Do you want to cancel it?"
-    assert_select 'body div#flash a', "Do you want to cancel it?"
+    assert_select 'body div#flash', "Cancel adding a new Asset?"
   end
 
   should "create a polymorphic relationship" do
     assert_difference('@post.assets.count') do
-      post :create, { :back_to => "/admin/posts/edit/#{@post.id}",
-                      :resource => @post.class.name,
-                      :resource_id => @post.id }
+      post :create, { :asset => { :caption => "Caption",
+                      :file => File.new("#{Rails.root}/config/database.yml"),
+                      :required_file => File.new("#{Rails.root}/config/database.yml") },
+                      :back_to => "/admin/posts/edit/#{@post.id}",
+                      :resource => @post.class.name, :resource_id => @post.id }
     end
 
     assert_response :redirect
@@ -27,15 +28,54 @@ class Admin::AssetsControllerTest < ActionController::TestCase
     assert_equal "Asset successfully assigned to Post.", flash[:notice]
   end
 
-  should "render edit and verify message on polymorphic relationship" do
-    asset = Factory(:asset)
+  context "edit" do
 
-    get :edit, { :id => asset.id,
-                 :back_to => "/admin/posts/#{@post.id}/edit",
-                 :resource => @post.class.name, :resource_id => @post.id }
+    setup do
+      @asset = Factory(:asset)
+      @request.env['HTTP_REFERER'] = "/admin/assets/edit/#{@asset.id}"
+    end
 
-    assert_select 'body div#flash', "You're updating a Asset for Post. Do you want to cancel it?"
-    assert_select 'body div#flash a', "Do you want to cancel it?"
+    should "verify there is a file link" do
+      get :edit, { :id => @asset.id }
+      assert_match /#{@asset.file.url}/, @response.body
+    end
+
+    should "verify file can be removed" do
+      get :edit, { :id => @asset.id }
+      assert_match /Remove file/, @response.body
+
+      assert @asset.file_uid.present?
+
+      get :detach, { :id => @asset.id, :attribute => "file" }
+      assert_response :redirect
+      assert_redirected_to "/admin/assets"
+      assert_equal "Asset successfully updated.", flash[:notice]
+
+      @asset.reload
+      assert @asset.file_uid.blank?
+    end
+
+    should "verify required_file can not removed" do
+      get :edit, { :id => @asset.id }
+      assert_no_match /Remove required file/, @response.body
+
+      get :detach, { :id => @asset.id, :attribute => "required_file" }
+      assert_response :success
+
+      @asset.reload
+      assert @asset.file.present?
+    end
+
+    should "verify message on polymorphic relationship" do
+      asset = Factory(:asset)
+
+      get :edit, { :id => asset.id,
+                   :back_to => "/admin/posts/#{@post.id}/edit",
+                   :resource => @post.class.name, :resource_id => @post.id }
+
+      assert_select 'body div#flash', "Cancel adding a new Asset?"
+    end
+
   end
 
   should "return to back_to url" do
@@ -48,7 +88,7 @@ class Admin::AssetsControllerTest < ActionController::TestCase
                     :resource_id => @post.id }
 
     assert_response :redirect
-    assert_redirected_to :action => "edit", :id => asset.id, :back_to => back_to
+    assert_redirected_to "/admin/assets"
     assert_equal "Asset successfully updated.", flash[:notice]
   end
 

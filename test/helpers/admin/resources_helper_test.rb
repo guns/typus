@@ -16,7 +16,7 @@ class Admin::ResourcesHelperTest < ActiveSupport::TestCase
       params = { :action => "edit", :back_to => "/back_to_param" }
       self.expects(:params).at_least_once.returns(params)
 
-      expected = [ "admin/helpers/resources/display_link_to_previous", { :message => "You're updating a Post." } ]
+      expected = [ "admin/helpers/resources/display_link_to_previous" ]
       output = display_link_to_previous
 
       assert_equal expected, output

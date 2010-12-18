@@ -59,7 +59,10 @@ module Typus
               when /\./                   then attribute_type = :transversal
             end
 
-            if respond_to?(:attachment_definitions) && attachment_definitions.try(:has_key?, field)
+            dragonfly = respond_to?(:dragonfly_apps_for_attributes) && dragonfly_apps_for_attributes.try(:has_key?, field)
+            paperclip = respond_to?(:attachment_definitions) && attachment_definitions.try(:has_key?, field)
+
+            if dragonfly || paperclip
               attribute_type = :file
             end
 
@@ -181,7 +184,7 @@ module Typus
         options = read_model_config['fields']['options']
 
         boolean = if options && options['booleans'] && boolean = options['booleans'][attribute.to_s]
-                    boolean.kind_of?(String) ? boolean.extract_settings : boolean
+                    boolean.is_a?(String) ? boolean.extract_settings : boolean
                   else
                     ["True", "False"]
                   end
@@ -272,7 +275,7 @@ module Typus
             condition = ["`#{table_name}`.#{key} BETWEEN ? AND ?", interval.first.to_s(:db), interval.last.to_s(:db)]
             conditions = merge_conditions(conditions, condition)
           when :date
-            if value.kind_of?(Hash)
+            if value.is_a?(Hash)
               date_format = Date::DATE_FORMATS[typus_date_format(key)]
 
               begin

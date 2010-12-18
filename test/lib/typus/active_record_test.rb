@@ -103,6 +103,12 @@ class ActiveRecordTest < ActiveSupport::TestCase
       assert_equal expected_fields.map { |i| i.last }, Picture.typus_fields_for(:form).values
     end
 
+    should "return form fields for Asset" do
+      expected_fields = [["caption", :string], ["file", :file], ["required_file", :file]]
+      assert_equal expected_fields.map { |i| i.first }, Asset.typus_fields_for(:form).keys
+      assert_equal expected_fields.map { |i| i.last }, Asset.typus_fields_for(:form).values
+    end
+
     should "return form fields for a Model without configuration" do
       assert Class.new(ActiveRecord::Base).typus_fields_for(:form).empty?
     end
@@ -455,7 +461,7 @@ class ActiveRecordTest < ActiveSupport::TestCase
   context "read_model_config" do
 
     should "return data for existing model" do
-      expected = {"application"=>"Site", "fields"=>{"default"=>"caption"}}
+      expected = {"application"=>"Site", "fields"=>{"default"=>"caption, file, required_file"}}
       assert_equal expected, Asset.read_model_config
     end
 

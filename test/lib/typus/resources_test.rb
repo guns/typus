@@ -3,7 +3,7 @@ require "test_helper"
 class ResourcesTest < ActiveSupport::TestCase
 
   should "verify default resource configuration options" do
-    assert_equal "edit", Typus::Resources.action_after_save
+    assert_equal "index", Typus::Resources.action_after_save
     assert_equal "edit", Typus::Resources.default_action_on_item
     assert_nil Typus::Resources.end_year
     assert_equal 15, Typus::Resources.form_rows

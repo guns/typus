@@ -8,9 +8,9 @@ Typus.setup do |config|
   # address will be used in Admin::Mailer.
   # config.mailer_sender = "admin@example.com"
 
-  # Define file attachment settings.
-  # config.file_preview = :typus_preview
-  # config.file_thumbnail = :typus_thumbnail
+  # Define paperclip attachments styles.
+  # config.file_preview = :medium
+  # config.file_thumbnail = :thumb
 
   # Authentication: +:none+, +:http_basic+
   # Run `rails g typus:migration` if you need an advanced authentication system.

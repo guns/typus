@@ -31,6 +31,23 @@ from the backend.
 [CHANGED] Updated `typus_preview` to display original filaname when file is
 not an image.
 
+[NEW] Support for Dragonfly attachments. Template for this kind of attribute
+is `_dragonfly.html.erb`.
+
+[CHANGED] Paperclip attachments are detected as `:paperclip` thus the form
+template is not `_paperclip.html.erb`.
+
+[NEW] 中文 (zh-CN) translation. [ZoOL]
+
+[CHANGED] `action_after_save` by default is `index`. This has been changed
+after a usability test with a client.
+
+[NEW] Greek (el) translation. [Spyros Livathinos]
+
+[CHANGED] Updated jQuery to v1.4.4
+
+[CHANGED] Updated fancybox to v1.3.4
+
 [3.0.2]
 
 [FIXED] Use Arel to get the data on lists. After moving to will_paginate I

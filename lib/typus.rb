@@ -145,13 +145,15 @@ module Typus
     def locales_mapping
       mapping = { "ca"    => "Català",
                   "de"    => "German",
+                  "el"    => "Greek",
                   "en"    => "English",
                   "es"    => "Español",
                   "fr"    => "Français",
                   "hu"    => "Magyar",
                   "it"    => "Italiano",
                   "pt-BR" => "Portuguese",
-                  "ru"    => "Russian" }
+                  "ru"    => "Russian",
+                  "zh-CN" => "中文" }
       mapping.default = "Unknown"
       return mapping
     end

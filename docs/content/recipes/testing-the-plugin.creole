@@ -1,0 +1,35 @@
+---
+title: Testing the Plugin
+
+parent_title: Recipes
+parent_link: /recipes/
+---
+
+= Testing the Plugin
+
+Clone the repository.
+
+{{{
+$ git clone https://github.com/fesplugas/typus.git
+$ cd typus
+}}}
+
+Test **Typus** with a {{{SQLite3}}} database: (default)
+
+{{{
+$ rake
+}}}
+
+Test **Typus** with a {{{MySQL}}} database:
+
+{{{
+$ mysqladmin -u root create typus_test
+$ rake DB=mysql
+}}}
+
+Test **Typus** with a {{{PostgreSQL}}} database:
+
+{{{
+$ createdb typus_test
+$ rake DB=postgresql
+}}}

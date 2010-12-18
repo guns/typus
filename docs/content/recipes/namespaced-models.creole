@@ -1,0 +1,45 @@
+---
+title: Namespaced Models
+
+parent_title: Recipes
+parent_link: /recipes/
+
+previous_title: Single Table Inheritance
+previous_link: /recipes/single-table-inheritance/
+
+next_title: Managing Configuration Files
+next_link: /recipes/configuration-files/
+---
+
+= Namespaced Models
+
+If you want to be able to use {{{delayed_job}}} you need to add the following
+routes into your {{{config/routes.rb}}}.
+
+{{{
+namespace :admin do
+  namespace :delayed do
+    resources :jobs
+  end
+end
+}}}
+
+And then create and configure {{{config/typus/delayed_job.yml}}} and 
+{{{config/typus/delayed_job_roles.yml}}} as you do with your other models.
+
+File {{{config/typus/delayed_job.yml}}}:
+
+{{{
+Delayed::Job:
+  fields:
+    list: ...
+    form: ...
+  search: ...
+}}}
+
+File {{{config/typus/delayed_job_roles.yml}}}:
+
+{{{
+admin:
+  Delayed::Job: all
+}}}

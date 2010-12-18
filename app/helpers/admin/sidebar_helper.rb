@@ -29,7 +29,7 @@ module Admin
 
     def export(klass)
       klass.typus_export_formats.map do |format|
-        link_to _t("Export as %{format}", :format => format.upcase), params.merge(:format => format)
+        link_to _t("Export as %{mime}", :mime => format.upcase), params.merge(:format => format)
       end
     end
 

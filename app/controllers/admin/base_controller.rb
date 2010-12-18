@@ -10,6 +10,9 @@ class Admin::BaseController < ActionController::Base
 
   helper_method :current_user
 
+  def help
+  end
+
   protected
 
   def reload_config_and_roles
@@ -25,9 +28,7 @@ class Admin::BaseController < ActionController::Base
   end
 
   def set_models_constantized
-    if Typus::Configuration.models_constantized.nil?
-      Typus::Configuration.models_constantized!
-    end
+    Typus::Configuration.models_constantized!
   end
 
 end

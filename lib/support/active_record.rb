@@ -49,7 +49,7 @@ class ActiveRecord::Base
   def mapping(attribute)
     values = self.class::const_get(attribute.to_s.upcase)
 
-    if values.kind_of?(Array)
+    if values.is_a?(Array)
       case values.first
       when Array
         array_keys, array_values = values.transpose

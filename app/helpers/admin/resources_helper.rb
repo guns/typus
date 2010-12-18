@@ -5,7 +5,7 @@ module Admin
     include FiltersHelper
     include FormHelper
     include RelationshipsHelper
-    include PreviewHelper
+    include FilePreviewHelper
     include SearchHelper
     include SidebarHelper
     include TableHelper
@@ -22,28 +22,7 @@ module Admin
     end
 
     def display_link_to_previous
-      return unless params[:back_to]
-
-      options = {}
-      options[:resource_from] = @resource.model_name.human
-      options[:resource_to] = params[:resource].typus_constantize.model_name.human if params[:resource]
-
-      editing = %w( edit update ).include?(params[:action])
-      message = case
-                when params[:resource] && editing
-                  "You're updating a %{resource_from} for %{resource_to}."
-                when editing
-                  "You're updating a %{resource_from}."
-                when params[:resource]
-                  "You're adding a new %{resource_from} to %{resource_to}."
-                else
-                  "You're adding a new %{resource_from}."
-                end
-      message = _t(message,
-                  :resource_from => options[:resource_from],
-                  :resource_to => options[:resource_to])
-
-      render File.join(path, "display_link_to_previous"), :message => message
+      render File.join(path, "display_link_to_previous") if params[:back_to]
     end
 
     private

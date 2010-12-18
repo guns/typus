@@ -23,7 +23,7 @@ class Admin::ResourcesController < Admin::BaseController
   before_filter :set_order,
                 :only => [ :index ]
   before_filter :set_fields,
-                :only => [ :index, :new, :edit, :create, :update, :show ]
+                :only => [ :index, :new, :edit, :create, :update, :show, :detach ]
 
   ##
   # This is the main index of the model. With filters, conditions and more.
@@ -44,8 +44,6 @@ class Admin::ResourcesController < Admin::BaseController
   end
 
   def new
-    check_ownership_of_referal_item
-
     item_params = params.dup
     rejections = %w(controller action resource resource_id back_to selected)
     item_params.delete_if { |k, v| rejections.include?(k) }
@@ -65,10 +63,8 @@ class Admin::ResourcesController < Admin::BaseController
 
     set_attributes_on_create
 
-    if @item.valid?
-      create_with_back_to and return if params[:back_to]
-      @item.save
-      redirect_on_success
+    if @item.save
+      params[:back_to] ? create_with_back_to : redirect_on_success
     else
       select_template(:new)
     end
@@ -97,6 +93,14 @@ class Admin::ResourcesController < Admin::BaseController
     end
   end
 
+  def detach
+    if @item.update_attributes(params[:attribute] => nil)
+      redirect_on_success
+    else
+      select_template(:edit)
+    end
+  end
+
   def destroy
     @item.destroy
     notice = _t("%{model} successfully removed.", :model => @resource.model_name.human)
@@ -106,11 +110,7 @@ class Admin::ResourcesController < Admin::BaseController
   def toggle
     @item.toggle(params[:field])
     @item.save!
-
-    notice = _t("%{model} %{attribute} changed.",
-               :model => @resource.model_name.human,
-               :attribute => params[:field].humanize.downcase)
-
+    notice = _t("%{model} successfully updated.", :model => @resource.model_name.human)
     respond_to do |format|
       format.html { redirect_to set_path, :notice => notice }
       format.json { render :json => @item }
@@ -133,7 +133,7 @@ class Admin::ResourcesController < Admin::BaseController
       @item.send(params[:go])
     end
 
-    notice = _t("Record moved %{to}.", :to => params[:go].gsub(/move_/, '').humanize.downcase)
+    notice = _t("Record moved to position %{to}.", :to => params[:go].gsub(/move_/, '').humanize.downcase)
 
     respond_to do |format|
       format.html { redirect_to set_path, :notice => notice }
@@ -150,13 +150,7 @@ class Admin::ResourcesController < Admin::BaseController
     resource_tableized = params[:related][:model].tableize
 
     if @item.send(resource_tableized) << resource_class.find(params[:related][:id])
-      flash[:notice] = _t("%{model_a} related to %{model_b}",
-                         :model_a => resource_class.model_name.human,
-                         :model_b => @resource.model_name.human)
-    else
-      flash[:alert] = _t("%{model_a} cannot be related to %{model_b}",
-                         :model_a => resource_class.model_name.human,
-                         :model_b => @resource.model_name.human)
+      flash[:notice] = _t("%{model} successfully updated.", :model => @resource.model_name.human)
     end
 
     redirect_to set_path
@@ -201,31 +195,10 @@ class Admin::ResourcesController < Admin::BaseController
     end
 
     if saved_succesfully
-      flash[:notice] = _t("%{model_a} unrelated from %{model_b}",
-                         :model_a => resource_class.model_name.human,
-                         :model_b => @resource.model_name.human)
-    else
-      flash[:alert] = _t("%{model_a} cannot be unrelated from %{model_b}",
-                        :model_a => resource_class.model_name.human,
-                        :model_b => @resource.model_name.human)
+      flash[:notice] = _t("%{model} successfully updated.", :model => @resource.model_name.human)
     end
 
     redirect_to set_path
-  end
-
-  ##
-  # Remove file attachments.
-  #
-  def detach
-    message = if @item.update_attributes(params[:attachment] => nil)
-                "%{attachment} removed."
-              else
-                "%{attachment} can't be removed."
-              end
-
-    notice = _t(message, :attachment => @resource.human_attribute_name(params[:attachment]))
-
-    redirect_to set_path, :notice => notice
   end
 
   private
@@ -251,7 +224,7 @@ class Admin::ResourcesController < Admin::BaseController
   def set_fields
     mapping = case params[:action]
               when "index" then :list
-              when "new", "edit", "create", "update" then :form
+              when "new", "create", "edit", "update" then :form
               else params[:action]
               end
 
@@ -271,14 +244,12 @@ class Admin::ResourcesController < Admin::BaseController
       path = { :action => action }
       path.merge!(:id => @item.id) unless action.eql?("index")
       notice = _t("%{model} successfully created.", :model => @resource.model_name.human)
-    when "update"
+    when "update", "detach"
       path = case action
              when "index"
                params[:back_to] ? "#{params[:back_to]}##{@resource.to_resource}" : { :action => action }
              else
-               { :action => action,
-                 :id => @item.id,
-                 :back_to => params[:back_to] }
+               { :action => action, :id => @item.id, :back_to => params[:back_to] }
              end
       notice = _t("%{model} successfully updated.", :model => @resource.model_name.human)
     end
@@ -293,34 +264,30 @@ class Admin::ResourcesController < Admin::BaseController
   # - <tt>has_many</tt> relationships (polymorphic ones).
   #
   def create_with_back_to
-    if params[:resource] && params[:resource_id]
-      resource_class = params[:resource].typus_constantize
+    association = @resource.reflect_on_association(params[:resource].to_sym)
+
+    if params[:resource_id]
+      resource_class = params[:resource].classify.typus_constantize
       resource_id = params[:resource_id]
       resource = resource_class.find(resource_id)
-      association = @resource.reflect_on_association(params[:resource].to_sym).macro rescue :polymorphic
-    else
-      association = :has_many
     end
 
-    case association
-    when :belongs_to
-      @item.save
+    message = _t("%{model} successfully updated.", :model => resource_class.model_name.human)
+
+    case association.macro
     when :has_and_belongs_to_many
-      @item.save
       @item.send(params[:resource]) << resource
     when :has_many
-      @item.save
-      message = _t("%{model} successfully created.", :model => @resource.model_name.human)
-      path = "#{params[:back_to]}?#{params[:selected]}=#{@item.id}"
+      if resource
+        @item.send(params[:resource]) << resource
+      else
+        path = "#{params[:back_to]}?#{association.primary_key_name}=#{@item.id}"
+      end
     when :polymorphic
       resource.send(@item.class.to_resource).create(params[@object_name])
     end
 
-    flash[:notice] = message || _t("%{model_a} successfully assigned to %{model_b}.",
-                                  :model_a => @item.class.model_name.human,
-                                  :model_b => resource_class.model_name.human)
-
-    redirect_to path || params[:back_to]
+    redirect_to (path || params[:back_to]), :notice => message
   end
 
   def select_template(action = params[:action], resource = @resource.to_resource)

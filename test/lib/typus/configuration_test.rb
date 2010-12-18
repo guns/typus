@@ -4,12 +4,12 @@ class ConfigurationTest < ActiveSupport::TestCase
 
   should "verify typus roles is loaded" do
     assert Typus::Configuration.respond_to?(:roles!)
-    assert Typus::Configuration.roles!.kind_of?(Hash)
+    assert Typus::Configuration.roles!.is_a?(Hash)
   end
 
   should "verify typus config file is loaded" do
     assert Typus::Configuration.respond_to?(:config!)
-    assert Typus::Configuration.config!.kind_of?(Hash)
+    assert Typus::Configuration.config!.is_a?(Hash)
   end
 
   should "load configuration files from config broken" do

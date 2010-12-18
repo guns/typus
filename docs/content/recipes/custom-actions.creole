@@ -1,0 +1,52 @@
+---
+title: Custom Actions
+
+parent_title: Recipes
+parent_link: /recipes/
+
+previous_title: Adding a Rich Text Editor
+previous_link: /recipes/rich-text-editor/
+
+next_title: Single Table Inheritance
+next_link: /recipes/single-table-inheritance/
+---
+
+= Custom Actions
+
+You can overwrite and extend Admin::ResourcesController with your methods. 
+Actions are defined in {{{config/typus/application.yml}}}:
+
+{{{
+Post:
+  ...
+  actions:
+    index: custom_action
+    edit: custom_action_for_an_item
+}}}
+
+Remember to define permissions on {{{config/typus/application_roles.yml}}} to 
+have access to the new actions.
+
+{{{
+admin:
+  Post: all
+
+editor:
+  Post: create, read, update, custom_action_for_an_item
+}}}
+
+Your controller will look like this ...
+
+{{{
+class Admin::PostsController < Admin::ResourcesController
+
+  def custom_action
+    ...
+  end
+
+  def custom_action_for_an_item
+    ...
+  end
+
+end
+}}}
