@@ -1,18 +1,18 @@
-<% current_user.applications.each do |app| %>
+<% admin_user.applications.each do |app| %>
 
   <table>
 
     <thead>
       <tr>
-        <th><%= _t(app) %></th>
+        <th><%= Typus::I18n.t(app) %></th>
       </tr>
     </thead>
 
-    <% current_user.application(app).each do |model| %>
+    <% admin_user.application(app).each do |model| %>
 
       <%
         klass = model.typus_constantize
-        klass_human_name = klass.model_name.human.gsub("/", " ").pluralize
+        klass_human_name = klass.model_name.human.pluralize
         admin_items_path = { :controller => "/admin/#{klass.to_resource}" }
       %>
 

@@ -1,15 +1,15 @@
 <%
 
   # Read only fields.
-  if @resource.typus_field_options_for(:read_only).to_s.include?(attribute)
+  if @resource.typus_field_options_for(:read_only).include?(attribute.to_sym)
     custom = { :readonly => 'readonly' }
-    label_text << " <small>#{_t("Read only")}</small>"
+    label_text << " <small>#{Typus::I18n.t("Read only")}</small>"
   end
 
   # Auto generated fields.
-  if @resource.typus_field_options_for(:auto_generated).include?(attribute)
+  if @resource.typus_field_options_for(:auto_generated).include?(attribute.to_sym)
     custom = { :auto_generated => true }
-    label_text << " <small>#{_t("Auto generated")}</small>"
+    label_text << " <small>#{Typus::I18n.t("Auto generated")}</small>"
   end
 
   options.merge!(custom) if custom

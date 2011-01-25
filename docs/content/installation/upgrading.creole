@@ -1,0 +1,15 @@
+---
+title: Upgrading
+
+parent_title: Installation
+---
+
+= Upgrading
+
+Generally there are not big changes in **Typus** configuration files, but
+sometimes there are {{{stylesheets}}} or {{{javascripts}}} updates. To update
+your application to make sure you have the latest assets installed just run:
+
+{{{
+$ rails generate typus:assets
+}}}

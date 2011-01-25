@@ -1,5 +1,11 @@
 class ActiveRecord::Base
 
+  def self.relationship_with(model)
+    association = reflect_on_association(model.table_name.to_sym) ||
+                  reflect_on_association(model.model_name.downcase.to_sym)
+    association.macro
+  end
+
   #--
   #     >> Post.to_resource
   #     => "posts"
@@ -8,24 +14,6 @@ class ActiveRecord::Base
   #++
   def self.to_resource
     name.underscore.pluralize
-  end
-
-  #--
-  # TODO: This has been copied from Rails 2 because has been removed from
-  #       Rails 3. Once the "build_conditions" has been refactored to use Arel
-  #       this can be removed.
-  #++
-  def self.merge_conditions(*conditions)
-    segments = []
-
-    conditions.each do |condition|
-      unless condition.blank?
-        sql = sanitize_sql(condition)
-        segments << sql unless sql.blank?
-      end
-    end
-
-    "(#{segments.join(') AND (')})" unless segments.empty?
   end
 
   #--

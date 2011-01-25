@@ -1,5 +1,5 @@
 <%
-  page_title = _t("Show %{resource}", :resource => @resource.model_name.human)
+  page_title = Typus::I18n.t("Show %{resource}", :resource => @resource.model_name.human)
   title(page_title)
 %>
 
@@ -10,7 +10,7 @@
 </h2>
 
 <%= display_flash_message %>
-<%= typus_render :partial => 'show' %>
+<%= render 'show' %>
 
 <dl>
 <%- @fields.each do |field| -%>
@@ -20,16 +20,12 @@
     raw_data = @item.send(field.first)
     data = case data_type
            when :boolean
-             boolean_hash = @resource.typus_boolean(field.first)
-             !raw_data.nil? ? boolean_hash["#{raw_data}".to_sym] : @resource.typus_options_for(:nil)
+             @resource.typus_boolean(field.first).invert[raw_data.to_s]
            when :belongs_to
-             if !raw_data.nil?
-               controller = raw_data.class.to_resource
-               action = raw_data.class.typus_options_for(:default_action_on_item)
-               options = { :controller => controller, :action => action, :id => raw_data }
-               link_to raw_data.to_label, options
-             else
-               nil
+             if raw_data
+               link_to raw_data.to_label, { :controller => raw_data.class.to_resource,
+                                            :action => raw_data.class.typus_options_for(:default_action_on_item),
+                                            :id => raw_data }
              end
            when :file
              typus_file_preview(@item, field.first)
@@ -39,7 +35,7 @@
              raw_data
            end
   -%>
-  <dd><%= data.blank? ? "&#151;".html_safe : data %></dd>
+  <dd><%= data.present? ? data : "&mdash;".html_safe %></dd>
 <%- end -%>
 </dl>
 

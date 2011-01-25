@@ -1,5 +1,13 @@
 require "test_helper"
 
+=begin
+
+  What's being tested here?
+
+    - Stuff related to Admin users. (a.k.a. Profile Stuff)
+
+=end
+
 class Admin::TypusUsersControllerTest < ActionController::TestCase
 
   context "Admin" do
@@ -18,9 +26,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
 
     should "not be able to toogle his status" do
       get :toggle, { :id => @typus_user.id, :field => 'status' }
-      assert_response :redirect
-      assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "You can't toggle your status.", flash[:notice]
+      assert_response :unprocessable_entity
     end
 
     should "be able to toggle other users status" do
@@ -31,9 +37,8 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
     end
 
     should "not be able to destroy himself" do
-      assert_raises RuntimeError do
-        delete :destroy, :id => @typus_user.id
-      end
+      delete :destroy, :id => @typus_user.id
+      assert_response :unprocessable_entity
     end
 
     should "be able to destroy other users" do
@@ -46,10 +51,15 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
       assert_equal "Typus user successfully removed.", flash[:notice]
     end
 
+    should "not be able to change his role" do
+      post :update, { :id => @typus_user.id, :typus_user => { :role => 'editor' } }
+      assert_response :unprocessable_entity
+    end
+
     should "be able to update other users role" do
       post :update, { :id => @typus_user_editor.id, :typus_user => { :role => 'admin' } }
       assert_response :redirect
-      assert_redirected_to "/admin/typus_users"
+      assert_redirected_to "/admin/typus_users/edit/#{@typus_user_editor.id}"
       assert_equal "Typus user successfully updated.", flash[:notice]
     end
 
@@ -63,11 +73,9 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
       @request.session[:typus_user_id] = @editor.id
     end
 
-    should "not_allow_editor_to_create_typus_users" do
+    should "not be able  to create typus_users" do
       get :new
-      assert_response :redirect
-      assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Editor is not able to perform this action. (new)", flash[:notice]
+      assert_response :unprocessable_entity
     end
 
     should "be able to edit his profile" do
@@ -78,55 +86,47 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
     should "be able to update his profile" do
       post :update, { :id => @editor.id, :typus_user => { :role => 'editor' } }
       assert_response :redirect
-      assert_redirected_to "/admin/typus_users"
+      assert_redirected_to "/admin/typus_users/edit/#{@editor.id}"
       assert_equal "Typus user successfully updated.", flash[:notice]
     end
 
-    should "not be able to update his profile and become root" do
+    should "not be able to change his role" do
       post :update, { :id => @editor.id, :typus_user => { :role => 'admin' } }
-      assert_response :redirect
-      assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "You can't change your role.", flash[:notice]
+      assert_response :unprocessable_entity
     end
 
     should "not be able to destroy his profile" do
-      assert_raises RuntimeError do
-        delete :destroy, :id => @editor.id
-      end
+      delete :destroy, :id => @editor.id
+      assert_response :unprocessable_entity
     end
 
-    should "not be able to toggle other his status" do
-      assert_raises RuntimeError do
-        get :toggle, { :id => @editor.id, :field => 'status' }
-      end
+    should "not be able to toggle his status" do
+      get :toggle, { :id => @editor.id, :field => 'status' }
+      assert_response :unprocessable_entity
     end
 
     should "not be able to edit other profiles" do
       user = Factory(:typus_user)
-      assert_raises RuntimeError do
-        get :edit, { :id => user.id }
-      end
+      get :edit, { :id => user.id }
+      assert_response :unprocessable_entity
     end
 
-    should_eventually "not be able to update other profiles" do
+    should "not be able to update other profiles" do
       user = Factory(:typus_user)
-      assert_raises RuntimeError do
-        post :update, { :id => user.id, :typus_user => { :role => 'admin' } }
-      end
+      post :update, { :id => user.id, :typus_user => { :role => 'admin' } }
+      assert_response :unprocessable_entity
     end
 
     should "not be able to destroy other profiles" do
       user = Factory(:typus_user)
-      assert_raises RuntimeError do
-        delete :destroy, :id => user.id
-      end
+      delete :destroy, :id => user.id
+      assert_response :unprocessable_entity
     end
 
     should "not be able to toggle other profiles status" do
       user = Factory(:typus_user)
-      assert_raises RuntimeError do
-        get :toggle, { :id => user.id, :field => 'status' }
-      end
+      get :toggle, { :id => user.id, :field => 'status' }
+      assert_response :unprocessable_entity
     end
 
   end
@@ -150,7 +150,7 @@ class Admin::TypusUsersControllerTest < ActionController::TestCase
     should "be able to update his profile" do
       post :update, { :id => @designer.id, :typus_user => { :role => 'designer', :email => 'designer@withafancydomain.com' } }
       assert_response :redirect
-      assert_redirected_to "/admin/typus_users"
+      assert_redirected_to "/admin/typus_users/edit/#{@designer.id}"
       assert_equal "Typus user successfully updated.", flash[:notice]
       assert_equal "designer@withafancydomain.com", @designer.reload.email
     end

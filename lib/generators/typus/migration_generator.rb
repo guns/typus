@@ -1,4 +1,5 @@
 require "rails/generators/migration"
+require "generators/typus/controller_generator"
 
 module Typus
 
@@ -31,11 +32,13 @@ Examples:
       DESC
 
       def self.next_migration_number(path)
-        Time.zone.now.utc.to_s(:number)
+        Time.zone.now.to_s(:number)
       end
 
       def generate_model
-        invoke "active_record:model", [options[:user_class_name]], :migration => false unless model_exists?
+        unless model_exists?
+          invoke "active_record:model", [options[:user_class_name]], :migration => false
+        end
       end
 
       def inject_mixins_into_model
@@ -43,7 +46,7 @@ Examples:
           <<-MSG
 
   ROLE = Typus::Configuration.roles.keys.sort
-  LANGUAGE = Typus.locales
+  LOCALE = Typus.locales
 
   enable_as_typus_user
 
@@ -63,12 +66,8 @@ Examples:
         template "config/typus/typus_roles.yml", "config/typus/typus_roles.yml"
       end
 
-      def generate_controllers
-        invoke "controller", ["admin/#{admin_users_table_name}"]
-      end
-
-      def make_controllers_inherit_from_resources_controller
-        gsub_file "app/controllers/admin/#{admin_users_table_name}_controller.rb", /ApplicationController/, "Admin::ResourcesController"
+      def generate_controller
+        Typus::Generators::ControllerGenerator.new([options[:user_class_name].pluralize]).invoke_all
       end
 
       def generate_migration

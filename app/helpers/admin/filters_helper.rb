@@ -7,24 +7,19 @@ module Admin
 
       return if typus_filters.empty?
 
-      current_request = request.env['QUERY_STRING'] || []
-
       filters = typus_filters.map do |key, value|
-        filter, items, message = case value
-                                 when :boolean then boolean_filter(current_request, key)
-                                 when :string then string_filter(current_request, key)
-                                 when :date, :datetime then date_filter(current_request, key)
-                                 when :belongs_to then relationship_filter(current_request, key)
-                                 when :has_many, :has_and_belongs_to_many then
-                                   relationship_filter(current_request, key, true)
-                                 # when nil then
-                                     # Do nothing. This is ugly but for now it's ok.
-                                 else
-                                   string_filter(current_request, key)
-                                 end
+                  items = case value
+                          when :boolean then boolean_filter(key)
+                          when :string then string_filter(key)
+                          when :date, :datetime then date_filter(key)
+                          when :belongs_to then belongs_to_filter(key)
+                          when :has_many, :has_and_belongs_to_many then
+                            has_many_filter(key)
+                          else
+                            string_filter(key)
+                          end
 
-        items = items.to_a
-        items.insert(0, [message, ""])
+                  filter = set_filter(key, value)
 
         { :filter => filter, :items => items }
       end
@@ -32,47 +27,71 @@ module Admin
       render "admin/helpers/filters/filters", :filters => filters
     end
 
-    def relationship_filter(request, filter, habtm = false)
+    def set_filter(key, value)
+      case value
+      when :belongs_to
+        att_assoc = @resource.reflect_on_association(key.to_sym)
+        class_name = att_assoc.options[:class_name] || key.capitalize.camelize
+        resource = class_name.typus_constantize
+        att_assoc.primary_key_name
+      else
+        key
+      end
+    end
+
+    def belongs_to_filter(filter)
       att_assoc = @resource.reflect_on_association(filter.to_sym)
-      class_name = att_assoc.options[:class_name] || ((habtm) ? filter.classify : filter.capitalize.camelize)
-      model = class_name.typus_constantize
-      related_fk = (habtm) ? filter : att_assoc.primary_key_name
+      class_name = att_assoc.options[:class_name] || filter.capitalize.camelize
+      resource = class_name.typus_constantize
 
-      params_without_filter = params.dup
-      %w(controller action page).each { |p| params_without_filter.delete(p) }
-      params_without_filter.delete(related_fk)
-
-      items   = [['&#151;'.html_safe, 'nil']] # allow IS NULL queries
-      items  += model.order(model.typus_order_by).map{ |v| [v.to_label, v.id] }
-      message = _t("View all %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase.pluralize)
-
-      [related_fk, items, message]
+      items = [[Typus::I18n.t("View belongs all %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase.pluralize), ""]]
+      items += [['&#151;'.html_safe, 'nil']] # HACK: allow IS NULL queries
+      items += resource.order(resource.typus_order_by).map { |v| [v.to_label, v.id] }
     end
 
-    def date_filter(request, filter)
-      values  = %w(today last_few_days last_7_days last_30_days)
-      items   = values.map { |v| [_t(v.humanize), v] }
-      message = _t("Show all dates")
-      [filter, items, message]
+    def has_many_filter(filter)
+      att_assoc = @resource.reflect_on_association(filter.to_sym)
+      class_name = att_assoc.options[:class_name] || filter.classify
+      resource = class_name.typus_constantize
+
+      items = [[Typus::I18n.t("View all %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase.pluralize), ""]]
+      items += resource.order(resource.typus_order_by).map { |v| [v.to_label, v.id] }
     end
 
-    def boolean_filter(request, filter)
-      items   = @resource.typus_boolean(filter)
-      message = _t("Show by %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase)
-      [filter, items, message]
+    def date_filter(filter)
+      values = %w(today last_few_days last_7_days last_30_days)
+      items = [[Typus::I18n.t("Show all dates"), ""]]
+      items += values.map { |v| [Typus::I18n.t(v.humanize), v] }
     end
 
-    def string_filter(request, filter)
-      values  = @resource::const_get(filter.to_s.upcase)
-      items   = values.is_a?(Hash) ? values : values.to_hash_with(values)
-      message = _t("Show by %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase)
-      [filter, items, message]
+    def boolean_filter(filter)
+      values  = @resource.typus_boolean(filter)
+      items = [[Typus::I18n.t("Show by %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase), ""]]
+      items += values.map { |k, v| [Typus::I18n.t(k.humanize), v] }
     end
 
-    def remove_filter_link(filter = request.env['QUERY_STRING'], params = params)
-      return unless filter.present?
-      message = params.compact.include?(:search) ? "search" : "filter"
-      link_to _t("Remove #{message}")
+    def string_filter(filter)
+      values = @resource::const_get(filter.to_s.upcase)
+
+      items = [[Typus::I18n.t("Show by %{attribute}", :attribute => @resource.human_attribute_name(filter).downcase), ""]]
+
+      array = case values
+              when Hash
+                values
+              when Array
+                if values.first.is_a?(Array)
+                  keys, values = values.map { |i| i.first }, values.map { |i| i.last }
+                  keys.to_hash_with(values)
+                else
+                  values.to_hash_with(values)
+                end
+              end
+
+      items += array.to_a
+    end
+
+    def predefined_filters
+      @predefined_filters ||= [["All", "index", "unscoped"]]
     end
 
   end

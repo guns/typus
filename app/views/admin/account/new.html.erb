@@ -1,5 +1,5 @@
 <%
-  page_title = _t("Sign up")
+  page_title = Typus::I18n.t("Sign up")
   title(page_title)
 %>
 
@@ -8,14 +8,18 @@
   <ul>
 
     <li>
-      <%= form.label :email, Typus.user_class.human_attribute_name(:email) %>
-      <%= form.text_field :email, :size => 20, :class => "text" %>
+      <%= form.label :email, Typus.user_class.human_attribute_name(:email), :for => 'autofocus' %>
+      <%= form.text_field :email, :size => 20, :class => "text", :id => 'autofocus', :autofocus => 'autofocus' %>
     </li>
 
     <li>
-      <%= submit_tag _t("Sign up"), :class => "button" %>
+      <%= submit_tag Typus::I18n.t("Sign up"), :class => "button" %>
     </li>
 
   </ul>
+
+  <script type="text/javascript">
+    (function() { document.getElementById('autofocus').focus(); })();
+  </script>
 
 <% end %>

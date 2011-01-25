@@ -1,1 +1,5 @@
 require 'nanoc3/tasks'
+
+task :deploy do
+  system "nanoc co && rake deploy:rsync"
+end

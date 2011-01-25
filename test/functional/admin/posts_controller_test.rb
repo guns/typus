@@ -25,6 +25,34 @@ class Admin::PostsControllerTest < ActionController::TestCase
       assert_template 'index'
     end
 
+    should "render index with accepted params" do
+      @post.update_attributes(:published => true)
+      get :index, { :published => 'true' }
+      assert_response :success
+      assert_template 'index'
+      assert assigns(:items).size.eql?(1)
+
+      get :index, { :published => 'false' }
+      assert assigns(:items).size.eql?(0)
+    end
+
+    should "render index with accepted params - search" do
+      @post.update_attributes(:title => "neinonon")
+      get :index, { :search => 'neinonon' }
+      assert_response :success
+      assert_template 'index'
+      assert assigns(:items).size.eql?(1)
+
+      get :index, { :search => 'unexisting' }
+      assert assigns(:items).size.eql?(0)
+    end
+
+    should "render index with non-accepted params" do
+      get :index, { :non_accepted_param => 'non_accepted_param' }
+      assert_response :success
+      assert_template 'index'
+    end
+
     should "render new" do
       get :new
       assert_response :success
@@ -35,7 +63,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
       assert_difference('Post.count') do
         post :create, { :post => { :title => 'This is another title', :body => 'Body' } }
         assert_response :redirect
-        assert_redirected_to "/admin/posts"
+        assert_redirected_to "/admin/posts/edit/#{Post.last.id}"
       end
     end
 
@@ -54,7 +82,73 @@ class Admin::PostsControllerTest < ActionController::TestCase
     should "update" do
       post :update, { :id => @post.id, :title => 'Updated' }
       assert_response :redirect
-      assert_redirected_to "/admin/posts"
+      assert_redirected_to "/admin/posts/edit/#{@post.id}"
+    end
+
+  end
+
+  context "CRUD extras" do
+
+    setup do
+      @request.env['HTTP_REFERER'] = "/admin/posts"
+    end
+
+    should "toggle" do
+      assert !@post.published
+      get :toggle, { :id => @post.id, :field => "published" }
+
+      assert_response :redirect
+      assert_redirected_to @request.env["HTTP_REFERER"]
+      assert_equal "Post successfully updated.", flash[:notice]
+      assert @post.reload.published
+    end
+
+  end
+
+  context "Actions" do
+
+    should "be edit and trash on index" do
+      get :index
+
+      expected = [ {"action_name"=>"Edit", "action"=>"edit"},
+                   {"confirm"=>"Trash?", "action_name"=>"Trash", "method"=>"delete", "action"=>"destroy"}]
+
+      assert_equal expected, assigns(:actions)
+    end
+
+    should "be edit and unrelate on edit" do
+      get :edit, { :id => @post.id }
+
+      expected = [ {"action_name"=>"Edit", "action"=>"edit"},
+                   {"confirm"=>"Unrelate?", "action_name"=>"Unrelate", "resource_id"=>@post.id, "resource"=>"Post", "action" => "unrelate"}]
+
+      assert_equal expected, assigns(:actions)
+    end
+
+    context "with overriden default action on item" do
+
+      setup do
+        Typus::Resources.expects(:default_action_on_item).at_least_once.returns('show')
+      end
+
+      should "be show and trash on index" do
+        get :index
+
+        expected = [ {"action_name"=>"Show", "action"=>"show"},
+                     {"confirm"=>"Trash?", "action_name"=>"Trash", "method"=>"delete", "action"=>"destroy"}]
+
+        assert_equal expected, assigns(:actions)
+      end
+
+      should "be show and unrelate on edit" do
+        get :edit, { :id => @post.id }
+
+        expected = [ {"action_name"=>"Show", "action"=>"show"},
+                     {"confirm"=>"Unrelate?", "action_name"=>"Unrelate", "resource_id"=>@post.id, "resource"=>"Post", "action" => "unrelate"}]
+
+        assert_equal expected, assigns(:actions)
+      end
+
     end
 
   end
@@ -135,7 +229,18 @@ class Admin::PostsControllerTest < ActionController::TestCase
   context "Formats" do
 
     should "render index and return xml" do
-      expected = <<-RAW
+      expected = if RUBY_VERSION >= '1.9'
+      <<-RAW
+<?xml version="1.0" encoding="UTF-8"?>
+<posts type="array">
+  <post>
+    <status>#{@post.status}</status>
+    <title>#{@post.title}</title>
+  </post>
+</posts>
+      RAW
+      else
+      <<-RAW
 <?xml version="1.0" encoding="UTF-8"?>
 <posts type="array">
   <post>
@@ -144,6 +249,7 @@ class Admin::PostsControllerTest < ActionController::TestCase
   </post>
 </posts>
       RAW
+      end
 
       get :index, :format => "xml"
 
@@ -237,10 +343,7 @@ title;status
 
       should "verify_editor_tries_to_edit_a_post_owned_by_the_admin" do
         get :edit, { :id => Factory(:post).id }
-
-        assert_response :redirect
-        assert_redirected_to @request.env['HTTP_REFERER']
-        assert_equal "You don't have permission to access this item.", flash[:alert]
+        assert_response :unprocessable_entity
       end
 
       should "verify_editor_tries_to_show_a_post_owned_by_the_admin" do
@@ -262,14 +365,11 @@ title;status
         assert_equal [@typus_user.id, @typus_user.id], assigns(:items).map(&:typus_user_id)
       end
 
-      should "verify_editor_tries_to_show_a_post_owned_by_the_admin whe only user items" do
+      should "verify_editor_tries_to_show_a_post_owned_by_the_admin when only user items" do
         Typus::Resources.expects(:only_user_items).returns(true)
         post = Factory(:post)
         get :show, { :id => post.id }
-
-        assert_response :redirect
-        assert_redirected_to @request.env['HTTP_REFERER']
-        assert_equal "You don't have permission to access this item.", flash[:alert]
+        assert_response :unprocessable_entity
       end
 
       should "verify_typus_user_id_of_item_when_creating_record" do
@@ -326,104 +426,61 @@ title;status
       should "not be able to add posts" do
         get :new
 
-        assert_response :redirect
-        assert_equal "Designer is not able to perform this action. (new)", flash[:notice]
-        assert_redirected_to :action => :index
+        assert_response :unprocessable_entity
       end
 
       should "not be able to destroy posts" do
         assert_no_difference('Post.count') do
           get :destroy, { :id => @post.id, :method => :delete }
         end
-        assert_response :redirect
-        assert_equal "You don't have permission to access this item.", flash[:alert]
-        assert_redirected_to :action => :index
+        assert_response :unprocessable_entity
       end
 
     end
 
   end
 
-  context "Relationships" do
+  context "Relationships (relate)" do
 
-    ##
-    # Post => has_many :comments
-    ##
-
-    should "relate_comment_with_post_and_then_unrelate" do
-
-      comment = Factory(:comment, :post => nil)
-      post_ = Factory(:post)
-      @request.env['HTTP_REFERER'] = "/admin/posts/edit/#{post_.id}#comments"
-
-      assert_difference('post_.comments.count') do
-        post :relate, { :id => post_.id,
-                        :related => { :model => 'Comment', :id => comment.id } }
-      end
-
-      assert_response :redirect
-      assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Post successfully updated.", flash[:notice]
-
-      assert_difference('post_.comments.count', -1) do
-        post :unrelate, { :id => post_.id,
-                          :resource => 'Comment', :resource_id => comment.id }
-      end
-
-      assert_response :redirect
-      assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Post successfully updated.", flash[:notice]
-
+    setup do
+      @post = Factory(:post)
     end
 
-    ##
-    # Post => has_and_belongs_to_many :categories
-    ##
+    should "relate comment to post (has_many)" do
+      comment = Factory(:comment, :post => nil)
+      @request.env['HTTP_REFERER'] = "/admin/posts/edit/#{@post.id}#comments"
 
-    should "relate_category_with_post_and_then_unrelate" do
+      assert_difference('@post.comments.count') do
+        post :relate, { :id => @post.id, :related => { :model => 'Comment', :id => comment.id, :association_name => 'comments' } }
+      end
+
+      assert_response :redirect
+      assert_redirected_to @request.env['HTTP_REFERER']
+      assert_equal "Post successfully updated.", flash[:notice]
+    end
+
+    should "relate asset to post (has_many - polymorphic)" do
+      asset = Factory(:asset)
+      id = asset.id
+      @request.env['HTTP_REFERER'] = "/admin/posts/edit/#{@post.id}#assets"
+
+      assert_difference('@post.assets.count') do
+        post :relate, { :id => @post.id, :related => { :model => 'Asset', :id => asset.id, :association_name => 'assets' } }
+      end
+
+      assert_response :redirect
+      assert_redirected_to @request.env['HTTP_REFERER']
+      assert_equal "Post successfully updated.", flash[:notice]
+    end
+
+    should "relate category to post (has_and_belongs_to_many)" do
       category = Factory(:category)
-      post_ = Factory(:post)
-      @request.env['HTTP_REFERER'] = "/admin/posts/edit/#{post_.id}#categories"
-
-      ##
-      # First Step: Relate
-      #
+      @request.env['HTTP_REFERER'] = "/admin/posts/edit/#{@post.id}#categories"
 
       assert_difference('category.posts.count') do
-        post :relate, { :id => post_.id, :related => { :model => 'Category', :id => category.id } }
+        post :relate, { :id => @post.id, :related => { :model => 'Category', :id => category.id, :association_name => 'categories' } }
       end
 
-      assert_response :redirect
-      assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Post successfully updated.", flash[:notice]
-
-      ##
-      # Second Step: Unrelate
-      #
-
-      assert_difference('category.posts.count', -1) do
-        post :unrelate, { :id => post_.id, :resource => 'Category', :resource_id => category.id }
-      end
-
-      assert_response :redirect
-      assert_redirected_to @request.env['HTTP_REFERER']
-      assert_equal "Post successfully updated.", flash[:notice]
-    end
-
-    ##
-    # Post => has_many :assets, :as => resource (Polimorphic)
-    ##
-
-    should "relate_asset_with_post_and_then_unrelate" do
-      post_ = Factory(:post)
-      asset = Factory(:asset)
-      post_.assets << asset
-
-      @request.env['HTTP_REFERER'] = "/admin/posts/edit/#{post_.id}#assets"
-
-      assert_difference('post_.assets.count', -1) do
-        get :unrelate, { :id => post_.id, :resource => 'Asset', :resource_id => asset.id }
-      end
       assert_response :redirect
       assert_redirected_to @request.env['HTTP_REFERER']
       assert_equal "Post successfully updated.", flash[:notice]
@@ -535,6 +592,12 @@ title;status
         @request.session[:typus_user_id] = @typus_user.id
       end
 
+=begin
+
+      ##
+      # This feature is no longer available. I've to decide if I want to take
+      # it back.
+      #
       should "get_index_and_render_edit_or_show_links_on_owned_records" do
         get :index
         Post.all.each do |post|
@@ -542,6 +605,8 @@ title;status
           assert_match "/posts/#{action}/#{post.id}", @response.body
         end
       end
+
+=end
 
       should "get_index_and_render_edit_or_show_on_only_user_items" do
         %w(edit show).each do |action|
@@ -556,6 +621,89 @@ title;status
             end
           end
         end
+      end
+
+    end
+
+  end
+
+  ##
+  # We are in a View and we want to create a new Post from there to be able
+  # to assign it. There are two cases:
+  #
+  # - We are creating the view.
+  # - We are editing the view.
+  #
+  context "create_with_back_to" do
+
+    setup do
+      @post = { :title => 'This is another title', :body => 'Body' }
+    end
+
+    context "when creating an item" do
+
+      ##
+      # We click on the "Add new" link and we are redirected to:
+      #
+      #     /admin/posts/new
+      #
+      # With a collection of params which will be used to create the
+      # association if everything works as expected.
+      #
+      # Once the association is created we are redirected back to where we
+      # started with a param which selects the Post on the View form.
+      #
+      #     /admin/views/new?post_id=1
+      #
+      # So we end up having a new Post and if we save the form will be
+      # assigned to the view.
+      #
+
+      setup do
+        @back_to = "/admin/view/new"
+      end
+
+      should "create new post and redirect to view" do
+        assert_difference('Post.count') do
+          post :create, { :post => @post,
+                          :back_to => @back_to,
+                          :resource => "View" }
+        end
+        assert_response :redirect
+        assert_redirected_to "#{@back_to}?post_id=#{Post.last.id}"
+      end
+
+    end
+
+    context "when editing an item" do
+
+      ##
+      # We click on the "Add new" link and we are redirected to:
+      #
+      #     /admin/posts/new
+      #
+      # The important thing here is that we are passing the `resource_id`
+      # because we will assign the newly created Post to the View.
+      #
+      # So we will end up having a new Post assigned to the View.
+      #
+
+      setup do
+        @view = Factory(:view, :post => nil)
+        @back_to = "/admin/view/edit/#{@view.id}"
+      end
+
+      should "create new post and redirect to view" do
+        assert_difference('Post.count') do
+          post :create, { :post => @post,
+                          :back_to => @back_to,
+                          :resource => "View", :resource_id => @view.id }
+        end
+        assert_response :redirect
+        assert_redirected_to @back_to
+
+        # Make sure the association is created!
+        assert @view.reload.post
       end
 
     end

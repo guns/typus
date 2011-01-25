@@ -11,10 +11,12 @@ class Admin::FiltersHelperTest < ActiveSupport::TestCase
   context "date_filter" do
 
     should "return an array" do
-      output = date_filter("request", "filter")
-      expected = "filter",
-                 [["Today", "today"], ["Last few days", "last_few_days"], ["Last 7 days", "last_7_days"], ["Last 30 days", "last_30_days"]],
-                 "Show all dates"
+      output = date_filter("filter")
+      expected = [["Show all dates", ""],
+                  ["Today", "today"],
+                  ["Last few days", "last_few_days"],
+                  ["Last 7 days", "last_7_days"],
+                  ["Last 30 days", "last_30_days"]]
       assert_equal expected, output
     end
 
@@ -27,10 +29,10 @@ class Admin::FiltersHelperTest < ActiveSupport::TestCase
     end
 
     should "return an array" do
-      output = boolean_filter("request", "filter")
-      expected = "filter",
-                 {"True"=>"true", "False"=>"false"},
-                 "Show by filter"
+      output = boolean_filter("filter")
+      expected = [["Show by filter", ""],
+                  ["True", "true"],
+                  ["False", "false"]]
       assert_equal expected, output
     end
 
@@ -43,32 +45,44 @@ class Admin::FiltersHelperTest < ActiveSupport::TestCase
     end
 
     should "return an array" do
-      output = string_filter("request", "status")
-      expected = "status",
-                 {"unpublished"=>"unpublished", "pending"=>"pending", "published"=>"published"},
-                 "Show by status"
+      output = string_filter("status")
+      expected = [["Show by status", ""],
+                  ["--", ""],
+                  ["Unpublished", "unpublished"],
+                  ["<div class=''>Something special</div>", "special"],
+                  ["Draft", "draft"],
+                  ["Published", "published"]]
+      assert_equal expected, output
+    end
+
+    should "return an array from an ARRAY_SELECTOR" do
+      output = string_filter("array_selector")
+      expected = [["Show by array selector", ""],
+                  ["item1", "item1"],
+                  ["item2", "item2"]]
+      assert_equal expected, output
+    end
+
+    should "return an array from an ARRAY_HASH_SELECTOR" do
+      output = string_filter("array_hash_selector")
+      expected = [["Show by array hash selector", ""],
+                  ["Custom Status", "custom"],
+                  ["Draft", "draft"]]
       assert_equal expected, output
     end
 
   end
 
-  context "remove_filter_link" do
+  context "predefined_filters" do
 
-    should "return nil when blank" do
-      output = remove_filter_link("", {})
-      assert_nil output
+    should "have a value" do
+      expected = [["All", "index", "unscoped"]]
+      assert_equal expected, predefined_filters
     end
 
-    should "return link to remove search" do
-      output = remove_filter_link('test', {:search => 'test'})
-      expected = ["Remove search"]
-      assert_equal expected, output
-    end
-
-    should "return link to remove filter" do
-      output = remove_filter_link('test', {:filter => 'test'})
-      expected = ["Remove filter"]
-      assert_equal expected, output
+    should "return my filter" do
+      @predefined_filters = "mock"
+      assert_equal "mock", predefined_filters
     end
 
   end

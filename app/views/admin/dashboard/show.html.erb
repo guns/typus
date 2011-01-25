@@ -1,5 +1,5 @@
 <%
-  page_title = _t("Dashboard")
+  page_title = Typus::I18n.t("Dashboard")
   title(page_title)
 %>
 
@@ -13,4 +13,4 @@
 
 <%= applications %>
 
-<%= resources(current_user) %>
+<%= resources(admin_user) %>

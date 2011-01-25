@@ -7,12 +7,16 @@ module Admin
       @model_to_relate = @resource.reflect_on_association(field.to_sym).class_name.typus_constantize
       @model_to_relate_as_resource = @model_to_relate.to_resource
       @reflection = @resource.reflect_on_association(field.to_sym)
+      @association_name = @reflection.through_reflection ? @reflection.name.to_s : @model_to_relate.model_name.tableize
     end
 
     def typus_form_has_many(field)
       setup_relationship(field)
-
-      @items_to_relate = @model_to_relate.where(@reflection.primary_key_name => nil) - @item.send(field)
+      if @reflection.through_reflection
+        @items_to_relate = @model_to_relate.all - @item.send(field)
+      else
+        @items_to_relate = @model_to_relate.where(@reflection.primary_key_name => nil) - @item.send(field)
+      end
 
       if set_condition && @items_to_relate.any?
         form = build_relate_form
@@ -29,6 +33,7 @@ module Admin
       render "admin/templates/has_n",
              :model_to_relate => @model_to_relate,
              :model_to_relate_as_resource => @model_to_relate_as_resource,
+             :association_name => @association_name,
              :foreign_key => foreign_key,
              :add_new => build_add_new(options),
              :form => form,
@@ -44,14 +49,13 @@ module Admin
         form = build_relate_form
       end
 
-      options = { :resource => @resource.to_resource }
-
       build_pagination
 
       render "admin/templates/has_n",
              :model_to_relate => @model_to_relate,
              :model_to_relate_as_resource => @model_to_relate_as_resource,
-             :add_new => build_add_new(options),
+             :association_name => @association_name,
+             :add_new => build_add_new,
              :form => form,
              :table => build_relationship_table
     end
@@ -66,7 +70,8 @@ module Admin
     def build_relate_form
       render "admin/templates/relate_form",
              :model_to_relate => @model_to_relate,
-             :items_to_relate => @items_to_relate
+             :items_to_relate => @items_to_relate,
+             :association_name => @association_name
     end
 
     def build_relationship_table
@@ -75,74 +80,47 @@ module Admin
                  @items,
                  @model_to_relate_as_resource,
                  {},
-                 @reflection.macro)
+                 @reflection.macro,
+                 @association_name)
     end
 
     def build_add_new(options = {})
-      default_options = { :controller => "/admin/#{@field}", :action => "new",
-                          :resource => @resource.to_resource.singularize, :resource_id => @item.id,
+      default_options = { :controller => "/admin/#{@model_to_relate.to_resource}", :action => "new",
+                          :resource => @resource.model_name, :resource_id => @item.id,
                           :back_to => @back_to }
 
-      if set_condition && current_user.can?("create", @model_to_relate)
-        link_to _t("Add new"), default_options.merge(options)
+      if set_condition && admin_user.can?("create", @model_to_relate)
+        link_to Typus::I18n.t("Add new"), default_options.merge(options)
       end
     end
 
     def set_condition
-      if @resource.typus_user_id? && current_user.is_not_root?
-        @item.owned_by?(current_user)
+      if @resource.typus_user_id? && admin_user.is_not_root?
+        @item.owned_by?(admin_user)
       else
         true
       end
     end
 
     def set_conditions
-      if @model_to_relate.typus_options_for(:only_user_items) && current_user.is_not_root?
-        { Typus.user_fk => current_user }
+      if @model_to_relate.typus_options_for(:only_user_items) && admin_user.is_not_root?
+        { Typus.user_fk => admin_user }
       end
     end
 
-    #--
-    # TODO: Move html code to partial.
-    #++
     def typus_form_has_one(field)
-      html = ""
+      setup_relationship(field)
 
-      model_to_relate = @resource.reflect_on_association(field.to_sym).class_name.typus_constantize
-      model_to_relate_as_resource = model_to_relate.to_resource
-
-      reflection = @resource.reflect_on_association(field.to_sym)
-      association = reflection.macro
-
-      html << <<-HTML
-<a name="#{field}"></a>
-<div class="box_relationships" id="#{model_to_relate_as_resource}">
-  <h2>
-  #{link_to model_to_relate.model_name.human, :controller => "/admin/#{model_to_relate_as_resource}"}
-  </h2>
-      HTML
-      items = Array.new
-      items << @resource.find(params[:id]).send(field) unless @resource.find(params[:id]).send(field).nil?
-      unless items.empty?
-        options = { :back_to => @back_to, :resource => @resource.to_resource, :resource_id => @item.id }
-        html << build_list(model_to_relate,
-                           model_to_relate.typus_fields_for(:relationship),
-                           items,
-                           model_to_relate_as_resource,
-                           options,
-                           association)
-      else
-        message = _t("No %{resources} found.",
-                     :resources => model_to_relate.model_name.human.pluralize.downcase)
-        html << <<-HTML
-  <div id="flash" class="notice"><p>#{message}</p></div>
-        HTML
+      @items = Array.new
+      if item = @resource.find(params[:id]).send(field)
+        @items << item
       end
-      html << <<-HTML
-</div>
-      HTML
 
-      return html
+      render "admin/templates/has_one",
+             :model_to_relate => @model_to_relate,
+             :model_to_relate_as_resource => @model_to_relate_as_resource,
+             :add_new => @items.empty? ? build_add_new : nil,
+             :table => build_relationship_table
     end
 
     def typus_belongs_to_field(attribute, form)
@@ -158,17 +136,21 @@ module Admin
       related_fk = @resource.reflect_on_association(attribute.to_sym).primary_key_name
 
       if params[:action] == 'edit'
-        options = { :resource => @resource.to_resource,
+        options = { :resource => @resource.model_name,
                     :resource_id => @item.id }
       else
-        options = { :resource => @resource.to_resource }
+        options = { :resource => @resource.model_name }
       end
 
       default = { :controller => "/admin/#{related.to_resource}", :action => 'new', :back_to => back_to }
 
-      if current_user.can?('create', related)
-        message = link_to _t("Add"), default.merge(options)
+      if admin_user.can?('create', related)
+        message = link_to Typus::I18n.t("Add"), default.merge(options)
       end
+
+      values = related.respond_to?(:roots) ?
+        expand_tree_into_select_field(related.roots, related_fk) :
+        related.order(related.typus_order_by).map { |p| [p.to_label, p.id] }
 
       render "admin/templates/belongs_to",
              :resource => @resource,
@@ -177,7 +159,7 @@ module Admin
              :related_fk => related_fk,
              :message => message,
              :label_text => @resource.human_attribute_name(attribute),
-             :values => related.order(related.typus_order_by).map { |p| [p.to_label, p.id] }.sort,
+             :values => values,
              # :html_options => { :disabled => attribute_disabled?(attribute) },
              :html_options => {},
              :options => { :include_blank => true }

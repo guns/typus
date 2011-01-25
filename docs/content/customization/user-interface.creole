@@ -1,0 +1,67 @@
+---
+title: User Interface
+
+parent_title: Customization
+---
+
+= User Interface
+
+You can customize the admin panel interface overwriting the default templates
+included with the plugin.
+
+It's recommended to run the {{{typus:views}}} generator to copy the default
+templates into your application.
+
+{{{
+$ rails generate typus:views
+}}}
+
+== Dashboard
+
+To override dashboard's sidebar:
+
+{{{
+views/admin/dashboard/_sidebar.html.erb
+}}}
+
+== Resources
+
+You can override views for all resources or by resource.
+
+For all resources:
+
+{{{
+views/admin/resources/index.html.erb
+views/admin/resources/edit.html.erb
+views/admin/resources/show.html.erb
+}}}
+
+For <var>articles</var>:
+
+{{{
+views/admin/articles/index.html.erb
+views/admin/articles/edit.html.erb
+views/admin/articles/show.html.erb
+}}}
+
+== Partials on Resources
+
+You can override partials for all resources or by resource.
+
+For all resources:
+
+{{{
+views/admin/resources/_index.html.erb
+views/admin/resources/_new.html.erb
+views/admin/resources/_edit.html.erb
+views/admin/resources/_show.html.erb
+}}}
+
+For <var>articles</var>:
+
+{{{
+views/admin/articles/_index.html.erb
+views/admin/articles/_new.html.erb
+views/admin/articles/_edit.html.erb
+views/admin/articles/_show.html.erb
+}}}

@@ -1,5 +1,5 @@
 <%
-  page_title = _t("%{resources}", :resources => @resource.model_name.human.pluralize)
+  page_title = @resource.model_name.human.pluralize
   title(page_title)
 %>
 
@@ -7,13 +7,19 @@
 
 <h2>
   <%= page_title %>
-  <small><%= remove_filter_link %></small>
 </h2>
 
 <%= display_flash_message %>
-<%= typus_render :partial => 'index' %>
 
-<% if (build_filters || search) && !@resource.count.zero? %>
+<%= render 'index' %>
+
+<ul class="predefined_filters">
+  <% predefined_filters.each do |filter, action, scope| %>
+    <li><%= link_to Typus::I18n.t(filter), :action => action %> (<%= @resource.send(scope).count %>)</li>
+  <% end %>
+</ul>
+
+<% if (build_filters || search) %>
   <div class="filters">
     <%= build_filters %>
     <%= search %>
@@ -24,5 +30,5 @@
   <%= raw build_list(@resource, @fields, @items) %>
   <%= will_paginate(@items, Typus.pagination) %>
 <% else %>
-  <p><%= _t("No %{resources} found.", :resources => @resource.model_name.human.pluralize.downcase) %></p>
+  <p><%= Typus::I18n.t("No %{resources} found.", :resources => @resource.model_name.human.pluralize.downcase) %></p>
 <% end %>

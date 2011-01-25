@@ -1,0 +1,133 @@
+---
+title: Change Log
+---
+
+= Change Log
+
+== 3.0.3 (Unreleased)
+
+**[NEW]** Support for has many through relationships. [jmeiss]
+
+**[CHANGED]** Removed typus pagination module and use {{{will_paginate}}} one.
+Pagination options can be configure overriding {{{Typus.pagination}}} variable.
+
+**[FIXED]** Queries are now using the table name. [tyx]
+
+**[NEW]** All queries are {{{unscoped}}} so we can separate completely the
+frontend from the backend.
+
+**[NEW]** We can disable sortable tables.
+
+**[FIXED]** Url generation bug when using namespaced STI models. [masone]
+
+**[NEW]** Raise an exception if config for model cannot be found. [masone]
+
+**[FIXED]** Minor bug fixes and re-styling ...
+
+**[NEW]** Layouts contain metatag with generator information.
+
+**[NEW]** Added missing csrf_meta_tag in {{{session.html.erb}}} layout.
+
+**[NEW]** Added constrain to database to avoid duplicated emails.
+
+**[FIXED]** Dates on tables are localized.
+
+**[FIXED]** {{{@resource.classify.constantize}}} becomes {{{@resource.constantize}}}.
+
+**[CHANGED]** Updated {{{typus_preview}}} to display original filaname when file is
+not an image.
+
+**[NEW]** Support for Dragonfly attachments. Template for this kind of attribute
+is {{{_dragonfly.html.erb}}}.
+
+**[CHANGED]** Paperclip attachments are detected as {{{:paperclip}}} thus the form
+template is not {{{_paperclip.html.erb}}}.
+
+**[NEW]** 中文 (zh-CN) translation. [ZoOL]
+
+**[CHANGED]** {{{action_after_save}}} by default is {{{index}}}. This has been
+changed after a usability test with a client.
+
+**[NEW]** Greek (el) translation. [Spyros Livathinos]
+
+**[CHANGED]** Updated jQuery to v1.4.4
+
+**[CHANGED]** Updated fancybox to v1.3.4
+
+**[NEW]** New generator: {{{rails generate typus:assets}}}.
+
+**[NEW]** Created UserVoice (http://typuscms.uservoice.com/)
+
+**[CHANGED]** Table of contents on documentation for easier access.
+
+**[CHANGED]** Display {{{&mdash;}}} where no content is available.
+
+**[NEW]** {{{Admin::ResourcesController}}} includes {{{Typus::Extensions}}} if
+available.
+
+**[CHANGED]** Removed {{{remove_filter_link}}} helper in favour of predefined
+links to filters.
+
+**[NEW]** Custom actions can be injected into table actions. This needs some
+refector to be more powerful (roles) but it works for now.
+
+**[CHANGED]** {{{current_user}}} is now {{{admin_user}}}.
+
+**[CHANGED]** All available locales are shown to the user.
+
+**[CHANGED]** All the I18n stuff of {{{typus}}} is now under Typus::I18n
+namespace.
+
+**[CHANGED]** {{{/admin/help}}} is now {{{/admin/user_guide}}}.
+
+**[NEW]** Link to {{{/admin/user_guide}}} from the sidebar.
+
+**[CHANGED]** AdminUser::LANGUAGES becomes AdminUser::LOCALE so you'll have to
+update your AdminUser.
+
+**[NEW]** Better application templates.
+
+== 3.0.2
+
+**[FIXED]** Use Arel to get the data on lists. After moving to will_paginate I
+broke the data method, on each list we where "selecting ALL on the table of
+the current model" (Really ugly bug) [Reported by NateW]
+
+**[FIXED]** If @current_user was being set many times on each request, thanks to
+rails caching mechanism this was not affecting to the performance. Now we only
+see the @current_user once. (As it should be.)
+
+== 3.0.1
+
+**[FIXED]** After moving from a vendored paginator to will_paginate I removed some
+stuff which shouldn't be removed, so the 3.0.0 gem is totally broken.
+
+**[FIXED]** Force query with postgresql adapter to not be case sensitive [jmeiss]
+
+== 3.0.0
+
+**[NEW]** New gem version compatible with Rails 3.
+
+== Previously
+
+Why a 3.0.0 version? After considering the work done for the Rails 3 transition
+I though it would be a good idea to keep versions syncronized with Rails.
+
+Typus will have the same version numbers as Rails as I considered it's pretty
+tied to it. With each release of Rails, we will take the latest features into
+Typus.
+
+Pending stuff that someday will be done, donations and collaborations are
+accepted.
+
+* Add AJAX, specially when removing and adding new relationships.
+
+* Transversal search and full models search.
+
+* Test the helpers and add some functional testing.
+
+* Nested models.
+
+* Contextual content depending on the role logged.
+
+* Replace typus authentication by devise.

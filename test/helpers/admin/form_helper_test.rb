@@ -10,8 +10,8 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
     params = { :controller => '/admin/post', :id => 1, :action => :create }
     self.stubs(:params).returns(params)
 
-    current_user = mock
-    current_user.stubs(:can?).with('create', Post).returns(false)
+    admin_user = mock
+    admin_user.stubs(:can?).with('create', Post).returns(false)
     @resource = Comment
 
     expected = <<-HTML
@@ -34,8 +34,8 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
     params = { :controller => '/admin/post', :id => 1, :action => :edit }
     self.stubs(:params).returns(params)
 
-    current_user = mock
-    current_user.stubs(:can?).with('create', Comment).returns(true)
+    admin_user = mock
+    admin_user.stubs(:can?).with('create', Comment).returns(true)
     @resource = Post
 
     expected = <<-HTML
@@ -71,46 +71,55 @@ class Admin::FormHelperTest < ActiveSupport::TestCase
 
   end
 
-  should_eventually "verify_attribute_disabled" do
-    @resource = Post
-    assert !attribute_disabled?('test')
-    Post.expects(:accessible_attributes).returns(['test'])
-    assert !attribute_disabled?('test')
-    Post.expects(:accessible_attributes).returns(['no_test'])
-    assert attribute_disabled?('test')
+  context "attribute_disabled?" do
+
+    setup do
+      @resource = Post
+    end
+
+    should "work for non protected_attributes" do
+      assert !attribute_disabled?('test')
+    end
+
+    should "work for protected_attributes" do
+      Post.expects(:protected_attributes).returns(['test'])
+      assert attribute_disabled?('test')
+    end
+
   end
 
-  should_eventually "test_expand_tree_into_select_field" do
+  context "expand_tree_into_select_field" do
 
-    items = Page.roots
+    setup do
+      @page = Factory(:page)
+      @children = Factory(:page, :parent => @page)
+      @subchildren = Factory(:page, :parent => @children)
+      @items = Page.roots
+    end
 
-    # Page#1 is a root.
+    should "verify it works" do
+      @item = Page.first
 
-    @item = Page.find(1)
-    output = expand_tree_into_select_field(items, 'parent_id')
-    expected = <<-HTML
-<option  value="1"> &#8627; Page#1</option>
-<option  value="2">&nbsp;&nbsp; &#8627; Page#2</option>
-<option  value="3"> &#8627; Page#3</option>
-<option  value="4">&nbsp;&nbsp; &#8627; Page#4</option>
-<option  value="5">&nbsp;&nbsp; &#8627; Page#5</option>
-<option  value="6">&nbsp;&nbsp;&nbsp;&nbsp; &#8627; Page#6</option>
-    HTML
-    assert_equal expected, output
+      expected = <<-HTML
+<option  value="#{@page.id}"> #{@page.to_label}</option>
+<option  value="#{@children.id}">&nbsp;&nbsp; #{@children.to_label}</option>
+<option  value="#{@subchildren.id}">&nbsp;&nbsp;&nbsp;&nbsp; #{@subchildren.to_label}</option>
+      HTML
 
-    # Page#4 is a children.
+      assert_equal expected, expand_tree_into_select_field(@items, 'parent_id')
+    end
 
-    @item = Page.find(4)
-    output = expand_tree_into_select_field(items, 'parent_id')
-    expected = <<-HTML
-<option  value="1"> &#8627; Page#1</option>
-<option  value="2">&nbsp;&nbsp; &#8627; Page#2</option>
-<option selected value="3"> &#8627; Page#3</option>
-<option  value="4">&nbsp;&nbsp; &#8627; Page#4</option>
-<option  value="5">&nbsp;&nbsp; &#8627; Page#5</option>
-<option  value="6">&nbsp;&nbsp;&nbsp;&nbsp; &#8627; Page#6</option>
-    HTML
-    assert_equal expected, output
+    should "verify if selects an item" do
+      @item = Page.last
+
+      expected = <<-HTML
+<option  value="#{@page.id}"> #{@page.to_label}</option>
+<option selected value="#{@children.id}">&nbsp;&nbsp; #{@children.to_label}</option>
+<option  value="#{@subchildren.id}">&nbsp;&nbsp;&nbsp;&nbsp; #{@subchildren.to_label}</option>
+      HTML
+
+      assert_equal expected, expand_tree_into_select_field(@items, 'parent_id')
+    end
 
   end
 

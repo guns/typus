@@ -1,5 +1,6 @@
 require "rails/generators/migration"
 require "generators/typus/controller_generator"
+require "generators/typus/assets_generator"
 
 module Typus
 
@@ -34,9 +35,7 @@ Description:
       end
 
       def copy_assets
-        Dir["#{templates_path}/public/**/*.*"].each do |file|
-          copy_file file.split("#{templates_path}/").last
-        end
+        Typus::Generators::AssetsGenerator.new.invoke_all
       end
 
       def generate_controllers
@@ -46,13 +45,9 @@ Description:
       end
 
       def generate_config
-        configuration = generate_yaml_files
-        unless configuration[:base].empty?
-          %w( application.yml application_roles.yml ).each do |file|
-            from = to = "config/typus/#{file}"
-            if File.exists?(from) then to = "config/typus/#{timestamp}_#{file}" end
-            @configuration = configuration
-            template from, to
+        if (@configuration = generate_yaml_files)[:base].present?
+          %w(application.yml application_roles.yml).each do |file|
+            template "config/typus/#{file}", "config/typus/#{timestamp}_#{file}"
           end
         end
       end
@@ -72,16 +67,13 @@ Description:
       end
 
       def timestamp
-        Time.zone.now.utc.to_s(:number)
+        Time.zone.now.to_s(:number)
       end
 
       private
 
-      def templates_path
-        File.join(Typus.root, "lib", "generators", "templates")
-      end
-
       def generate_yaml_files
+        Typus.reload!
 
         configuration = { :base => "", :roles => "" }
 
@@ -107,23 +99,19 @@ Description:
                            created_at created_on updated_at updated_on deleted_at
                            salt crypted_password
                            password_salt persistence_token single_access_token perishable_token
-                           _type$
+                           _type$ type
                            _file_size$ )
 
-          default_rejections = rejections + %w( password password_confirmation )
-          form_rejections = rejections + %w( position )
+          default_rejections = (rejections + %w( password password_confirmation )).join("|")
+          form_rejections = (rejections + %w( position )).join("|")
 
-          default = klass.columns.reject do |column|
-                   column.name.match(default_rejections.join("|")) || column.sql_type == "text"
-                 end.map(&:name)
-
-          form = klass.columns.reject do |column|
-                   column.name.match(form_rejections.join("|"))
-                 end.map(&:name)
+          fields = klass.columns.map(&:name)
+          default = fields.reject { |f| f.match(default_rejections) }
+          form = fields.reject { |f| f.match(form_rejections) }
 
           # Model defaults.
           order_by = "position" if default.include?("position")
-          filters = "created_at" if klass.columns.include?("created_at")
+          filters = "created_at" if fields.include?("created_at")
           search = ( %w(name title) & default ).join(", ")
 
           # We want attributes of belongs_to relationships to be shown in our
@@ -152,8 +140,7 @@ Description:
 
         end
 
-        return configuration
-
+        configuration
       end
 
     end

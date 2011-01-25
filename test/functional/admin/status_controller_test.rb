@@ -1,5 +1,13 @@
 require "test_helper"
 
+=begin
+
+  What's being tested here?
+
+    - Resource controller (which is not associated with a model).
+
+=end
+
 class Admin::StatusControllerTest < ActionController::TestCase
 
   context "Admin" do

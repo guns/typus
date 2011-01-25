@@ -1,10 +1,14 @@
 require "test_helper"
 
-class Admin::PagesControllerTest < ActionController::TestCase
+=begin
 
-  ##
-  # Here we test the scopes.
-  #
+  What's being tested here?
+
+    - Scopes
+
+=end
+
+class Admin::PagesControllerTest < ActionController::TestCase
 
   setup do
     @typus_user = Factory(:typus_user)

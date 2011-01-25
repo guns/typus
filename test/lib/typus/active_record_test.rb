@@ -31,10 +31,11 @@ class ActiveRecordTest < ActiveSupport::TestCase
                          [:body, :text],
                          [:status, :string],
                          [:favorite_comment_id, :integer],
-                         [:created_at, :datetime],
-                         [:updated_at, :datetime],
                          [:published_at, :datetime],
-                         [:typus_user_id, :integer]]
+                         [:typus_user_id, :integer],
+                         [:published, :boolean],
+                         [:created_at, :datetime],
+                         [:updated_at, :datetime]]
       assert_equal expected_fields.map { |i| i.first }, Post.model_fields.keys
       assert_equal expected_fields.map { |i| i.last }, Post.model_fields.values
     end
@@ -92,33 +93,39 @@ class ActiveRecordTest < ActiveSupport::TestCase
                          ["email", :string],
                          ["password", :password],
                          ["password_confirmation", :password],
-                         ["language", :selector]]
+                         ["locale", :selector]]
       assert_equal expected_fields.map { |i| i.first }, TypusUser.typus_fields_for(:form).keys
       assert_equal expected_fields.map { |i| i.last }, TypusUser.typus_fields_for(:form).values
     end
 
-    should "return form fields for Picture" do
-      expected_fields = [["title", :string], ["picture", :file]]
-      assert_equal expected_fields.map { |i| i.first }, Picture.typus_fields_for(:form).keys
-      assert_equal expected_fields.map { |i| i.last }, Picture.typus_fields_for(:form).values
-    end
-
     should "return form fields for Asset" do
-      expected_fields = [["caption", :string], ["file", :file], ["required_file", :file]]
-      assert_equal expected_fields.map { |i| i.first }, Asset.typus_fields_for(:form).keys
-      assert_equal expected_fields.map { |i| i.last }, Asset.typus_fields_for(:form).values
+      expected_fields = [["caption", :string], ["dragonfly", :file], ["dragonfly_required", :file], ["original_file_name", :virtual]]
+      assert_equal expected_fields.map { |i| i.first }, Asset.typus_fields_for(:special).keys
+      assert_equal expected_fields.map { |i| i.last }, Asset.typus_fields_for(:special).values
     end
 
-    should "return form fields for a Model without configuration" do
-      assert Class.new(ActiveRecord::Base).typus_fields_for(:form).empty?
+    should "raise a RuntimeError when model does not have configuration" do
+      assert_raises RuntimeError do
+        Class.new(ActiveRecord::Base).typus_fields_for(:form)
+      end
     end
 
     should "return relationship fields for TypusUser" do
-      assert_equal %w(first_name last_name role email language), TypusUser.typus_fields_for(:relationship).keys
+      assert_equal %w(first_name last_name role email locale), TypusUser.typus_fields_for(:relationship).keys
     end
 
     should "return undefined fields for TypusUser" do
-      assert_equal %w(first_name last_name role email language), TypusUser.typus_fields_for(:undefined).keys
+      assert_equal %w(first_name last_name role email locale), TypusUser.typus_fields_for(:undefined).keys
+    end
+
+    should "work for transversal fields" do
+      expected_fields = [["email", :string],
+                         ["post", :belongs_to],
+                         ["post_id", :integer],
+                         ["spam", :boolean],
+                         ["post.title", :transversal]]
+      assert_equal expected_fields.map { |i| i.first }, Comment.typus_fields_for(:list).keys
+      assert_equal expected_fields.map { |i| i.last }, Comment.typus_fields_for(:list).values
     end
 
   end
@@ -193,7 +200,7 @@ class ActiveRecordTest < ActiveSupport::TestCase
   context "typus_application" do
 
     should "return application for Post" do
-      assert_equal "Blog", Post.typus_application
+      assert_equal "CRUD Extended", Post.typus_application
     end
 
     should "return application for View" do
@@ -208,7 +215,10 @@ class ActiveRecordTest < ActiveSupport::TestCase
       assert_equal [:status], Post.typus_field_options_for(:selectors)
       assert_equal [:permalink], Post.typus_field_options_for(:read_only)
       assert_equal [:created_at], Post.typus_field_options_for(:auto_generated)
-      assert_equal [], Post.typus_field_options_for(:unexisting)
+    end
+
+    should "return empty array for unexisting option" do
+      assert Post.typus_field_options_for(:unexisting).empty?
     end
 
   end
@@ -231,7 +241,7 @@ class ActiveRecordTest < ActiveSupport::TestCase
     end
 
     should "return booleans for Comment" do
-      expected = {"No, its not spam" => "false", "Yes, its spam" => "true"}
+      expected = {"No, it's not spam" => "false", "Yes, it's spam" => "true"}
       assert_equal expected, Comment.typus_boolean(:spam)
     end
 
@@ -310,10 +320,6 @@ class ActiveRecordTest < ActiveSupport::TestCase
       assert_equal ["csv", "xml"], Post.typus_export_formats
     end
 
-    should "return picture formats" do
-      assert_equal [], Picture.typus_export_formats
-    end
-
   end
 
   context "typus_order_by" do
@@ -321,127 +327,6 @@ class ActiveRecordTest < ActiveSupport::TestCase
     should "return defaults_for order_by on Post" do
       assert_equal "posts.title ASC, posts.created_at DESC", Post.typus_order_by
       assert_equal %w(title -created_at), Post.typus_defaults_for(:order_by)
-    end
-
-  end
-
-  context "build_conditions" do
-
-    should "generate conditions for id" do
-      Post.stubs(:typus_defaults_for).with(:search).returns(["id"])
-
-      params = { :search => '1' }
-      expected = "(`posts`.id LIKE '%1%')"
-
-      assert_equal expected, Post.build_conditions(params).first
-    end
-
-    should "generate conditions for fields starting with equal" do
-      Post.stubs(:typus_defaults_for).with(:search).returns(["=id"])
-
-      params = { :search => '1' }
-      expected = "(`posts`.id LIKE '1')"
-
-      assert_equal expected, Post.build_conditions(params).first
-    end
-
-    should "generate conditions for fields starting with ^" do
-      Post.stubs(:typus_defaults_for).with(:search).returns(["^id"])
-
-      params = { :search => '1' }
-      expected = "(`posts`.id LIKE '1%')"
-
-      assert_equal expected, Post.build_conditions(params).first
-    end
-
-    should "return_sql_conditions_on_search_for_typus_user" do
-      expected = case ENV["DB"]
-                 when /postgresql/
-                   "(TEXT(role) LIKE '%francesc%' OR TEXT(last_name) LIKE '%francesc%' OR TEXT(email) LIKE '%francesc%' OR TEXT(first_name) LIKE '%francesc%')"
-                 else
-                   "(`typus_users`.role LIKE '%francesc%' OR `typus_users`.last_name LIKE '%francesc%' OR `typus_users`.email LIKE '%francesc%' OR `typus_users`.first_name LIKE '%francesc%')"
-                end
-
-      params = { :search => "francesc" }
-      assert_equal expected, TypusUser.build_conditions(params).first
-      params = { :search => "Francesc" }
-      assert_equal expected, TypusUser.build_conditions(params).first
-    end
-
-    should "return_sql_conditions_on_search_and_filter_for_typus_user" do
-      case ENV["DB"]
-      when /mysql/
-        boolean_true = "(`typus_users`.`status` = 1)"
-        boolean_false = "(`typus_users`.`status` = 0)"
-      else
-        boolean_true = "(\"typus_users\".\"status\" = 't')"
-        boolean_false = "(\"typus_users\".\"status\" = 'f')"
-      end
-
-      expected = "((`typus_users`.role LIKE '%francesc%' OR `typus_users`.last_name LIKE '%francesc%' OR `typus_users`.email LIKE '%francesc%' OR `typus_users`.first_name LIKE '%francesc%')) AND #{boolean_true}"
-
-      params = { :search => "francesc", :status => "true" }
-      assert_equal expected, TypusUser.build_conditions(params).first
-      params = { :search => "francesc", :status => "false" }
-      assert_match /#{boolean_false}/, TypusUser.build_conditions(params).first
-    end
-
-    should "return_sql_conditions_on_filtering_typus_users_by_status" do
-      case ENV["DB"]
-      when /mysql/
-        boolean_true = "(`typus_users`.`status` = 1)"
-        boolean_false = "(`typus_users`.`status` = 0)"
-      else
-        boolean_true = "(\"typus_users\".\"status\" = 't')"
-        boolean_false = "(\"typus_users\".\"status\" = 'f')"
-      end
-
-      params = { :status => "true" }
-      assert_equal boolean_true, TypusUser.build_conditions(params).first
-      params = { :status => "false" }
-      assert_equal boolean_false, TypusUser.build_conditions(params).first
-    end
-
-    should "return_sql_conditions_on_filtering_typus_users_by_created_at today" do
-      expected = "(`typus_users`.created_at BETWEEN '#{Time.zone.now.beginning_of_day.to_s(:db)}' AND '#{Time.zone.now.beginning_of_day.tomorrow.to_s(:db)}')"
-      params = { :created_at => "today" }
-      assert_equal expected, TypusUser.build_conditions(params).first
-    end
-
-    should "return_sql_conditions_on_filtering_typus_users_by_created_at last_few_days" do
-      expected = "(`typus_users`.created_at BETWEEN '#{3.days.ago.beginning_of_day.to_s(:db)}' AND '#{Time.zone.now.beginning_of_day.tomorrow.to_s(:db)}')"
-      params = { :created_at => "last_few_days" }
-      assert_equal expected, TypusUser.build_conditions(params).first
-    end
-
-    should "return_sql_conditions_on_filtering_typus_users_by_created_at last_7_days" do
-      expected = "(`typus_users`.created_at BETWEEN '#{6.days.ago.beginning_of_day.to_s(:db)}' AND '#{Time.zone.now.beginning_of_day.tomorrow.to_s(:db)}')"
-      params = { :created_at => "last_7_days" }
-      assert_equal expected, TypusUser.build_conditions(params).first
-    end
-
-    should "return_sql_conditions_on_filtering_typus_users_by_created_at last_30_days" do
-      expected = "(`typus_users`.created_at BETWEEN '#{Time.zone.now.beginning_of_day.prev_month.to_s(:db)}' AND '#{Time.zone.now.beginning_of_day.tomorrow.to_s(:db)}')"
-      params = { :created_at => "last_30_days" }
-      assert_equal expected, TypusUser.build_conditions(params).first
-    end
-
-    should "return_sql_conditions_on_filtering_posts_by_published_at today" do
-      expected = "(`posts`.published_at BETWEEN '#{Time.zone.now.beginning_of_day.to_s(:db)}' AND '#{Time.zone.now.beginning_of_day.tomorrow.to_s(:db)}')"
-      params = { :published_at => "today" }
-      assert_equal expected, Post.build_conditions(params).first
-    end
-
-    should "return_sql_conditions_on_filtering_posts_by_string" do
-      expected = case ENV["DB"]
-                 when /mysql/
-                   "(`typus_users`.`role` = 'admin')"
-                 else
-                   "(\"typus_users\".\"role\" = 'admin')"
-                 end
-
-      params = { :role => "admin" }
-      assert_equal expected, TypusUser.build_conditions(params).first
     end
 
   end
@@ -461,7 +346,9 @@ class ActiveRecordTest < ActiveSupport::TestCase
   context "read_model_config" do
 
     should "return data for existing model" do
-      expected = {"application"=>"Site", "fields"=>{"default"=>"caption, file, required_file"}}
+      expected = {"application"=>"CRUD Extended",
+                  "fields"=>{"default"=>"caption, dragonfly, dragonfly_required",
+                             "special"=>"caption, dragonfly, dragonfly_required, original_file_name"}}
       assert_equal expected, Asset.read_model_config
     end
 

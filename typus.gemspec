@@ -6,7 +6,7 @@ require 'typus/version'
 Gem::Specification.new do |s|
   s.name = "typus"
   s.version = Typus::VERSION
-  s.date = "2010-11-28"
+  s.date = Time.now.strftime('%Y-%m-%d')
 
   s.platform = Gem::Platform::RUBY
   s.authors = ["Francesc Esplugas"]
@@ -18,9 +18,10 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project = "typus"
 
-  s.files = Dir.glob('**/*') - Dir.glob('test/**/*') - ['typus.gemspec']
+  s.files = Dir.glob('**/*') - Dir.glob('test/**/*')  - Dir.glob('docs/**/*') - ['typus.gemspec']
   s.require_path = "lib"
 
   s.add_dependency "fastercsv", "1.5.3" if RUBY_VERSION < '1.9'
-  s.add_dependency 'will_paginate', '~> 3.0.pre2'
+  s.add_dependency "render_inheritable"
+  s.add_dependency "will_paginate", "~> 3.0.pre2"
 end

@@ -8,227 +8,178 @@ class FakeController
   end
 end
 
-
-
 class Admin::TableHelperTest < ActiveSupport::TestCase
 
   include Admin::TableHelper
 
-
-  
   include ActionView::Helpers::UrlHelper
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::TextHelper
   include ActionView::Helpers::RawOutputHelper
-  
+
   include ActionView::Context
 
   include Rails.application.routes.url_helpers
 
   def render(*args); args; end
   def params; {} end
+  def admin_user; end
 
   setup do
     default_url_options[:host] = "test.host"
     self.stubs(:controller).returns(FakeController.new)
   end
 
-  should_eventually "test_build_table" do
+  context "table_header" do
 
-    current_user = Factory(:typus_user)
+    should "work" do
+      params = { :controller => "/admin/typus_users", :action => "index" }
+      fields = TypusUser.typus_fields_for(:list)
 
-    params = { :controller => '/admin/typus_users', :action => 'index' }
-    self.expects(:params).at_least_once.returns(params)
+      expected = [ %(<a href="/admin/typus_users?order_by=email">Email</a>),
+                   %(<a href="/admin/typus_users?order_by=role">Role</a>),
+                   %(<a href="/admin/typus_users?order_by=status">Status</a>) ]
 
-    fields = TypusUser.typus_fields_for(:list)
-    items = TypusUser.all
+      assert_equal expected, table_header(TypusUser, fields, params)
+    end
 
-    expects(:render).once.with('admin/helpers/table_header',
-      { :headers => [
-        '<a href="http://test.host/admin/typus_users?order_by=email">Email </a>',
-        '<a href="http://test.host/admin/typus_users?order_by=role">Role </a>',
-        '<a href="http://test.host/admin/typus_users?order_by=status">Status </a>',
-        '&nbsp;',
-        '&nbsp;'
-    ]})
+    should "work with params" do
+      params = { :controller => "/admin/typus_users", :action => "index", :search => "admin" }
+      fields = TypusUser.typus_fields_for(:list)
 
-    build_table(TypusUser, fields, items)
+      expected = [ %(<a href="/admin/typus_users?order_by=email&amp;search=admin">Email</a>),
+                   %(<a href="/admin/typus_users?order_by=role&amp;search=admin">Role</a>),
+                   %(<a href="/admin/typus_users?order_by=status&amp;search=admin">Status</a>) ]
 
-  end
-
-  should_eventually "test_table_header" do
-
-    current_user = mock
-    current_user.expects(:can?).with("delete", TypusUser).returns(true)
-
-    fields = TypusUser.typus_fields_for(:list)
-
-    params = { :controller => "/admin/typus_users", :action => "index" }
-    self.expects(:params).at_least_once.returns(params)
-
-    output = table_header(TypusUser, fields)
-    expected = [ "admin/helpers/table_header",
-                 { :headers=> [ %(<a href="http://test.host/admin/typus_users?order_by=email">Email</a>),
-                                %(<a href="http://test.host/admin/typus_users?order_by=role">Role</a>),
-                                %(<a href="http://test.host/admin/typus_users?order_by=status">Status</a>),
-                                "&nbsp;"] } ]
-
-    assert_equal expected, output
+      assert_equal expected, table_header(TypusUser, fields, params)
+    end
 
   end
 
-  should_eventually "test_table_header_with_params" do
+  context "actions" do
 
-    current_user = mock
-    current_user.expects(:can?).with("delete", TypusUser).returns(true)
+    should "return a default value which is an empty array" do
+      assert actions.empty?
+    end
 
-    fields = TypusUser.typus_fields_for(:list)
-
-    params = { :controller => "/admin/typus_users", :action => "index", :search => "admin" }
-    self.expects(:params).at_least_once.returns(params)
-
-    output = table_header(TypusUser, fields)
-
-    expected = [ "admin/helpers/table_header",
-                 { :headers => [ %(<a href="http://test.host/admin/typus_users?order_by=email&search=admin">Email</a>),
-                                 %(<a href="http://test.host/admin/typus_users?order_by=role&search=admin">Role</a>),
-                                 %(<a href="http://test.host/admin/typus_users?order_by=status&search=admin">Status</a>),
-                                 %(&nbsp;) ] } ]
-
-    assert_equal expected, output
+    should "return a predefined value" do
+      @actions = "mock"
+      assert_equal "mock", actions
+    end
 
   end
 
-  should_eventually "test_table_header_when_user_cannot_delete_items" do
+  context "table_belongs_to_field" do
 
-    current_user = mock
-    current_user.expects(:can?).with("delete", TypusUser).returns(false)
+    should "work without associated model" do
+      comment = Factory(:comment, :post => nil)
+      assert_equal "&mdash;", table_belongs_to_field("post", comment)
+    end
 
-    fields = TypusUser.typus_fields_for(:list)
+    should "work with associated model when user has access" do
+      admin_user.expects(:can?).returns(true)
+      comment = Factory(:comment)
+      post = comment.post
+      assert_equal %(<a href="/admin/posts/edit/#{post.id}">#{post.to_label}</a>), table_belongs_to_field("post", comment)
+    end
 
-    params = { :controller => "/admin/typus_users", :action => "index" }
-    self.expects(:params).at_least_once.returns(params)
-
-    output = table_header(TypusUser, fields)
-
-    expected = [ "admin/helpers/table_header",
-                 { :headers => [ %(<a href="http://test.host/admin/typus_users?order_by=email">Email</a>),
-                                 %(<a href="http://test.host/admin/typus_users?order_by=role">Role</a>),
-                                 %(<a href="http://test.host/admin/typus_users?order_by=status">Status</a>) ] } ]
-
-    assert_equal expected, output
-
-  end
-
-  should_eventually "test_table_header_when_user_cannot_delete_items_with_params" do
-
-    current_user = mock
-    current_user.expects(:can?).with("delete", TypusUser).returns(false)
-
-    fields = TypusUser.typus_fields_for(:list)
-
-    params = { :controller => "/admin/typus_users", :action => "index", :search => "admin" }
-    self.expects(:params).at_least_once.returns(params)
-
-    output = table_header(TypusUser, fields)
-
-    expected = [ "admin/helpers/table_header",
-                 { :headers => [ %(<a href="http://test.host/admin/typus_users?order_by=email&search=admin">Email</a>),
-                                 %(<a href="http://test.host/admin/typus_users?order_by=role&search=admin">Role</a>),
-                                 %(<a href="http://test.host/admin/typus_users?order_by=status&search=admin">Status</a>) ] } ]
-    assert_equal expected, output
+    should "work with associated model when user does not have access" do
+      admin_user.expects(:can?).returns(false)
+      comment = Factory(:comment)
+      post = comment.post
+      assert_equal post.to_label, table_belongs_to_field("post", comment)
+    end
 
   end
 
-  should_eventually "test_table_belongs_to_field" do
-
-    current_user = Factory(:typus_user)
-
-    comment = comments(:without_post_id)
-    output = table_belongs_to_field("post", comment)
-    expected = "<td></td>"
-
-    assert_equal expected, output
-    default_url_options[:host] = "test.host"
-
-    comment = comments(:with_post_id)
-    output = table_belongs_to_field("post", comment)
-    expected = %(<td><a href="http://test.host/admin/posts/edit/1">Post#1</a></td>)
-
-    assert_equal expected.strip, output
-
-  end
-
-  should_eventually "test_table_has_and_belongs_to_many_field" do
+  should "test_table_has_and_belongs_to_many_field" do
     post = Factory(:post)
-    output = table_has_and_belongs_to_many_field("comments", post)
-    expected = %(<td>John, Me, Me</td>)
-    assert_equal expected.strip, output
+    post.comments << Factory(:comment, :name => "John")
+    post.comments << Factory(:comment, :name => "Jack")
+    assert_equal "John, Jack", table_has_and_belongs_to_many_field("comments", post)
   end
 
-  should_eventually "test_table_string_field" do
+  context "table_string_field" do
+
+    should "work" do
+      post = Factory(:post)
+      assert_equal post.title, table_string_field(:title, post)
+    end
+
+    should "work when attribute is empty" do
+      post = Factory(:post)
+      post.title = ""
+      assert_equal "&mdash;", table_string_field(:title, post)
+    end
+
+  end
+
+  context "table_integer_field" do
+
+    should "work" do
+      post = Factory(:post)
+      assert_equal post.id, table_integer_field(:id, post)
+    end
+
+    should "work when attribute is empty" do
+      post = Factory(:post)
+      post.id = nil
+      assert_equal "&mdash;", table_integer_field(:id, post)
+    end
+
+  end
+
+  context "table_tree_field" do
+
+    should "work when no parent" do
+      page = Factory(:page)
+      assert_equal "&mdash;", table_tree_field("title", page)
+    end
+
+    should "work when parent" do
+      parent = Factory(:page)
+      page = Factory(:page, :parent => parent)
+      assert_equal parent.to_label, table_tree_field("title", page)
+    end
+
+  end
+
+  should "test_table_datetime_field" do
     post = Factory(:post)
-    output = table_string_field(:title, post, :created_at)
-    expected = %(<td class="title">#{post.title}</td>)
-    assert_equal expected.strip, output
+    assert_equal post.created_at.strftime("%d %b %H:%M"), table_datetime_field(:created_at, post)
   end
 
-  should_eventually "test_table_string_field_with_link" do
-    post = Factory(:post)
-    output = table_string_field(:title, post, :title)
-    expected = %(<td class="title">#{post.title}</td>)
-    assert_equal expected.strip, output
+  context "table_boolean_field" do
+
+    should "work when default status is true" do
+      post = Factory(:typus_user)
+      expected = %(<a href="/admin/typus_users/toggle/#{post.id}?field=status" data-confirm="Change status?">Active</a>)
+      assert_equal expected, table_boolean_field("status", post)
+    end
+
+    should "work when default status is false" do
+      post = Factory(:typus_user, :status => false)
+      expected = %(<a href="/admin/typus_users/toggle/#{post.id}?field=status" data-confirm="Change status?">Inactive</a>)
+      assert_equal expected, table_boolean_field("status", post)
+    end
+
+    should "work when default status is nil" do
+      post = Factory(:typus_user, :status => nil)
+      assert post.status.nil?
+      expected = %(<a href="/admin/typus_users/toggle/#{post.id}?field=status" data-confirm="Change status?">Inactive</a>)
+      assert_equal expected, table_boolean_field("status", post)
+    end
+
   end
 
-  should_eventually "table_tree_field_when_displays_a_parent" do
-    page = Factory(:page)
-    output = table_tree_field("test", page)
-    expected = "<td>&#151;</td>"
-    assert_equal expected, output
-  end
+  context "table_transversal_field" do
 
-  should_eventually "table_tree_field_when_displays_a_children" do
-    page = Factory(:page, :status => "unpublished")
-    output = table_tree_field("test", page)
-    expected = "<td>&#151;</td>"
-    assert_equal expected, output
-  end
-
-  should_eventually "test_table_datetime_field" do
-    post = Factory(:post)
-
-    output = table_datetime_field(:created_at, post)
-    expected = %(<td>#{post.created_at.strftime("%m/%y")}</td>)
-
-    assert_equal expected.strip, output
-  end
-
-  should_eventually "test_table_datetime_field_with_link" do
-    post = Factory(:post)
-
-    output = table_datetime_field(:created_at, post, :created_at)
-    expected = %(<td>#{post.created_at.strftime("%m/%y")}</td>)
-
-    assert_equal expected.strip, output
-  end
-
-  should_eventually "test_table_boolean_field" do
-
-    post = Factory(:typus_user)
-    output = table_boolean_field("status", post)
-    expected = <<-HTML
-<td><a href="http://test.host/admin/typus_users/toggle/1?field=status" onclick="return confirm('Change status?');">Active</a></td>
-    HTML
-
-    assert_equal expected.strip, output
-
-    post = Factory(:typus_user, :status => false)
-    output = table_boolean_field("status", post)
-    expected = <<-HTML
-<td><a href="http://test.host/admin/typus_users/toggle/3?field=status" onclick="return confirm('Change status?');">Inactive</a></td>
-    HTML
-
-    assert_equal expected.strip, output
+    should "work" do
+      comment = Factory(:comment)
+      output = table_transversal_field("post.title", comment)
+      expected = comment.post.title
+      assert_equal expected, output
+    end
 
   end
 
@@ -239,19 +190,19 @@ class Admin::TableHelperTest < ActiveSupport::TestCase
 
     output = table_position_field(nil, first_category)
     expected = <<-HTML
-<a href="/admin/categories/position/1?go=move_lower">Down</a> / <span class="inactive">Up</span>
+1<br/><br/><a href="/admin/categories/position/#{first_category.id}?go=move_lower">Down</a> / <a href="/admin/categories/position/#{first_category.id}?go=move_to_bottom">Bottom</a>
     HTML
     assert_equal expected.strip, output
 
     output = table_position_field(nil, second_category)
     expected = <<-HTML
-<a href="/admin/categories/position/2?go=move_lower">Down</a> / <a href="/admin/categories/position/2?go=move_higher">Up</a>
+2<br/><br/><a href="/admin/categories/position/#{second_category.id}?go=move_to_top">Top</a> / <a href="/admin/categories/position/#{second_category.id}?go=move_higher">Up</a> / <a href="/admin/categories/position/#{second_category.id}?go=move_lower">Down</a> / <a href="/admin/categories/position/#{second_category.id}?go=move_to_bottom">Bottom</a>
     HTML
     assert_equal expected.strip, output
 
     output = table_position_field(nil, last_category)
     expected = <<-HTML
-<span class="inactive">Down</span> / <a href="/admin/categories/position/3?go=move_higher">Up</a>
+3<br/><br/><a href="/admin/categories/position/#{last_category.id}?go=move_to_top">Top</a> / <a href="/admin/categories/position/#{last_category.id}?go=move_higher">Up</a>
     HTML
     assert_equal expected.strip, output
   end

@@ -9,8 +9,13 @@ class Admin::AccountControllerTest < ActionController::TestCase
 
       assert_response :success
       assert_template "new"
-      assert_match "layouts/admin/session", @controller.inspect
       assert_equal "Enter your email below to create the first user.", flash[:notice]
+    end
+
+    should "render session layout" do
+      get :new
+      assert_template "new"
+      assert_template "layouts/admin/session"
     end
 
     should "verify forgot_password redirects to new when there are no admin users" do

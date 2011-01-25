@@ -1,7 +1,7 @@
-<div class="box_relationships" id="<%= model_to_relate_as_resource %>">
+<div class="box_relationships" id="<%= association_name %>">
 
   <h2>
-    <%= model_to_relate.model_name.human.pluralize %>
+    <%= association_name.capitalize.pluralize %>
     <small><%= add_new %></small>
   </h2>
 
@@ -9,9 +9,9 @@
 
   <% if @items.any? -%>
     <%= table %>
-    <%= will_paginate(@items, Typus.pagination.merge(:anchor => model_to_relate.to_resource)) %>
+    <%= will_paginate(@items, Typus.pagination.merge(:anchor => association_name)) %>
   <% else %>
-    <p><%= _t("No %{resources} found.", :resources => model_to_relate.model_name.human.pluralize.downcase) %></p>
+    <p><%= Typus::I18n.t("No %{resources} found.", :resources => association_name.pluralize.downcase) %></p>
   <% end %>
 
 </div>

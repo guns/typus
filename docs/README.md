@@ -10,4 +10,4 @@ To build the site and deploy it run the following command.
 
     $ nanoc co && rake deploy:rsync
 
-Copyright © 2007-2010 Francesc Esplugas, released under the MIT license.
+Copyright © 2007-2011 Francesc Esplugas, released under the MIT license.

@@ -42,66 +42,59 @@ class TypusTest < ActiveSupport::TestCase
     assert_equal "admin", Typus.master_role
   end
 
-  should "verify default_config for user_class_name" do
-    assert_equal "TypusUser", Typus.user_class_name
-  end
-
-  should "verify default_config for typus_user_id" do
-    assert_equal "typus_user_id", Typus.user_fk
-  end
-
-  should "verify default_config for available_locales" do
-    assert_equal [:en], Typus.available_locales
-  end
-
   should "verify config_folder is a Pathname" do
     assert Typus.config_folder.is_a?(Pathname)
   end
 
-  should "return root" do
-    expected = "."
-    assert Typus.root.is_a?(String)
-    assert_equal expected, Typus.root
-  end
-
   should "return applications sorted" do
-    assert Typus.respond_to?(:applications)
-    assert Typus.applications.is_a?(Array)
-    assert_equal %w(Blog Site Typus), Typus.applications
+    expected = ["Admin", "CRUD", "CRUD Extended", "HasManyThrough", "HasOne"]
+    assert_equal expected, Typus.applications
   end
 
-  should "return modules of an application" do
-    assert Typus.respond_to?(:application)
-    assert_equal %w(Comment Picture Post), Typus.application("Blog")
+  should "return modules of the CRUD Extended application" do
+    expected = ["Asset", "Category", "Comment", "Page", "Post"]
+    assert_equal expected, Typus.application("CRUD Extended")
   end
 
   should "return models and should be sorted" do
-    assert Typus.respond_to?(:models)
-    assert Typus.models.is_a?(Array)
-    assert_equal %w(Asset Category Comment CustomUser Page Picture Post TypusUser View), Typus.models
+    expected = %w(Asset Case Category Comment Entry Invoice Order Page Post Project ProjectCollaborator TypusUser User View)
+    assert_equal expected, Typus.models
   end
 
   should "verify resources class_method" do
-    assert Typus.respond_to?(:resources)
-    assert_equal %w(Git Order Status WatchDog), Typus.resources
+    assert_equal %w(Git Status WatchDog), Typus.resources
   end
 
-  should "return user_class" do
-    assert_equal TypusUser, Typus.user_class
+  context "user_class" do
+
+    should "return default value" do
+      assert_equal TypusUser, Typus.user_class
+    end
+
   end
 
-  should "return overrided user_class" do
-    Typus.expects(:user_class_name).returns("CustomUser")
-    assert_equal CustomUser, Typus.user_class
+  context "user_class_name" do
+
+    should "return default value" do
+      assert_equal "TypusUser", Typus.user_class_name
+    end
+
+    should "be overrided on demand" do
+      assert Typus.respond_to?("user_class_name=")
+    end
+
   end
 
-  should "return_user_fk" do
-    assert_equal "typus_user_id", Typus.user_fk
-  end
+  context "user_fk" do
 
-  should "return overrided user_fk" do
-    Typus.expects(:user_fk).returns("my_user_fk")
-    assert_equal "my_user_fk", Typus.user_fk
+    should "return default value" do
+      assert_equal "typus_user_id", Typus.user_fk
+    end
+
+    should "be overrided on demand" do
+      assert Typus.respond_to?("user_fk=")
+    end
+
   end
 
 end

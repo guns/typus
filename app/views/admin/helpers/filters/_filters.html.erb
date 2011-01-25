@@ -6,7 +6,7 @@
         <li><%= select_tag filter[:filter], options_for_select(filter[:items], params[filter[:filter]]) %></li>
       <% end %>
       <%= hidden_field_tag :search, params[:search] if params[:search] %>
-      <li><%= submit_tag _t("Filter"), :name => nil %></li>
+      <li><%= submit_tag Typus::I18n.t("Filter"), :name => nil %></li>
     </ul>
   </div>
 

@@ -22,10 +22,10 @@ module Admin
 
       if !validators.include?(field) && attachment
         attribute_i18n = @item.class.human_attribute_name(attribute)
-        message = _t("Remove %{attribute}", :attribute => attribute_i18n)
+        message = Typus::I18n.t("Remove")
         label_text = <<-HTML
 #{attribute_i18n}
-<small>#{link_to message, { :action => 'detach', :id => @item.id, :attribute => attribute }, :confirm => _t("Are you sure?")}</small>
+<small>#{link_to message, { :action => 'detach', :id => @item.id, :attribute => attribute }, :confirm => Typus::I18n.t("Are you sure?")}</small>
         HTML
         label_text.html_safe
       end
@@ -45,22 +45,23 @@ module Admin
     def typus_file_preview_for_dragonfly(attachment)
       if attachment.mime_type =~ /^image\/.+/
         render "admin/helpers/file_preview",
-               :preview => attachment.process(:thumb, 'x450').url,
-               :thumb => attachment.process(:thumb, '150x150#').url
+               :preview => attachment.process(:thumb, Typus.image_preview_size).url,
+               :thumb => attachment.process(:thumb, Typus.image_thumb_size).url
       else
         link_to attachment.name, attachment.url
       end
     end
 
     def typus_file_preview_for_paperclip(attachment)
-      return unless attachment.exists?
-      styles = attachment.styles.keys
-      if styles.include? Typus.file_preview and styles.include? Typus.file_thumbnail
-        render "admin/helpers/file_preview",
-               :preview => attachment.url(Typus.file_preview),
-               :thumb => attachment.url(Typus.file_thumbnail)
-      else
-        link_to attachment.original_filename, attachment.url
+      if attachment.exists?
+        styles = attachment.styles.keys
+        if styles.include?(Typus.file_preview) && styles.include?(Typus.file_thumbnail)
+          render "admin/helpers/file_preview",
+                 :preview => attachment.url(Typus.file_preview, false),
+                 :thumb => attachment.url(Typus.file_thumbnail, false)
+        else
+          link_to attachment.original_filename, attachment.url(:original, false)
+        end
       end
     end
 

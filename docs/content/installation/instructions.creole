@@ -1,0 +1,28 @@
+---
+title: Instructions
+
+parent_title: Installation
+---
+
+= Installation Instructions
+
+To install **Typus**, edit the application {{{Gemfile}}} and add the following
+line.
+
+{{{
+gem 'typus'
+
+# Bundle edge Typus instead:
+# gem 'typus', :git => 'https://github.com/fesplugas/typus.git'
+}}}
+
+Install the gem using bundler:
+
+{{{
+$ bundle install
+}}}
+
+== Login into Typus
+
+Start the application server, go to http://0.0.0.0:3000/admin and follow the
+instructions.

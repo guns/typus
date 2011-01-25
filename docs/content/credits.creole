@@ -1,0 +1,20 @@
+---
+title: Credits
+---
+
+= Credits
+
+Somehow involved in the project:
+
+* [[http://www.rubyist.net/~matz|Yukihiro "matz" Matsumoto]] creator of 
+[[http://ruby-lang.org/|Ruby]], in my opinion, the most beautiful programming
+ever kwnown.
+* [[http://loudthinking.com/|David Heinemeier Hansson]] for creating 
+[[http://rubyonrails.org/|Ruby on Rails]].
+* [[http://www.djangoproject.com/|Django Admin]] who inspired part of the 
+development, in special the templates rendering and user interface.
+* [[http://ellislab.com/|Ellislab]], creators of [[http://codeigniter.com/|CodeIgniter]],
+for their [[http://codeigniter.com/user_guide/doc_style/index.html|documentation templates]].
+
+You can see a list of contributors and their commits on 
+[[http://github.com/fesplugas/typus/contributors|GitHub]].

@@ -20,8 +20,8 @@ class FakeUser
     !is_root?
   end
 
-  def preferences
-    { :locale => Typus.available_locales.first }
+  def locale
+    ::I18n.locale
   end
 
   def resources
@@ -40,7 +40,8 @@ class FakeUser
     Typus.master_role
   end
 
-  def name
+  def status
+    true
   end
 
 end

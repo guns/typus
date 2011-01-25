@@ -39,3 +39,8 @@ task :release => :build do
   system "gem push typus-#{Typus::VERSION}.gem"
   system "git clean -fd && rm -f typus-#{Typus::VERSION}.gem"
 end
+
+desc 'Deploy'
+task :deploy do
+  system "cd test/fixtures/rails_app && cap deploy"
+end

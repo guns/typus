@@ -4,7 +4,7 @@ module Typus
 
     class ViewsGenerator < Rails::Generators::Base
 
-      source_root File.expand_path("../../../../app/views", __FILE__)
+      source_root File.expand_path("../../../../app", __FILE__)
 
       desc <<-MSG
 Description:
@@ -13,11 +13,7 @@ Description:
       MSG
 
       def copy_views
-        directory "admin", "app/views/admin"
-      end
-
-      def copy_layouts
-        directory "layouts", "app/views/layouts"
+        directory "views", "app/views"
       end
 
     end

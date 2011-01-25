@@ -1,0 +1,14 @@
+<div class="box_relationships" id="<%= model_to_relate_as_resource %>">
+
+  <h2>
+    <%= model_to_relate.model_name.human %>
+    <small><%= add_new %></small>
+  </h2>
+
+  <% if @items.any? -%>
+    <%= table %>
+  <% else %>
+    <p><%= Typus::I18n.t("No %{resources} found.", :resources => model_to_relate.model_name.human.downcase) %></p>
+  <% end %>
+
+</div>

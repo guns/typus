@@ -2,22 +2,23 @@ module Admin
 
   module TableHelper
 
-    def build_table(model, fields, items, link_options = {}, association = nil)
+    def build_table(model, fields, items, link_options = {}, association = nil, association_name = nil)
       render "admin/helpers/table/table",
              :model => model,
              :fields => fields,
              :items => items,
              :link_options => link_options,
-             :headers => table_header(model, fields)
+             :headers => table_header(model, fields),
+             :association_name => association_name
     end
 
-    def table_header(model, fields)
+    def table_header(model, fields, params = params)
       fields.map do |key, value|
 
         key = key.gsub(".", " ") if key.match(/\./)
         content = model.human_attribute_name(key)
 
-        if params[:action] == "index" && model.typus_options_for(:sortable)
+        if params[:action].eql?('index') && model.typus_options_for(:sortable)
           association = model.reflect_on_association(key.to_sym)
           order_by = association ? association.primary_key_name : key
 
@@ -29,8 +30,8 @@ module Admin
                          end
             switch = sort_order.last if params[:order_by].eql?(order_by)
             options = { :order_by => order_by, :sort_order => sort_order.first }
-            message = [ content, switch ].compact
-            link_to raw(message.join(" ")), params.merge(options)
+            message = [content, switch].compact.join(" ").html_safe
+            link_to message, params.merge(options)
           else
             content
           end
@@ -42,97 +43,39 @@ module Admin
       end
     end
 
-    def table_fields_for_item(item, fields, link_options)
-      fields.map do |key, value|
-        case value
-        when :boolean then table_boolean_field(key, item)
-        when :datetime then table_datetime_field(key, item, link_options)
-        when :date then table_datetime_field(key, item, link_options)
-        when :time then table_datetime_field(key, item, link_options)
-        when :belongs_to then table_belongs_to_field(key, item)
-        when :tree then table_tree_field(key, item)
-        when :file then table_file_field(key, item, link_options)
-        when :position then table_position_field(key, item)
-        when :selector then table_selector(key, item)
-        when :transversal then table_transversal(key, item)
-        when :has_and_belongs_to_many then table_has_and_belongs_to_many_field(key, item)
-        when :text, nil then table_text_field(key, item, link_options)
-        else
-          table_string_field(key, item, link_options)
+    def table_fields_for_item(item, fields)
+      fields.map { |k, v| send("table_#{v || :string}_field", k, item) }
+    end
+
+    def actions
+      @actions ||= []
+    end
+
+    def table_actions(model, item, association_name = nil)
+      actions.map do |action|
+        if admin_user.can?(action[:action], model.name)
+          link_to Typus::I18n.t(action[:action_name]),
+                  { :controller => model.to_resource, :action => action[:action], :id => item.id, :resource => action[:resource], :resource_id => action[:resource_id], :association_name => association_name },
+                  { :confirm => action[:confirm], :method => action[:method], :target => "_parent" }
         end
-      end
-    end
-
-    def table_actions(model, item, connector = " / ")
-      Array.new.tap do |data|
-        data << table_default_action(model, item)
-        data << table_action(model, item)
-      end.compact.join(connector).html_safe
-    end
-
-    def table_default_action(model, item)
-      default_action = item.class.typus_options_for(:default_action_on_item)
-      action = if model.typus_user_id? && current_user.is_not_root?
-                 item.owned_by?(current_user) ? default_action : "show"
-               elsif current_user.cannot?("edit", model)
-                 'show'
-               else
-                 default_action
-               end
-
-      options = { :controller => "/admin/#{item.class.to_resource}",
-                  :action => action,
-                  :id => item.id }
-
-      link_to _t(action.capitalize), options
-    end
-
-    def table_action(model, item)
-      case params[:action]
-      when "index"
-        action = "trash"
-        options = { :action => 'destroy', :id => item.id }
-        method = :delete
-      when "edit", "show", "update"
-        action = "unrelate"
-        options = { :action => 'unrelate', :id => params[:id], :resource => model, :resource_id => item.id }
-      end
-
-      condition = true
-
-      case params[:action]
-      when 'index'
-        condition = if model.typus_user_id? && current_user.is_not_root?
-                      item.owned_by?(current_user)
-                    elsif (current_user.id.eql?(item.id) && model.eql?(Typus.user_class))
-                      false
-                    else
-                      current_user.can?('destroy', model)
-                    end
-      when 'show'
-        condition = if @resource.typus_user_id? && current_user.is_not_root?
-                      @item.owned_by?(current_user)
-                    end
-      end
-
-      confirm = _t("#{action.titleize} %{resource}?", :resource => model.model_name.human)
-
-      if condition
-        link_to _t(action.titleize), options, :title => _t(action.titleize), :confirm => confirm, :method => method
-      end
+      end.compact.join(" / ").html_safe
     end
 
     def table_belongs_to_field(attribute, item)
       if att_value = item.send(attribute)
         action = item.send(attribute).class.typus_options_for(:default_action_on_item)
-        if current_user.can?(action, att_value.class.name)
+        # in place of a link, an AJAX form for changing the relationship
+        if admin_user.can?(action, att_value.class.name)
           url_opts  = { :controller => "/admin/#{att_value.class.to_resource}", :action => 'update', :id => att_value.id }
           html_opts = { 'data-remote' => 'ajax-update' }
           content   = form_for item, :url => url_opts, :html => html_opts do |f|
-            @table_options_for_select ||= {} # memoize because this is fairly expensive
+            # memoize because this is fairly expensive
+            @table_options_for_select ||= {}
             @table_options_for_select[attribute] ||= att_value.class.all.map { |r| [r.to_label, r.id] }.sort
             f.select attribute + '_id', @table_options_for_select[attribute], :selected => att_value.id, :include_blank => true
           end
+        else
+          att_value.to_label
         end
       else
         "&mdash;".html_safe
@@ -143,24 +86,33 @@ module Admin
       item.send(attribute).map { |i| i.to_label }.join(", ")
     end
 
-    def table_text_field(*args)
-      truncate table_string_field(*args)
+    alias :table_has_many_field :table_has_and_belongs_to_many_field
+
+    def table_string_field(attribute, item)
+      (raw_content = item.send(attribute)).present? ? truncate(raw_content) : "&mdash;".html_safe
     end
 
-    def table_string_field(attribute, item, link_options = {})
-      (raw_content = item.send(attribute)).present? ? raw_content : "&#151;".html_safe
+    alias :table_text_field :table_string_field
+
+    def table_generic_field(attribute, item)
+      (raw_content = item.send(attribute)).present? ? raw_content : "&mdash;".html_safe
     end
 
-    def table_selector(attribute, item)
+    alias :table_float_field :table_generic_field
+    alias :table_integer_field :table_generic_field
+    alias :table_decimal_field :table_generic_field
+    alias :table_virtual_field :table_generic_field
+
+    def table_selector_field(attribute, item)
       item.mapping(attribute)
     end
 
-    def table_file_field(attribute, item, link_options = {})
+    def table_file_field(attribute, item)
       typus_file_preview(item, attribute)
     end
 
     def table_tree_field(attribute, item)
-      item.parent ? item.parent.to_label : "&#151;".html_safe
+      item.parent ? item.parent.to_label : "&mdash;".html_safe
     end
 
     def table_position_field(attribute, item, connector = " / ")
@@ -172,47 +124,44 @@ module Admin
       end
     end
 
-    def table_datetime_field(attribute, item, link_options = {})
-      if item.send(attribute).nil?
-        item.class.typus_options_for(:nil)
-      else
-        I18n.localize(item.send(attribute), :format => item.class.typus_date_format(attribute))
+    def table_datetime_field(attribute, item)
+      if field = item.send(attribute)
+        I18n.localize(field, :format => item.class.typus_date_format(attribute))
       end
     end
+
+    alias :table_date_field :table_datetime_field
+    alias :table_time_field :table_datetime_field
 
     def table_boolean_field(attribute, item)
-      boolean_hash = item.class.typus_boolean(attribute).invert
       status = item.send(attribute)
+      boolean_hash = item.class.typus_boolean(attribute).invert
+      human_boolean = status ? boolean_hash["true"] : boolean_hash["false"]
 
-      if status.nil?
-        Typus::Resources.human_nil
-      else
-        message = _t(boolean_hash[status.to_s])
-        options = { :controller => "/admin/#{item.class.to_resource}",
-                    :action => "toggle",
-                    :id => item.id,
-                    :field => attribute.gsub(/\?$/, '') }
-        confirm = _t("Change %{attribute}?",
-                     :attribute => item.class.human_attribute_name(attribute).downcase)
-        link_to message, options, :confirm => confirm
-      end
+      options = { :controller => "/admin/#{item.class.to_resource}",
+                  :action => "toggle",
+                  :id => item.id,
+                  :field => attribute.gsub(/\?$/, '') }
+      confirm = Typus::I18n.t("Change %{attribute}?", :attribute => item.class.human_attribute_name(attribute).downcase)
+      link_to Typus::I18n.t(human_boolean), options, :confirm => confirm
     end
 
-    def table_transversal(attribute, item)
-      _attribute, virtual = attribute.split(".")
-      obj = item.send(_attribute).send(virtual)
+    def table_transversal_field(attribute, item)
+      field_1, field_2 = attribute.split(".")
+      obj = item.send(field_1).send(field_2)
 
       # FIXME: ensure attachment instance belongs to item
       # if we have an attachment at the end of the method call, link to the
       # current item's edit page, anchoring at the has_many table
       if get_type_of_attachment(obj) == :paperclip
         anchor = case obj.content_type
-        when %r:\Aimage/: then image_tag obj.url(Typus.file_thumbnail)
+        when %r(\Aimage/) then image_tag obj.url(Typus.file_thumbnail)
         when nil          then nil
         else obj
         end
 
         if anchor
+          # FIXME: this link does not work properly
           link_to anchor, "/admin/#{item.class.name.tableize}/edit/#{item.id}##{obj.instance.class.name.tableize}"
         else
           anchor

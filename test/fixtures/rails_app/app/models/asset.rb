@@ -1,10 +1,26 @@
+=begin
+
+  This model is used to test:
+
+    - Dragonfly Attachments
+    - Paperclip Attachments
+    - Polymorphic Associations
+
+=end
+
 class Asset < ActiveRecord::Base
 
   belongs_to :resource, :polymorphic => true
 
-  image_accessor :file
-  image_accessor :required_file
+  # Dragonfly Attachment
+  image_accessor :dragonfly
+  image_accessor :dragonfly_required
+  validates_presence_of :dragonfly_required
 
-  validates_presence_of :required_file
+  # Paperclip Attachment
+  has_attached_file :paperclip, :styles => { :medium => "300x300>", :thumb => "100x100>" }
+
+  def original_file_name
+  end
 
 end

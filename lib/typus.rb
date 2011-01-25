@@ -7,11 +7,13 @@ require "support/object"
 require "support/string"
 
 require "typus/engine"
+require "typus/i18n"
 require "typus/orm/active_record"
 require "typus/user"
 require "typus/version"
 
-require 'will_paginate'
+require "render_inheritable"
+require "will_paginate"
 
 autoload :FakeUser, "support/fake_user"
 
@@ -19,6 +21,10 @@ module Typus
 
   autoload :Configuration, "typus/configuration"
   autoload :Resources, "typus/resources"
+
+  autoload :Actions, "typus/actions"
+  autoload :Filters, "typus/filters"
+  autoload :Format, "typus/format"
 
   module Authentication
     autoload :Base, "typus/authentication/base"
@@ -55,8 +61,8 @@ module Typus
   # Pagination options
   #
   mattr_accessor :pagination
-  @@pagination = { :previous_label => "&larr; " + _t("Previous"),
-                   :next_label => _t("Next") + " &rarr;" }
+  @@pagination = { :previous_label => "&larr; " + Typus::I18n.t("Previous"),
+                   :next_label => Typus::I18n.t("Next") + " &rarr;" }
 
   ##
   # Define a password.
@@ -67,18 +73,31 @@ module Typus
   @@password = "columbia"
 
   ##
-  # Configure the e-mail address which will be shown in Admin::Mailer.
-  #
-  # When `nil`, the `forgot_password` will be disabled.
+  # Configure the e-mail address which will be shown in Admin::Mailer. If not
+  # set `forgot_password` feature is disabled.
   #
   mattr_accessor :mailer_sender
   @@mailer_sender = nil
+
+  ##
+  # Define `paperclip` attachment styles.
+  #
 
   mattr_accessor :file_preview
   @@file_preview = :medium
 
   mattr_accessor :file_thumbnail
   @@file_thumbnail = :thumb
+
+  ##
+  # Define `dragonfly` attachment styles.
+  #
+
+  mattr_accessor :image_preview_size
+  @@image_preview_size = 'x450'
+
+  mattr_accessor :image_thumb_size
+  @@image_thumb_size = '75x75#'
 
   ##
   # Defines the default relationship table.
@@ -95,19 +114,13 @@ module Typus
   mattr_accessor :user_fk
   @@user_fk = "typus_user_id"
 
-  mattr_accessor :available_locales
-  @@available_locales = [:en]
-
   class << self
 
     # Default way to setup typus. Run `rails generate typus` to create a fresh
     # initializer with all configuration values.
     def setup
       yield self
-    end
-
-    def root
-      (File.dirname(__FILE__) + "/../").chomp("/lib/../")
+      reload!
     end
 
     def applications
@@ -121,14 +134,22 @@ module Typus
 
     # Lists models from the configuration file.
     def models
-      Typus::Configuration.config.map { |i| i.first }.sort
+      if config = Typus::Configuration.config
+        config.map { |i| i.first }.sort
+      else
+        []
+      end
     end
 
     # Lists resources, which are tableless models.
     def resources
-      Typus::Configuration.roles.keys.map do |key|
-        Typus::Configuration.roles[key].keys
-      end.flatten.sort.uniq.delete_if { |x| models.include?(x) }
+      if roles = Typus::Configuration.roles
+        roles.keys.map do |key|
+          Typus::Configuration.roles[key].keys
+        end.flatten.sort.uniq.delete_if { |x| models.include?(x) }
+      else
+        []
+      end
     end
 
     # Lists models under <tt>app/models</tt>.
@@ -138,30 +159,17 @@ module Typus
     end
 
     def locales
-      human = available_locales.map { |i| locales_mapping[i.to_s] }
-      available_locales.map { |i| i.to_s }.to_hash_with(human).invert
-    end
-
-    def locales_mapping
-      mapping = { "ca"    => "Català",
-                  "de"    => "German",
-                  "el"    => "Greek",
-                  "en"    => "English",
-                  "es"    => "Español",
-                  "fr"    => "Français",
-                  "hu"    => "Magyar",
-                  "it"    => "Italiano",
-                  "pt-BR" => "Portuguese",
-                  "ru"    => "Russian",
-                  "zh-CN" => "中文" }
-      mapping.default = "Unknown"
-      return mapping
-    end
-
-    def detect_locales
-      available_locales.each do |locale|
-        I18n.load_path += Dir[File.join(Typus.root, "config", "available_locales", "#{locale}*")]
-      end
+      { "Català" => "ca",
+        "German" => "de",
+        "Greek"  => "el",
+        "English" => "en",
+        "Español" => "es",
+        "Français" => "fr",
+        "Magyar" => "hu",
+        "Italiano" => "It",
+        "Portuguese" => "pt-BR",
+        "Russian" => "ru",
+        "中文" => "zh-CN" }
     end
 
     def application_models
@@ -179,11 +187,8 @@ module Typus
     def reload!
       Typus::Configuration.roles!
       Typus::Configuration.config!
-      detect_locales
     end
 
   end
 
 end
-
-Typus.reload!

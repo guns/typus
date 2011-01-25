@@ -15,15 +15,18 @@ module Typus
         attr_accessor :password
         attr_protected :status
 
-        validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/
-        validates_presence_of :email
-        validates_uniqueness_of :email
+        validates :email,
+                  :presence => true,
+                  :uniqueness => true,
+                  :format => { :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/ }
 
-        validates_confirmation_of :password, :if => :password_required?
+        validates :password,
+                  :confirmation => { :if => :password_required? },
+                  :presence => { :if => :password_required? }
+
         validates_length_of :password, :within => 6..40, :if => :password_required?
-        validates_presence_of :password, :if => :password_required?
 
-        validates_presence_of :role
+        validates :role, :presence => true
 
         before_save :initialize_salt, :encrypt_password, :initialize_token
 
@@ -52,7 +55,7 @@ module Typus
             :password => options[:password],
             :password_confirmation => options[:password],
             :role => options[:role],
-            :preferences => { :locale => I18n.default_locale.to_s }
+            :preferences => { :locale => ::I18n.default_locale.to_s }
       end
 
     end
@@ -60,7 +63,7 @@ module Typus
     module InstanceMethods
 
       def name
-        full_name = [first_name, last_name].compact.delete_if { |s| s.empty? }
+        full_name = [first_name, last_name].delete_if { |s| s.blank? }
         full_name.any? ? full_name.join(" ") : email
       end
 
@@ -80,30 +83,15 @@ module Typus
         Typus.application(name).delete_if { |r| !resources.keys.include?(r) }
       end
 
-      #--
-      # TODO: Rename action to mapping and refactor the _action case statement.
-      #++
       def can?(action, resource, options = {})
-        resource = resource.name if resource.is_a?(Class)
+        resource = resource.model_name if resource.is_a?(Class)
 
         return false if !resources.include?(resource)
         return true if resources[resource].include?("all")
 
-        _action = if options[:special]
-                    action
-                  else
-                    case action
-                    when "new", "create" then "create"
-                    when "index", "show" then "read"
-                    when "edit", "update",
-                         "position", "toggle",
-                         "relate", "unrelate", "detach" then "update"
-                    when "destroy" then "delete"
-                    else action
-                    end
-                  end
+        action = options[:special] ? action : action.acl_action_mapper
 
-        resources[resource].extract_settings.include?(_action)
+        resources[resource].extract_settings.include?(action)
       end
 
       def cannot?(*args)
@@ -118,22 +106,19 @@ module Typus
         !is_root?
       end
 
-      def language
-        preferences[:locale]
-      rescue
-        I18n.default_locale.to_s
+      def locale
+        (preferences && preferences[:locale]) ? preferences[:locale] : ::I18n.default_locale
       end
 
-      def language=(locale)
+      def locale=(locale)
         options = { :locale => locale }
-        self.preferences.merge!(options)
-      rescue
-        self.preferences = {}
-        retry
+        self.preferences ||= {}
+        self.preferences[:locale] = locale
       end
 
       protected
 
+      # TODO: Update the hash generation by a harder one ...
       def generate_hash(string)
         Digest::SHA1.hexdigest(string)
       end

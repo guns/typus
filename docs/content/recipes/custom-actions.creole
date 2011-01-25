@@ -2,7 +2,6 @@
 title: Custom Actions
 
 parent_title: Recipes
-parent_link: /recipes/
 
 previous_title: Adding a Rich Text Editor
 previous_link: /recipes/rich-text-editor/
@@ -13,7 +12,7 @@ next_link: /recipes/single-table-inheritance/
 
 = Custom Actions
 
-You can overwrite and extend Admin::ResourcesController with your methods. 
+You can override and extend Admin::ResourcesController with your methods. 
 Actions are defined in {{{config/typus/application.yml}}}:
 
 {{{

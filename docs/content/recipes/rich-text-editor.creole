@@ -2,7 +2,6 @@
 title: Adding a Rich Text Editor
 
 parent_title: Recipes
-parent_link: /recipes/
 
 previous_title: 
 previous_link: 
@@ -13,52 +12,9 @@ next_link: /recipes/custom-actions/
 
 = Adding a Rich Text Editor
 
-Download **CKEditor** and uncompress it under the {{{public/javascripts}}} 
-folder.
+You can add a **Rich Text Editor**, ([[http://ckeditor.com/|CKEditor]]), to
+your application by running the following task into your application folder:
 
 {{{
-$ cd public/javascripts
-$ curl -O http://download.cksource.com/CKEditor/CKEditor/CKEditor%203.4/ckeditor_3.4.tar.gz
-$ tar xvzf ckeditor_3.4.tar.gz
-$ rm ckeditor_3.4.tar.gz
-}}}
-
-Edit the file {{{public/admin/javascripts/application.js}}} and copy the 
-following snippet. This will replace all {{{textarea}}} with **CKEditor**.
-
-{{{
-document.write("<script type='text/javascript' src='/javascripts/ckeditor/ckeditor.js'></script>"); 
-
-$(function() {
-  if ($('textarea').length > 0) {
-    var data = $('textarea');
-    $.each(data, function(i) { CKEDITOR.replace(data[i].id); });
-  }
-});
-}}}
-
-Now you can configure **CKEditor** editing {{{public/javascripts/ckeditor/config.js}}}. 
-This is how mine looks like, but you can customize all the settings of 
-**CKEditor** to match your requirements.
-
-{{{
-CKEDITOR.editorConfig = function( config )
-{
-
-  config.height = '250px';
-  config.width = '690px';
-
-  config.toolbar = 'Easy';
-  config.toolbar_Easy =
-    [
-        ['Source','-','Templates', '-', 'Cut','Copy','Paste','PasteText','PasteFromWord',],
-        ['Maximize'],
-        ['Undo','Redo','-','SelectAll','RemoveFormat'],
-        ['Link','Unlink','Anchor', '-', 'Image','Embed'], 
-        ['Styles','Format', 'Bold','Italic','Underline','Strike','-', 'TextColor'],
-        ['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'],
-        ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-    ];
-
-};
+$ rake rails:template LOCATION=http://core.typuscms.com/templates/extras/ckeditor.rb
 }}}

@@ -1,4 +1,4 @@
-# Typus: Admin interface for Rails applications
+# Typus: Admin Panel for Ruby on Rails applications
 
 **Typus** is designed for a single activity:
 
@@ -12,38 +12,50 @@ extensible enough to match lots of use cases.
 - Built-in Authentication.
 - User Permissions by using Access Control Lists. (stored in yaml files)
 - CRUD and custom actions for your models on a clean interface.
-- Internationalized interface.
+- Internationalized interface (Català, German, Greek, English, Español,
+Français, Magyar, Italiano, Portuguese, Russian, 中文)
 - Customizable and extensible templates.
+- Integrated [paperclip][1] and [dragonfly][2] attachments viewer.
 - Low memory footprint.
-- Works with Rails 3.0 and is Ruby 1.9.2 compatible.
+- Works with `Rails 3.0`.
+- Tested with `Ruby 1.8.7-p300` and `Ruby 1.9.2-p136`.
 - Tested with SQLite, MySQL and PostgreSQL.
 - MIT License, the same as Rails.
 
 ## Links
 
 - [Documentation](http://core.typuscms.com/)
-- [Demo](http://demo.typuscms.com/)
+- [Demo](http://demo.typuscms.com/) ([Code][3])
 - [Source Code](http://github.com/fesplugas/typus)
 - [Mailing List](http://groups.google.com/group/typus)
 - [Gems](http://rubygems.org/gems/typus)
 - [Contributors List](http://github.com/fesplugas/typus/contributors)
+- [Continous Integration](http://ci.typuscms.com/)
 
 ## Installing
 
-Add **Typus** to your `Gemfile`:
+Add **Typus** to your `Gemfile`
 
     gem 'typus', :git => 'https://github.com/fesplugas/typus.git'
 
-Update your bundle:
+Update your bundle
 
     $ bundle install
 
-Run the *Typus* generator:
+Run the generator
 
     $ rails generate typus
 
-Start the application server and go to <http://0.0.0.0:3000/admin>.
+Start the application server
+
+    $ rails server
+
+and go to <http://0.0.0.0:3000/admin>.
 
 ## License
 
-Copyright © 2007-2010 Francesc Esplugas, released under the MIT license.
+Copyright © 2007-2011 Francesc Esplugas, released under the MIT license.
+
+[1]: http://rubygems.org/gems/paperclip
+[2]: http://rubygems.org/gems/dragonfly
+[3]: https://github.com/fesplugas/typus/tree/master/test/fixtures/rails_app

@@ -13,7 +13,7 @@ module Typus
     end
 
     mattr_accessor :action_after_save
-    @@action_after_save = "index"
+    @@action_after_save = "edit"
 
     mattr_accessor :default_action_on_item
     @@default_action_on_item = "edit"
@@ -23,9 +23,6 @@ module Typus
 
     mattr_accessor :form_rows
     @@form_rows = 15
-
-    mattr_accessor :human_nil
-    @@human_nil = "nil"
 
     mattr_accessor :minute_step
     @@minute_step = 5

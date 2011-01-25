@@ -4,8 +4,8 @@ class String
     split(",").map { |x| x.strip }
   end
 
-  def remove_prefix(prefix = 'admin/')
-    partition(prefix).last
+  def remove_prefix
+    split("/")[1..-1].join("/")
   end
 
   def extract_class
@@ -14,6 +14,33 @@ class String
 
   def typus_constantize
     Typus::Configuration.models_constantized[self]
+  end
+
+  def action_mapper
+    case self
+    when "index" then :list
+    when "new", "create", "edit", "update" then :form
+    else self
+    end
+  end
+
+  def acl_action_mapper
+    case self
+    when "new", "create"
+      "create"
+    when "index", "show"
+      "read"
+    when "edit", "update", "position", "toggle", "relate", "unrelate", "detach"
+      "update"
+    when "destroy", "trash"
+      "delete"
+    else
+      self
+    end
+  end
+
+  def to_resource
+    self.underscore.pluralize
   end
 
 end

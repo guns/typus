@@ -9,13 +9,14 @@ module Typus
       files = (application + plugins).reject { |f| f.include?("_roles.yml") }
 
       @@config = {}
+
       files.each do |file|
         if data = YAML::load_file(file)
           @@config.merge!(data)
         end
       end
 
-      return @@config
+      @@config
     end
 
     mattr_accessor :config
@@ -26,22 +27,17 @@ module Typus
       plugins = Dir[File.join("vendor", "plugins", "*", "config", "typus", "*_roles.yml").to_s]
       files = (application + plugins).sort
 
-      @@roles = { Typus.master_role => {} }
+      @@roles = {}
 
       files.each do |file|
-        data = YAML::load_file(file)
-        next unless data
-        data.each do |key, value|
-          next unless value
-          begin
-            @@roles[key].merge!(value)
-          rescue
-            @@roles[key] = value
+        if data = YAML::load_file(file)
+          data.compact.each do |key, value|
+            @@roles[key] ? @@roles[key].merge!(value) : (@@roles[key] = value)
           end
         end
       end
 
-      return @@roles.compact
+      @@roles
     end
 
     mattr_accessor :roles

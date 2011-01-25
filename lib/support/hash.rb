@@ -1,7 +1,7 @@
 class Hash
 
   def compact
-    delete_if { |key, value| value.blank? }
+    delete_if { |k, v| v.blank? }
   end
 
 end

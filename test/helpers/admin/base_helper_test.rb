@@ -8,20 +8,18 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
   include ActionView::Helpers::TextHelper
 
   def render(*args); args; end
-  # include ActionView::Rendering
-  # include ActionView::Partials
 
   context "login info" do
 
     setup do
-      current_user = mock
-      self.stubs(:current_user).returns(current_user)
-      current_user.stubs(:name).returns("Admin")
-      current_user.stubs(:id).returns(1)
+      admin_user = mock
+      self.stubs(:admin_user).returns(admin_user)
+      admin_user.stubs(:name).returns("Admin")
+      admin_user.stubs(:id).returns(1)
     end
 
     should "skip rendering when we're using a fake user" do
-      current_user.stubs(:is_a?).with(FakeUser).returns(true)
+      admin_user.stubs(:is_a?).with(FakeUser).returns(true)
       output = login_info
       assert_nil output
     end
@@ -29,13 +27,13 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
     context "when the current user is not a FakeUser" do
 
       setup do
-        current_user.stubs(:is_a?).with(FakeUser).returns(false)
+        admin_user.stubs(:is_a?).with(FakeUser).returns(false)
       end
 
       context "when the user cannot edit his informations" do
 
         should "render a partial with the user name" do
-          current_user.stubs(:can?).with('edit', 'TypusUser').returns(false)
+          admin_user.stubs(:can?).with('edit', 'TypusUser').returns(false)
           assert_equal ["admin/helpers/login_info"], login_info
         end
 
@@ -46,7 +44,7 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
         should "render a partial with a link" do
           link_options = { :action => 'edit', :controller => '/admin/typus_users', :id => 1 }
 
-          current_user.stubs(:can?).with('edit', 'TypusUser').returns(true)
+          admin_user.stubs(:can?).with('edit', 'TypusUser').returns(true)
           self.stubs(:link_to).with("Admin", link_options).returns(%(<a href="/admin/typus_users/edit/1">Admin</a>))
 
           assert_equal ["admin/helpers/login_info"], login_info
@@ -60,37 +58,8 @@ class Admin::BaseHelperTest < ActiveSupport::TestCase
 
   context "header" do
 
-    should_eventually "render with root_path" do
-
-      # ActionView::Helpers::UrlHelper does not support strings, which are 
-      # returned by named routes link root_path
-      self.stubs(:link_to).returns(%(<a href="/">View site</a>))
-      self.stubs(:link_to_unless_current).returns(%(<a href="/admin/dashboard">Dashboard</a>))
-
-      output = header
-
-      partial = "admin/helpers/header"
-      options = { :links => [ %(<a href="/admin/dashboard">Dashboard</a>),
-                              %(<a href="/admin/dashboard">Dashboard</a>),
-                              %(<a href="/">View site</a>) ] }
-
-      assert_equal [ partial, options ], output
-
-    end
-
-    should_eventually "render without root_path" do
-
-      Rails.application.routes.named_routes.routes.reject! { |key, route| key == :root }
-
-      self.stubs(:link_to_unless_current).returns(%(<a href="/admin/dashboard">Dashboard</a>))
-
-      output = header
-      partial = "admin/helpers/header"
-      options = { :links => [ %(<a href="/admin/dashboard">Dashboard</a>),
-                              %(<a href="/admin/dashboard">Dashboard</a>) ] }
-
-      assert_equal [ partial, options ], output
-
+    should "work returning a partial" do
+      assert_equal ["admin/helpers/header"], header
     end
 
   end

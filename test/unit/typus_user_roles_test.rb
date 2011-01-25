@@ -14,11 +14,27 @@ class TypusUserRolesTest < ActiveSupport::TestCase
     end
 
     should "verify models access" do
-      expected = %w(Asset Category Comment Git Page Post Status TypusUser View WatchDog)
+      expected = ["Asset",
+                  "Case",
+                  "Category",
+                  "Comment",
+                  "Entry",
+                  "Git",
+                  "Invoice",
+                  "Order",
+                  "Page",
+                  "Post",
+                  "Project",
+                  "ProjectCollaborator",
+                  "Status",
+                  "TypusUser",
+                  "User",
+                  "View",
+                  "WatchDog"]
       assert_equal expected, @typus_user.resources.map(&:first).sort
     end
 
-    should "verify resources without actions related are removed" do
+    should_eventually "verify resources without actions related are removed" do
       assert !@typus_user.resources.map(&:first).include?('Order')
     end
 
@@ -35,7 +51,7 @@ class TypusUserRolesTest < ActiveSupport::TestCase
       assert @typus_user.cannot?('show', 'Status', { :special => true })
     end
 
-    should "verify we cannot perform actions on resources which don't have that action defined" do
+    should_eventually "verify we cannot perform actions on resources which don't have that action defined" do
       assert @typus_user.cannot?('index', 'Order')
     end
 

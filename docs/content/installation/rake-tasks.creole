@@ -1,0 +1,13 @@
+---
+title: Rake Tasks
+
+parent_title: Installation
+---
+
+= Rake Tasks
+
+To see a list of **Typus** related tasks run:
+
+{{{
+$ rake -T typus
+}}}

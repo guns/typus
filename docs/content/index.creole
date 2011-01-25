@@ -5,11 +5,9 @@ title: "Admin Panel for Ruby on Rails Applications"
 = Admin Panel for Ruby on Rails Applications
 
 **Typus** is a control panel for [[http://rubyonrails.org/|Ruby on Rails]] 
-applications to allow trusted users edit structured content. It’s not a CMS 
-with a full working system but it provides a part of the system: 
-authentication, permissions and basic look and feel for your websites control 
-panel. So using [[http://rubyonrails.org/|Rails]] with **Typus** lets you 
-concentrate on your application instead of the bits to manage the system.
+applications to allow trusted users edit structured content.
+
+It’s not a CMS with a full working system but it provides a part of the system: authentication, permissions and basic look and feel for your websites control panel. So using [[http://rubyonrails.org/|Rails]] with **Typus** lets you concentrate on your application instead of the bits to manage the system.
 
 **Typus** is the "old latin" word for **type** which stands for:
 
@@ -18,12 +16,6 @@ A category of people or things having common characteristics.
 }}}
 
 You can try a demo [[http://demo.typuscms.com/admin|here]].
-
-<div class="important">
-**Note**: Demo site has enabled the **typus_cms** module which is not
-available for download (sorry, only the core is open source), but it's a good
-example to show the things you can do with **Typus**.
-</div>
 
 == <a name="key_features" href="#key_features">Key Features</a>
 
@@ -60,26 +52,6 @@ $ rails generate typus
 
 Start the application server and go to http://0.0.0.0:3000/admin.
 
-== <a name="useful_links" href="#useful_links">Useful Links</a>
-
-* [[/documentation/|Documentation]]
-* [[/documentation/installation/|Installing Typus]]
-* [[/documentation/configuration/|Main Configuration]]
-* [[/documentation/configuration-resources/|Resources Configuration]] (ActiveRecord Models)
-* [[/documentation/configuration-resource/|Resource Configuration]] (Memcached, Redis ...)
-* [[/documentation/configuration-roles/|Roles Configuration]]
-* [[/documentation/configuration-ui/|User Interface Customization]]
-* [[/recipes/|Recipes]]
-
-Elsewhere ...
-
-* [[http://rubygems.org/gems/typus|Gems]]
-* [[http://github.com/fesplugas/typus|Plugin source code]]
-* [[http://groups.google.com/group/typus|Mailing list]]
-* [[http://github.com/fesplugas/typus/issues|Bug reports]]
-* [[http://github.com/fesplugas/typus/contributors|Contributors]]
-* [[http://pledgie.com/campaigns/11233|Donate]]
-
 == <a name="contribute" href="#contribute">Contribute</a>
 
 All of our hard work and help/support is free. We do have expenses to pay for 
@@ -95,20 +67,6 @@ and make it better.
 small.
 * [[http://pledgie.com/campaigns/11233|Contribute a few bucks]].
 
-Somehow involved in the project:
-
-* [[http://www.rubyist.net/~matz|Yukihiro "matz" Matsumoto]] creator of 
-[[http://ruby-lang.org/|Ruby]] the most beautiful programming ever kwnown.
-* [[http://loudthinking.com/|David Heinemeier Hansson]] for creating 
-[[http://rubyonrails.org/|Ruby on Rails]].
-* [[http://www.djangoproject.com/|Django Admin]] who inspired part of the 
-development, in special the templates rendering and UI.
-* [[http://ellislab.com/|Ellislab]], creators of [[http://codeigniter.com/|CodeIgniter]],
-for their [[http://codeigniter.com/user_guide/doc_style/index.html|documentation templates]].
-
-You can see a list of contributors and their commits on 
-[[http://github.com/fesplugas/typus/contributors|GitHub]].
-
 == <a name="services" href="#services">Services</a>
 
 You can directly participate in the support and development of **Typus**, 
@@ -116,28 +74,3 @@ including new features, by hiring our team to work on your project. We offer
 customization services for modules and extensions for a fee.
 
 Send your inquiries to [[mailto:contact@typuscms.com|contact@typuscms.com]].
-
-== <a name="mit_license" href="#mit_license">MIT License</a>
-
-{{{
-Copyright (c) 2007-2010 Francesc Esplugas Marti
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-}}}

@@ -2,7 +2,44 @@ require "test_helper"
 
 class ActiveRecordTest < ActiveSupport::TestCase
 
+  context "relationship_with" do
+
+    should "return relationship between Post and Comment" do
+      assert_equal :has_many, Post.relationship_with(Comment)
+    end
+
+    should "return relationship between Comment and Post" do
+      assert_equal :belongs_to, Comment.relationship_with(Post)
+    end
+
+    should "return relationship between Post and Category" do
+      assert_equal :has_and_belongs_to_many, Post.relationship_with(Category)
+    end
+
+    should "return relationship between Category and Post" do
+      assert_equal :has_and_belongs_to_many, Category.relationship_with(Post)
+    end
+
+    should "return relationship between Order and Invoice" do
+      assert_equal :has_one, Order.relationship_with(Invoice)
+    end
+
+    should "return relationship between Invoice and Order" do
+      assert_equal :belongs_to, Invoice.relationship_with(Order)
+    end
+
+  end
+
   context "mapping" do
+
+    teardown do
+      Post.send(:remove_const, :STATUS)
+      Post::STATUS = { "Draft" => "draft",
+                       "Published" => "published",
+                       "Unpublished" => "unpublished",
+                       "--" => "",
+                       "<div class=''>Something special</div>".html_safe => "special" }
+    end
 
     context "with an array" do
 

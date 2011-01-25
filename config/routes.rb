@@ -1,12 +1,9 @@
 Rails.application.routes.draw do
 
-  match "/admin" => redirect("/admin/dashboard")
+  scope "admin", :module => :admin, :as => "admin" do
 
-  namespace :admin do
-
-    match "help" => "base#help"
-
-    resource :dashboard, :only => [:show], :controller => :dashboard
+    match "/" => "dashboard#show", :as => "dashboard"
+    match "user_guide" => "base#user_guide"
 
     if Typus.authentication == :session
       resource :session, :only => [:new, :create, :destroy], :controller => :session
@@ -15,8 +12,14 @@ Rails.application.routes.draw do
       end
     end
 
-  end
+    Typus.models.map { |i| i.to_resource }.each do |resource|
+      match "#{resource}(/:action(/:id(.:format)))", :controller => resource
+    end
 
-  match ':controller(/:action(/:id(.:format)))', :controller => /admin\/[^\/]+/
+    Typus.resources.map { |i| i.underscore }.each do |resource|
+      match "#{resource}(/:action(/:id(.:format)))", :controller => resource
+    end
+
+  end
 
 end

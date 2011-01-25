@@ -1,44 +1,33 @@
-require "typus/format"
-
 class Admin::ResourcesController < Admin::BaseController
 
+  include Typus::Actions
+  include Typus::Filters
   include Typus::Format
 
   before_filter :get_model
-
-  before_filter :get_object,
-                :only => [ :show,
-                           :edit, :update, :destroy, :toggle,
-                           :position, :relate, :unrelate,
-                           :detach ]
-
-  before_filter :check_resource_ownership,
-                :only => [ :edit, :update, :destroy, :toggle,
-                           :position, :relate, :unrelate ]
-
-  before_filter :check_if_user_can_perform_action_on_user,
-                :only => [ :edit, :update, :toggle, :destroy ]
+  before_filter :set_scope
+  before_filter :get_object, :only => [:show, :edit, :update, :destroy, :toggle, :position, :relate, :unrelate, :detach]
+  before_filter :check_resource_ownership, :only => [:edit, :update, :destroy, :toggle, :position, :relate, :unrelate ]
   before_filter :check_if_user_can_perform_action_on_resources
+  before_filter :set_order, :only => [:index]
+  before_filter :set_fields, :only => [:index, :new, :edit, :create, :update, :show, :detach]
 
-  before_filter :set_order,
-                :only => [ :index ]
-  before_filter :set_fields,
-                :only => [ :index, :new, :edit, :create, :update, :show, :detach ]
+  before_filter :check_if_we_can_add_a_new_item, :only => [:new, :create]
 
   ##
   # This is the main index of the model. With filters, conditions and more.
   #
-  # By default application can respond_to html, csv and xml, but you can add
+  # By default application can respond to html, csv and xml, but you can add
   # your formats.
   #
   def index
-    @conditions, @joins = @resource.build_conditions(params)
-    check_resource_ownerships if @resource.typus_options_for(:only_user_items)
+    add_action(:action_name => default_action.titleize, :action => default_action)
+    add_action(:action_name => "Trash", :action => "destroy", :confirm => "#{Typus::I18n.t("Trash")}?", :method => 'delete')
 
     get_objects
 
     respond_to do |format|
-      format.html { generate_html and select_template }
+      format.html { generate_html }
       @resource.typus_export_formats.each { |f| format.send(f) { send("generate_#{f}") } }
     end
   end
@@ -47,10 +36,7 @@ class Admin::ResourcesController < Admin::BaseController
     item_params = params.dup
     rejections = %w(controller action resource resource_id back_to selected)
     item_params.delete_if { |k, v| rejections.include?(k) }
-
     @item = @resource.new(item_params)
-
-    select_template
   end
 
   ##
@@ -66,17 +52,17 @@ class Admin::ResourcesController < Admin::BaseController
     if @item.save
       params[:back_to] ? create_with_back_to : redirect_on_success
     else
-      select_template(:new)
+      render :new
     end
   end
 
   def edit
-    select_template
+    add_action(:action_name => default_action.titleize, :action => default_action)
+    add_action(:action_name => "Unrelate", :action => "unrelate", :confirm => "#{Typus::I18n.t("Unrelate")}?", :resource => @resource.model_name, :resource_id => @item.id)
   end
 
   def show
-    check_resource_ownership and return if @resource.typus_options_for(:only_user_items)
-    select_template
+    check_resource_ownership if @resource.typus_options_for(:only_user_items)
   end
 
   def update
@@ -87,7 +73,7 @@ class Admin::ResourcesController < Admin::BaseController
         format.html { redirect_on_success }
         format.json { render :json => @item }
       else
-        format.html { select_template(:edit) }
+        format.html { render :edit }
         format.json { render :json => @item.errors.full_messages }
       end
     end
@@ -97,20 +83,25 @@ class Admin::ResourcesController < Admin::BaseController
     if @item.update_attributes(params[:attribute] => nil)
       redirect_on_success
     else
-      select_template(:edit)
+      render :edit
     end
   end
 
   def destroy
-    @item.destroy
-    notice = _t("%{model} successfully removed.", :model => @resource.model_name.human)
-    redirect_to set_path, :notice => notice
+    if @item.destroy
+      notice = Typus::I18n.t("%{model} successfully removed.", :model => @resource.model_name.human)
+    else
+      alert = @item.errors.full_messages
+    end
+    redirect_to set_path, :notice => notice, :alert => alert
   end
 
   def toggle
     @item.toggle(params[:field])
     @item.save!
-    notice = _t("%{model} successfully updated.", :model => @resource.model_name.human)
+
+    notice = Typus::I18n.t("%{model} successfully updated.", :model => @resource.model_name.human)
+
     respond_to do |format|
       format.html { redirect_to set_path, :notice => notice }
       format.json { render :json => @item }
@@ -118,13 +109,14 @@ class Admin::ResourcesController < Admin::BaseController
   end
 
   ##
-  # Change item position. This only works if acts_as_list is installed. We can
-  # then move items:
+  # Change item position:
   #
   #   params[:go] = 'move_to_top'
   #
   # Available positions are move_to_top, move_higher, move_lower, move_to_bottom.
   # If params[:go] is an integer, item is inserted at that position.
+  #
+  # NOTE: Only works if `acts_as_list` is installed.
   #
   def position
     if params[:go] =~ /\A\d+\z/
@@ -133,7 +125,7 @@ class Admin::ResourcesController < Admin::BaseController
       @item.send(params[:go])
     end
 
-    notice = _t("Record moved to position %{to}.", :to => params[:go].gsub(/move_/, '').humanize.downcase)
+    notice = Typus::I18n.t("%{model} successfully updated.", :model => @resource.model_name.human)
 
     respond_to do |format|
       format.html { redirect_to set_path, :notice => notice }
@@ -142,63 +134,85 @@ class Admin::ResourcesController < Admin::BaseController
   end
 
   ##
-  # Relate a model object to another, this action is used only by the
-  # has_and_belongs_to_many and has_many relationships.
+  # Action to relate models which respond to:
+  #
+  #   - has_and_belongs_to_many
+  #   - has_many
+  #
+  # For example:
+  #
+  #   class Item < ActiveRecord::Base
+  #     has_many :line_items
+  #   end
+  #
+  #   class LineItem < ActiveRecord::Base
+  #     belongs_to :item
+  #   end
+  #
+  #   >> related_item = LineItem.find(params[:related][:id])
+  #   => ...
+  #   >> item = Item.find(params[:id])
+  #   => ...
+  #   >> item.line_items << related_item
+  #   => ...
   #
   def relate
     resource_class = params[:related][:model].typus_constantize
-    resource_tableized = params[:related][:model].tableize
+    association_name = params[:related][:association_name].tableize
 
-    if @item.send(resource_tableized) << resource_class.find(params[:related][:id])
-      flash[:notice] = _t("%{model} successfully updated.", :model => @resource.model_name.human)
+    if @item.send(association_name) << resource_class.find(params[:related][:id])
+      flash[:notice] = Typus::I18n.t("%{model} successfully updated.", :model => @resource.model_name.human)
     end
 
     redirect_to set_path
   end
 
   ##
-  # Remove relationship between models, this action never removes items!
+  # Action to unrelate models which respond to:
+  #
+  #   - has_and_belongs_to_many
+  #   - has_many
+  #   - has_one
   #
   def unrelate
-    resource_class = params[:resource].typus_constantize
-    resource_tableized = params[:resource].tableize
-    resource = resource_class.find(params[:resource_id])
 
-    # We consider that we are unrelating a has_many or has_and_belongs_to_many
+    ##
+    # Find the remote object which is named item!
+    #
 
-    reflection = @resource.reflect_on_association(resource_class.table_name.to_sym)
-    macro = reflection.try(:macro)
-    options = reflection.try(:options)
+    item_class = params[:resource].typus_constantize
+    item = item_class.find(params[:resource_id])
 
-    case macro
-    # when :has_one
-    #   attribute = resource_tableized.singularize
-    #   saved_succesfully = @item.update_attribute attribute, nil
-    when :has_many
-      if options.has_key?(:as) # We are in a polymorphic relationship
-        interface = options[:as]
-        saved_succesfully = resource.update_attributes("#{interface}_type" => nil, "#{interface}_id" => nil)
-      elsif options.has_key?(:through)
-        resource_parent = reflection.active_record.find(params[:id])
-        saved_succesfully = resource_parent.send(resource_tableized).delete(resource)
-      else
-        # We have to verify we can unrelate. For example: A Category which has
-        # many posts and Post validates_presence_of Category should not be removed.
-        attribute = @resource.table_name.singularize
-        saved_succesfully = resource.update_attributes(attribute => nil)
-      end
-    when :has_and_belongs_to_many
-      attribute = resource_tableized
-      saved_succesfully = @item.send(attribute).delete(resource)
+    ##
+    # Detect which kind of relationship there's between both models.
+    #
+    #     item respect @item
+    #
+
+    # This is not nil in case of a has_many :through association.
+    association_name = params[:association_name].to_sym unless params[:association_name].blank?
+
+    case item_class.relationship_with(@resource)
+    when :has_one
+      association_name = @resource.model_name.downcase.to_sym
+      worked = item.send(association_name).delete
     else
-      saved_succesfully = false
+      association_name ||= @resource.model_name.tableize.to_sym
+      worked = item.send(association_name).delete(@item)
     end
 
-    if saved_succesfully
-      flash[:notice] = _t("%{model} successfully updated.", :model => @resource.model_name.human)
+    ##
+    # Finally delete the associated object. Depending on your models setup
+    # associated models will be removed or foreign_key will be set to nil.
+    #
+
+    if worked
+      notice = Typus::I18n.t("%{model} successfully updated.", :model => item_class.model_name.human)
+    else
+      alert = item.error.full_messages
     end
 
-    redirect_to set_path
+    redirect_to set_path, :notice => notice, :alert => alert
   end
 
   private
@@ -209,26 +223,33 @@ class Admin::ResourcesController < Admin::BaseController
   end
 
   def set_scope
-    @resource.unscoped
+    @resource = @resource.unscoped
   end
 
   def get_object
-    @item = set_scope.find(params[:id])
+    @item = @resource.find(params[:id])
   end
 
   def get_objects
     eager_loading = @resource.reflect_on_all_associations(:belongs_to).reject { |i| i.options[:polymorphic] }.map { |i| i.name }
-    @items = set_scope.joins(@joins).where(@conditions).order(set_order).includes(eager_loading)
+
+    @resource.build_conditions(params).each do |condition|
+      @resource = @resource.where(condition)
+    end
+
+    @resource.build_joins(params).each do |join|
+      @resource = @resource.joins(join)
+    end
+
+    if @resource.typus_options_for(:only_user_items)
+      check_resources_ownership
+    end
+
+    @items = @resource.order(set_order).includes(eager_loading)
   end
 
   def set_fields
-    mapping = case params[:action]
-              when "index" then :list
-              when "new", "create", "edit", "update" then :form
-              else params[:action]
-              end
-
-    @fields = @resource.typus_fields_for(mapping)
+    @fields = @resource.typus_fields_for(params[:action].action_mapper)
   end
 
   def set_order
@@ -243,7 +264,7 @@ class Admin::ResourcesController < Admin::BaseController
     when "create"
       path = { :action => action }
       path.merge!(:id => @item.id) unless action.eql?("index")
-      notice = _t("%{model} successfully created.", :model => @resource.model_name.human)
+      notice = Typus::I18n.t("%{model} successfully created.", :model => @resource.model_name.human)
     when "update", "detach"
       path = case action
              when "index"
@@ -251,48 +272,155 @@ class Admin::ResourcesController < Admin::BaseController
              else
                { :action => action, :id => @item.id, :back_to => params[:back_to] }
              end
-      notice = _t("%{model} successfully updated.", :model => @resource.model_name.human)
+      notice = Typus::I18n.t("%{model} successfully updated.", :model => @resource.model_name.human)
     end
 
     redirect_to path, :notice => notice
   end
 
   ##
-  # When <tt>params[:back_to]</tt> is defined this action is used.
+  # Here what we basically do is to associate objects after they have been
+  # created. It's similar to calling `relate`.
   #
-  # - <tt>has_and_belongs_to_many</tt> relationships.
-  # - <tt>has_many</tt> relationships (polymorphic ones).
+  # We have two objects:
+  #
+  #   - @item: Which is the create object.
+  #   - item: Which is the object which be associated to.
+  #
+  # http://0.0.0.0:3000/admin/entries/new?back_to=%2Fadmin%2Fcategories%2Fedit%2F3&resource=categories&resource_id=3
   #
   def create_with_back_to
-    association = @resource.reflect_on_association(params[:resource].to_sym)
 
-    if params[:resource_id]
-      resource_class = params[:resource].classify.typus_constantize
-      resource_id = params[:resource_id]
-      resource = resource_class.find(resource_id)
-    end
+    #
+    # Find the remote object which is named item!
+    #
 
-    message = _t("%{model} successfully updated.", :model => resource_class.model_name.human)
+    item_class = params[:resource].typus_constantize
+    item = item_class.find(params[:resource_id]) if params[:resource_id]
 
-    case association.macro
+    ##
+    # Detect which kind of relationship there's between both models.
+    #
+
+    ##
+    # Here we have something like:
+    #
+    # Eg 1.
+    #
+    #   - We are editing an Order and want to add a new Invoice.
+    #   - Click on "Add New" and we are redirected to the form.
+    #   - We want to know which kind of relationship there's between both
+    #     objects.
+    #
+    #         >> Order.relationship_with(Invoice)
+    #         => :has_one
+    #
+    # Eg 2.
+    #
+    #   - We are editing a Entry and want to add a new Attachment.
+    #   - Click on "Add New" and we are redirected to the form.
+    #   - We want to know which kind of relationship there's between both
+    #     objects.
+    #
+    #         >> Entry.relationship_with(Attachment)
+    #         => :has_and_belongs_to_many
+    #
+    # Eg 3.
+    #
+    #   - We are editing a Entry and want to add a new Comment.
+    #   - Click on "Add New" and we are redirected to the form.
+    #   - We want to know which kind of relationship there's between both
+    #     objects.
+    #
+    #         >> Entry.relationship_with(Comment)
+    #         => :has_many
+    #
+    # Eg 4.
+    #
+    #   - We are editing a Post (Entry) and want to add a new Attachment.
+    #   - Click on "Add New" and we are redirected to the form.
+    #   - We want to know which kind of relationship there's between both
+    #     objects.
+    #
+    #         >> Post.relationship_with(Attachment)
+    #         => :has_and_belongs_to_many
+    #
+
+    case item_class.relationship_with(@resource)
+    when :has_one
+      # Order#invoice = @item
+      association_name = @resource.model_name.downcase.to_sym
+      item.send("#{association_name}=", @item)
+      worked = true
     when :has_and_belongs_to_many
-      @item.send(params[:resource]) << resource
-    when :has_many
-      if resource
-        @item.send(params[:resource]) << resource
-      else
-        path = "#{params[:back_to]}?#{association.primary_key_name}=#{@item.id}"
+      # Attachment#entries.push(item)
+      association_name = @resource.model_name.tableize.to_sym
+      worked = item.send(association_name).push(@item)
+    when :belongs_to
+      # Entry#comments.push(item)
+      association_name = item_class.model_name.tableize.to_sym
+      if item
+        worked = @item.send(association_name).push(item)
       end
-    when :polymorphic
-      resource.send(@item.class.to_resource).create(params[@object_name])
     end
 
-    redirect_to (path || params[:back_to]), :notice => message
+    association = @resource.reflect_on_association(association_name)
+
+    ##
+    # Set @back_to
+    #
+
+    @back_to = if item
+                 params[:back_to]
+               else
+                 "#{params[:back_to]}?#{association.primary_key_name}=#{@item.id}"
+               end
+
+    ##
+    # Finally delete the associated object. Depending on your models setup
+    # associated models will be removed or foreign_key will be set to nil.
+    #
+
+    if item
+      if worked
+        notice = Typus::I18n.t("%{model} successfully updated.", :model => item_class.model_name.human)
+      else
+        alert = @item.error.full_messages
+      end
+    end
+
+    redirect_to set_path, :notice => notice, :alert => alert
   end
 
-  def select_template(action = params[:action], resource = @resource.to_resource)
-    folder = File.exist?("app/views/admin/#{resource}/#{action}.html.erb") ? resource : 'resources'
-    render "admin/#{folder}/#{action}"
+  def default_action
+    @resource.typus_options_for(:default_action_on_item)
+  end
+
+  ##
+  # If we are trying to create a new Invoice which belongs_to Order, we should
+  # verify before the the Order doesn't have an Invoice, otherwise we would
+  # have and Order with many Invoices which is something not desired.
+  #
+  # Eg:
+  #
+  #     @resource (Invoice)
+  #     params[:resource] = "Order"
+  #     params[:resource_id] = "1"
+  #
+  # Does this Order already has an Invoice. If true, redirect to back.
+  #
+  def check_if_we_can_add_a_new_item
+    if params[:resource] && params[:resource_id]
+      item_class = params[:resource].typus_constantize
+      item = item_class.find(params[:resource_id]) if params[:resource_id]
+
+      if item_class.relationship_with(@resource) == :has_one
+        association_name = @resource.model_name.downcase.to_sym
+        if item.send(association_name)
+          render :text => "Not allowed!", :status => :unprocessable_entity
+        end
+      end
+    end
   end
 
 end
